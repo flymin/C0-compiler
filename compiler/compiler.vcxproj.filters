@@ -56,5 +56,8 @@
     <ClCompile Include="tar.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="tar_new.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

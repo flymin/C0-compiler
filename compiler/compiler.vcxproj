@@ -33,6 +33,7 @@
     <ClCompile Include="mid_code.cpp" />
     <ClCompile Include="table.cpp" />
     <ClCompile Include="tar.cpp" />
+    <ClCompile Include="tar_new.cpp" />
     <ClCompile Include="words.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

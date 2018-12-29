@@ -15,7 +15,7 @@
 
 using namespace std;
 
-#ifndef NEW_TAR
+#ifdef NEW_TAR
 
 #if 0
 #define MIPS_LEFT cout
@@ -701,6 +701,7 @@ void set_data_str() {
 }
 
 void tar_code() {
+	cout << "using new tar code generater" << endl;
 	set_data_str();
 	readline_tar();
 }

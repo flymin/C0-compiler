@@ -2,6 +2,7 @@
 @array CHAR False 5
 @var CHAR char_flag
 @var INT int_flag
+@var INT X
 @array INT list 101
 @var INT n
 @call main
@@ -302,6 +303,10 @@ temp = #0
 @ret temp
 @func conFun
 @ret 10
+@func returnX
+#0 = X ADD 1
+X = #0
+@ret X
 @func main
 @var CHAR proc
 @var CHAR iproc
@@ -575,4 +580,15 @@ main_L_16_else_over :
 @printf LINE
 @printf STRING S_23
 @printf LINE
+#0 = X ADD 0
+@call returnX
+@get #1
+#2 = #1 ADD 0
+#3 = #0 EQ #2
+@bz #3 main_L_17_else_begin
+@printf STRING S_24
+@printf LINE
+@j main_L_17_else_over
+main_L_17_else_begin :
+main_L_17_else_over :
 @ret 
