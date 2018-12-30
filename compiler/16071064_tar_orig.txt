@@ -52,9 +52,14 @@ quicksort_E:
    # @var INT _temp
    # @var INT _con
    # #0 = left GT right
-sgt $t0, $a0, $a1
+lw $t0, -12($fp)
+lw $t1, -16($fp)
+sgt $t0, $t0, $t1
+sw $t0, -44($fp)
    # @bz #0 quicksort_L_0_else_begin
+lw $t0, -44($fp)
 beq $t0, $0, quicksort_L_0_else_begin
+nop
    # @ret 
 jr $ra
 nop
@@ -66,39 +71,63 @@ quicksort_L_0_else_begin:
    # quicksort_L_0_else_over :
 quicksort_L_0_else_over:
    # #0 = list ARRGET left
-sll $v0, $a0, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t0, 0($v0)
+lw $t1, -12($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -44($fp)
    # temp = #0
-move $s0, $t0
+lw $t0, -44($fp)
+sw $t0, -32($fp)
    # i = left
-move $s1, $a0
+lw $t0, -12($fp)
+sw $t0, -20($fp)
    # j = right
-move $s2, $a1
+lw $t0, -16($fp)
+sw $t0, -24($fp)
    # #0 = i NEQ j
-sne $t0, $s1, $s2
+lw $t0, -20($fp)
+lw $t1, -24($fp)
+sne $t0, $t0, $t1
+sw $t0, -44($fp)
    # @bz #0 quicksort_L_1_else_begin
+lw $t0, -44($fp)
 beq $t0, $0, quicksort_L_1_else_begin
+nop
    # quicksort_L_2_dobegin :
 quicksort_L_2_dobegin:
    # _con = 0
-li $s3, 0
+li $t0, 0
+sw $t0, -40($fp)
    # #1 = list ARRGET j
-sll $v0, $s2, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t1, 0($v0)
+lw $t1, -24($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -48($fp)
    # #2 = #1 GE temp
-sge $t2, $t1, $s0
+lw $t0, -48($fp)
+lw $t1, -32($fp)
+sge $t0, $t0, $t1
+sw $t0, -52($fp)
    # @bz #2 quicksort_L_3_else_begin
-beq $t2, $0, quicksort_L_3_else_begin
+lw $t0, -52($fp)
+beq $t0, $0, quicksort_L_3_else_begin
+nop
    # #3 = i LT j
-slt $t3, $s1, $s2
+lw $t0, -20($fp)
+lw $t1, -24($fp)
+slt $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #3 quicksort_L_4_else_begin
-beq $t3, $0, quicksort_L_4_else_begin
+lw $t0, -56($fp)
+beq $t0, $0, quicksort_L_4_else_begin
+nop
    # _con = 1
-li $s3, 1
+li $t0, 1
+sw $t0, -40($fp)
    # @j quicksort_L_4_else_over
 j quicksort_L_4_else_over
 nop
@@ -114,44 +143,66 @@ quicksort_L_3_else_begin:
    # quicksort_L_3_else_over :
 quicksort_L_3_else_over:
    # _temp = 0
-li $s4, 0
+li $t0, 0
+sw $t0, -36($fp)
    # quicksort_L_5_for_cond :
 quicksort_L_5_for_cond:
    # @bz _con quicksort_L_5_for_end
-beq $s3, $0, quicksort_L_5_for_end
+lw $t0, -40($fp)
+beq $t0, $0, quicksort_L_5_for_end
+nop
    # @j quicksort_L_5_for_state
 j quicksort_L_5_for_state
 nop
    # quicksort_L_5_for_step :
 quicksort_L_5_for_step:
    # _temp = _temp ADD 1
-addi $s4, $s4, 1
+lw $t0, -36($fp)
+addi $t0, $t0, 1
+sw $t0, -36($fp)
    # @j quicksort_L_5_for_cond
 j quicksort_L_5_for_cond
 nop
    # quicksort_L_5_for_state :
 quicksort_L_5_for_state:
    # #1 = j SUB 1
-addi $t1, $s2, -1
+lw $t0, -24($fp)
+addi $t0, $t0, -1
+sw $t0, -48($fp)
    # j = #1
-move $s2, $t1
+lw $t0, -48($fp)
+sw $t0, -24($fp)
    # _con = 0
-li $s3, 0
+li $t0, 0
+sw $t0, -40($fp)
    # #1 = list ARRGET j
-sll $v0, $s2, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t1, 0($v0)
+lw $t1, -24($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -48($fp)
    # #2 = #1 GE temp
-sge $t2, $t1, $s0
+lw $t0, -48($fp)
+lw $t1, -32($fp)
+sge $t0, $t0, $t1
+sw $t0, -52($fp)
    # @bz #2 quicksort_L_6_else_begin
-beq $t2, $0, quicksort_L_6_else_begin
+lw $t0, -52($fp)
+beq $t0, $0, quicksort_L_6_else_begin
+nop
    # #3 = i LT j
-slt $t3, $s1, $s2
+lw $t0, -20($fp)
+lw $t1, -24($fp)
+slt $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #3 quicksort_L_7_else_begin
-beq $t3, $0, quicksort_L_7_else_begin
+lw $t0, -56($fp)
+beq $t0, $0, quicksort_L_7_else_begin
+nop
    # _con = 1
-li $s3, 1
+li $t0, 1
+sw $t0, -40($fp)
    # @j quicksort_L_7_else_over
 j quicksort_L_7_else_over
 nop
@@ -172,22 +223,36 @@ nop
    # quicksort_L_5_for_end :
 quicksort_L_5_for_end:
    # _con = 0
-li $s3, 0
+li $t0, 0
+sw $t0, -40($fp)
    # #1 = list ARRGET i
-sll $v0, $s1, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t1, 0($v0)
+lw $t1, -20($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -48($fp)
    # #2 = #1 LE temp
-sle $t2, $t1, $s0
+lw $t0, -48($fp)
+lw $t1, -32($fp)
+sle $t0, $t0, $t1
+sw $t0, -52($fp)
    # @bz #2 quicksort_L_8_else_begin
-beq $t2, $0, quicksort_L_8_else_begin
+lw $t0, -52($fp)
+beq $t0, $0, quicksort_L_8_else_begin
+nop
    # #3 = i LT j
-slt $t3, $s1, $s2
+lw $t0, -20($fp)
+lw $t1, -24($fp)
+slt $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #3 quicksort_L_9_else_begin
-beq $t3, $0, quicksort_L_9_else_begin
+lw $t0, -56($fp)
+beq $t0, $0, quicksort_L_9_else_begin
+nop
    # _con = 1
-li $s3, 1
+li $t0, 1
+sw $t0, -40($fp)
    # @j quicksort_L_9_else_over
 j quicksort_L_9_else_over
 nop
@@ -203,44 +268,66 @@ quicksort_L_8_else_begin:
    # quicksort_L_8_else_over :
 quicksort_L_8_else_over:
    # _temp = 0
-li $s4, 0
+li $t0, 0
+sw $t0, -36($fp)
    # quicksort_L_10_for_cond :
 quicksort_L_10_for_cond:
    # @bz _con quicksort_L_10_for_end
-beq $s3, $0, quicksort_L_10_for_end
+lw $t0, -40($fp)
+beq $t0, $0, quicksort_L_10_for_end
+nop
    # @j quicksort_L_10_for_state
 j quicksort_L_10_for_state
 nop
    # quicksort_L_10_for_step :
 quicksort_L_10_for_step:
    # _temp = _temp ADD 1
-addi $s4, $s4, 1
+lw $t0, -36($fp)
+addi $t0, $t0, 1
+sw $t0, -36($fp)
    # @j quicksort_L_10_for_cond
 j quicksort_L_10_for_cond
 nop
    # quicksort_L_10_for_state :
 quicksort_L_10_for_state:
    # #1 = i ADD 1
-addi $t1, $s1, 1
+lw $t0, -20($fp)
+addi $t0, $t0, 1
+sw $t0, -48($fp)
    # i = #1
-move $s1, $t1
+lw $t0, -48($fp)
+sw $t0, -20($fp)
    # _con = 0
-li $s3, 0
+li $t0, 0
+sw $t0, -40($fp)
    # #1 = list ARRGET i
-sll $v0, $s1, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t1, 0($v0)
+lw $t1, -20($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -48($fp)
    # #2 = #1 LE temp
-sle $t2, $t1, $s0
+lw $t0, -48($fp)
+lw $t1, -32($fp)
+sle $t0, $t0, $t1
+sw $t0, -52($fp)
    # @bz #2 quicksort_L_11_else_begin
-beq $t2, $0, quicksort_L_11_else_begin
+lw $t0, -52($fp)
+beq $t0, $0, quicksort_L_11_else_begin
+nop
    # #3 = i LT j
-slt $t3, $s1, $s2
+lw $t0, -20($fp)
+lw $t1, -24($fp)
+slt $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #3 quicksort_L_12_else_begin
-beq $t3, $0, quicksort_L_12_else_begin
+lw $t0, -56($fp)
+beq $t0, $0, quicksort_L_12_else_begin
+nop
    # _con = 1
-li $s3, 1
+li $t0, 1
+sw $t0, -40($fp)
    # @j quicksort_L_12_else_over
 j quicksort_L_12_else_over
 nop
@@ -261,31 +348,45 @@ nop
    # quicksort_L_10_for_end :
 quicksort_L_10_for_end:
    # #1 = i LT j
-slt $t1, $s1, $s2
+lw $t0, -20($fp)
+lw $t1, -24($fp)
+slt $t0, $t0, $t1
+sw $t0, -48($fp)
    # @bz #1 quicksort_L_13_else_begin
-beq $t1, $0, quicksort_L_13_else_begin
+lw $t0, -48($fp)
+beq $t0, $0, quicksort_L_13_else_begin
+nop
    # #2 = list ARRGET i
-sll $v0, $s1, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t2, 0($v0)
+lw $t1, -20($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -52($fp)
    # t = #2
-move $s5, $t2
+lw $t0, -52($fp)
+sw $t0, -28($fp)
    # #2 = list ARRGET j
-sll $v0, $s2, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t2, 0($v0)
+lw $t1, -24($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -52($fp)
    # list ARRSET i #2
-sll $v0, $s1, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-sw $t2, 0($v0)
+lw $t0, -52($fp)
+lw $t1, -20($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+sw $t0, 0($t1)
    # list ARRSET j t
-sll $v0, $s2, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-sw $s5, 0($v0)
+lw $t0, -28($fp)
+lw $t1, -24($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+sw $t0, 0($t1)
    # @j quicksort_L_13_else_over
 j quicksort_L_13_else_over
 nop
@@ -294,9 +395,14 @@ quicksort_L_13_else_begin:
    # quicksort_L_13_else_over :
 quicksort_L_13_else_over:
    # #1 = i NEQ j
-sne $t1, $s1, $s2
+lw $t0, -20($fp)
+lw $t1, -24($fp)
+sne $t0, $t0, $t1
+sw $t0, -48($fp)
    # @bz #1 quicksort_L_2_doend
-beq $t1, $0, quicksort_L_2_doend
+lw $t0, -48($fp)
+beq $t0, $0, quicksort_L_2_doend
+nop
    # @j quicksort_L_2_dobegin
 j quicksort_L_2_dobegin
 nop
@@ -310,39 +416,37 @@ quicksort_L_1_else_begin:
    # quicksort_L_1_else_over :
 quicksort_L_1_else_over:
    # #0 = list ARRGET i
-sll $v0, $s1, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t0, 0($v0)
+lw $t1, -20($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -44($fp)
    # list ARRSET left #0
-sll $v0, $a0, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-sw $t0, 0($v0)
+lw $t0, -44($fp)
+lw $t1, -12($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+sw $t0, 0($t1)
    # list ARRSET i temp
-sll $v0, $s1, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-sw $s0, 0($v0)
+lw $t0, -32($fp)
+lw $t1, -20($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+sw $t0, 0($t1)
    # @push left
    # #0 = i SUB 1
-addi $t0, $s1, -1
+lw $t0, -20($fp)
+addi $t0, $t0, -1
+sw $t0, -44($fp)
    # @push #0
    # @call quicksort
-sw $a0, -12($fp) # store left
-sw $a1, -16($fp) # store right
-sw $s0, -32($fp) # store temp
-sw $s1, -20($fp) # store i
-sw $s2, -24($fp) # store j
-sw $s3, -40($fp) # store _con
-sw $s4, -36($fp) # store _temp
-sw $s5, -28($fp) # store t
-sw $t0, -44($fp) # store #0
-sw $t1, -48($fp) # store #1
-sw $t2, -52($fp) # store #2
-sw $t3, -56($fp) # store #3
-move $a1, $t0
-move $a0, $a0
+lw $t0, -44($fp)
+sw $t0, -16($sp)
+lw $t0, -12($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -352,15 +456,16 @@ addi $sp, $sp, 60
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # #0 = i ADD 1
-lw $s0, -20($fp) # load i
-addi $t0, $s0, 1
+lw $t0, -20($fp)
+addi $t0, $t0, 1
+sw $t0, -44($fp)
    # @push #0
    # @push right
    # @call quicksort
-sw $t0, -44($fp) # store #0
-lw $s1, -16($fp) # load right
-move $a1, $s1
-move $a0, $t0
+lw $t0, -16($fp)
+sw $t0, -16($sp)
+lw $t0, -44($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -376,9 +481,14 @@ nop
 F_E:
    # @para INT no
    # #0 = no EQ 0
-seq $t0, $a0, $0
+lw $t0, -12($fp)
+li $t1, 0
+seq $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 F_L_0_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, F_L_0_else_begin
+nop
    # @ret 1
 li $v0, 1
 jr $ra
@@ -391,10 +501,14 @@ F_L_0_else_begin:
    # F_L_0_else_over :
 F_L_0_else_over:
    # #0 = no EQ 1
-li $s0, 1
-seq $t0, $a0, $s0
+lw $t0, -12($fp)
+li $t1, 1
+seq $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 F_L_1_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, F_L_1_else_begin
+nop
    # @ret 1
 li $v0, 1
 jr $ra
@@ -407,12 +521,13 @@ F_L_1_else_begin:
    # F_L_1_else_over :
 F_L_1_else_over:
    # #0 = no SUB 1
-addi $t0, $a0, -1
+lw $t0, -12($fp)
+addi $t0, $t0, -1
+sw $t0, -16($fp)
    # @push #0
    # @call F
-sw $a0, -12($fp) # store no
-sw $t0, -16($fp) # store #0
-move $a0, $t0
+lw $t0, -16($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -422,15 +537,15 @@ addi $sp, $sp, 36
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #1
-move $t1, $v0
+sw $v0, -20($fp)
    # #2 = no SUB 2
-lw $s0, -12($fp) # load no
-addi $t2, $s0, -2
+lw $t0, -12($fp)
+addi $t0, $t0, -2
+sw $t0, -24($fp)
    # @push #2
    # @call F
-sw $t1, -20($fp) # store #1
-sw $t2, -24($fp) # store #2
-move $a0, $t2
+lw $t0, -24($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -440,12 +555,14 @@ addi $sp, $sp, 36
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #3
-move $t3, $v0
+sw $v0, -28($fp)
    # #4 = #1 ADD #3
-lw $t1, -20($fp) # load #1
-add $t4, $t1, $t3
+lw $t0, -20($fp)
+lw $t1, -28($fp)
+add $t0, $t0, $t1
+sw $t0, -32($fp)
    # @ret #4
-move $v0, $t4
+lw $v0, -32($fp)
 jr $ra
 nop
    # @func bg
@@ -455,40 +572,61 @@ bg_E:
    # @var INT temp
    # @var INT i
    # #0 = a GT b
-sgt $t0, $a0, $a1
+lw $t0, -12($fp)
+lw $t1, -16($fp)
+sgt $t0, $t0, $t1
+sw $t0, -28($fp)
    # @bz #0 bg_L_0_else_begin
+lw $t0, -28($fp)
 beq $t0, $0, bg_L_0_else_begin
+nop
    # temp = 3
-li $s0, 3
+li $t0, 3
+sw $t0, -20($fp)
    # @j bg_L_0_else_over
 j bg_L_0_else_over
 nop
    # bg_L_0_else_begin :
 bg_L_0_else_begin:
    # temp = 4
-li $s0, 4
+li $t0, 4
+sw $t0, -20($fp)
    # bg_L_0_else_over :
 bg_L_0_else_over:
    # #0 = temp GE 3
-li $s1, 3
-sge $t0, $s0, $s1
+lw $t0, -20($fp)
+li $t1, 3
+sge $t0, $t0, $t1
+sw $t0, -28($fp)
    # @bz #0 bg_L_1_else_begin
+lw $t0, -28($fp)
 beq $t0, $0, bg_L_1_else_begin
+nop
    # #1 = temp NEQ 4
-li $s2, 4
-sne $t1, $s0, $s2
+lw $t0, -20($fp)
+li $t1, 4
+sne $t0, $t0, $t1
+sw $t0, -32($fp)
    # @bz #1 bg_L_2_else_begin
-beq $t1, $0, bg_L_2_else_begin
+lw $t0, -32($fp)
+beq $t0, $0, bg_L_2_else_begin
+nop
    # #2 = True ARRGET temp
-sll $v0, $s0, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -0
-lw $t2, 0($v0)
+lw $t1, -20($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -0
+lw $t0, 0($t1)
+sw $t0, -36($fp)
    # #3 = #2 NEQ 47
-li $s3, 47
-sne $t3, $t2, $s3
+lw $t0, -36($fp)
+li $t1, 47
+sne $t0, $t0, $t1
+sw $t0, -40($fp)
    # @bz #3 bg_L_3_else_begin
-beq $t3, $0, bg_L_3_else_begin
+lw $t0, -40($fp)
+beq $t0, $0, bg_L_3_else_begin
+nop
    # @printf STRING S_0
 li $v0, 4
 la $a0, S_0
@@ -513,15 +651,21 @@ nop
    # bg_L_2_else_begin :
 bg_L_2_else_begin:
    # #2 = False ARRGET temp
-sll $v0, $s0, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -16
-lw $t2, 0($v0)
+lw $t1, -20($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -16
+lw $t0, 0($t1)
+sw $t0, -36($fp)
    # #3 = #2 NEQ 45
-li $s4, 45
-sne $t3, $t2, $s4
+lw $t0, -36($fp)
+li $t1, 45
+sne $t0, $t0, $t1
+sw $t0, -40($fp)
    # @bz #3 bg_L_4_else_begin
-beq $t3, $0, bg_L_4_else_begin
+lw $t0, -40($fp)
+beq $t0, $0, bg_L_4_else_begin
+nop
    # @printf STRING S_1
 li $v0, 4
 la $a0, S_1
@@ -547,8 +691,8 @@ bg_L_1_else_begin:
    # bg_L_1_else_over :
 bg_L_1_else_over:
    # True ARRSET 2 84
-li $s5, 84
-sw $s5, -8($gp)
+li $t0, 84
+sw $t0, -8($gp)
    # @ret 
 jr $ra
 nop
@@ -623,19 +767,23 @@ _scanf_E:
    # @scanf CHAR temp
 li $v0, 12
 syscall
-move $s0, $v0
+sw $v0, -12($fp)
    # @ret temp
-move $v0, $s0
+lw $v0, -12($fp)
 jr $ra
 nop
    # @func int2char
 int2char_E:
    # @para INT no
    # #0 = no EQ 43
-li $s0, 43
-seq $t0, $a0, $s0
+lw $t0, -12($fp)
+li $t1, 43
+seq $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 int2char_L_0_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, int2char_L_0_else_begin
+nop
    # @ret 43
 li $v0, 43
 jr $ra
@@ -648,10 +796,14 @@ int2char_L_0_else_begin:
    # int2char_L_0_else_over :
 int2char_L_0_else_over:
    # #0 = no EQ 45
-li $s1, 45
-seq $t0, $a0, $s1
+lw $t0, -12($fp)
+li $t1, 45
+seq $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 int2char_L_1_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, int2char_L_1_else_begin
+nop
    # @ret 45
 li $v0, 45
 jr $ra
@@ -664,10 +816,14 @@ int2char_L_1_else_begin:
    # int2char_L_1_else_over :
 int2char_L_1_else_over:
    # #0 = no EQ 42
-li $s2, 42
-seq $t0, $a0, $s2
+lw $t0, -12($fp)
+li $t1, 42
+seq $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 int2char_L_2_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, int2char_L_2_else_begin
+nop
    # @ret 42
 li $v0, 42
 jr $ra
@@ -680,10 +836,14 @@ int2char_L_2_else_begin:
    # int2char_L_2_else_over :
 int2char_L_2_else_over:
    # #0 = no EQ 47
-li $s3, 47
-seq $t0, $a0, $s3
+lw $t0, -12($fp)
+li $t1, 47
+seq $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 int2char_L_3_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, int2char_L_3_else_begin
+nop
    # @ret 47
 li $v0, 47
 jr $ra
@@ -696,15 +856,23 @@ int2char_L_3_else_begin:
    # int2char_L_3_else_over :
 int2char_L_3_else_over:
    # #0 = no LE 57
-li $s4, 57
-sle $t0, $a0, $s4
+lw $t0, -12($fp)
+li $t1, 57
+sle $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 int2char_L_4_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, int2char_L_4_else_begin
+nop
    # #1 = no GE 48
-li $s5, 48
-sge $t1, $a0, $s5
+lw $t0, -12($fp)
+li $t1, 48
+sge $t0, $t0, $t1
+sw $t0, -20($fp)
    # @bz #1 int2char_L_5_else_begin
-beq $t1, $0, int2char_L_5_else_begin
+lw $t0, -20($fp)
+beq $t0, $0, int2char_L_5_else_begin
+nop
    # @ret 49
 li $v0, 49
 jr $ra
@@ -724,15 +892,23 @@ int2char_L_4_else_begin:
    # int2char_L_4_else_over :
 int2char_L_4_else_over:
    # #0 = no LE 90
-li $s6, 90
-sle $t0, $a0, $s6
+lw $t0, -12($fp)
+li $t1, 90
+sle $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 int2char_L_6_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, int2char_L_6_else_begin
+nop
    # #1 = no GE 65
-li $s7, 65
-sge $t1, $a0, $s7
+lw $t0, -12($fp)
+li $t1, 65
+sge $t0, $t0, $t1
+sw $t0, -20($fp)
    # @bz #1 int2char_L_7_else_begin
-beq $t1, $0, int2char_L_7_else_begin
+lw $t0, -20($fp)
+beq $t0, $0, int2char_L_7_else_begin
+nop
    # @ret 65
 li $v0, 65
 jr $ra
@@ -752,15 +928,23 @@ int2char_L_6_else_begin:
    # int2char_L_6_else_over :
 int2char_L_6_else_over:
    # #0 = no LE 122
-li $t2, 122
-sle $t0, $a0, $t2
+lw $t0, -12($fp)
+li $t1, 122
+sle $t0, $t0, $t1
+sw $t0, -16($fp)
    # @bz #0 int2char_L_8_else_begin
+lw $t0, -16($fp)
 beq $t0, $0, int2char_L_8_else_begin
+nop
    # #1 = no GE 97
-li $t3, 97
-sge $t1, $a0, $t3
+lw $t0, -12($fp)
+li $t1, 97
+sge $t0, $t0, $t1
+sw $t0, -20($fp)
    # @bz #1 int2char_L_9_else_begin
-beq $t1, $0, int2char_L_9_else_begin
+lw $t0, -20($fp)
+beq $t0, $0, int2char_L_9_else_begin
+nop
    # @ret 97
 li $v0, 97
 jr $ra
@@ -787,7 +971,7 @@ nop
 ascii2int_E:
    # @para CHAR chtemp
    # @ret chtemp
-move $v0, $a0
+lw $v0, -12($fp)
 jr $ra
 nop
    # @func sum
@@ -800,21 +984,35 @@ sum_E:
    # @para INT a6
    # @var INT temp
    # #0 = a1 ADD a2
-add $t0, $a0, $a1
+lw $t0, -12($fp)
+lw $t1, -16($fp)
+add $t0, $t0, $t1
+sw $t0, -40($fp)
    # #0 = #0 ADD a3
-add $t0, $t0, $a2
+lw $t0, -40($fp)
+lw $t1, -20($fp)
+add $t0, $t0, $t1
+sw $t0, -40($fp)
    # #0 = #0 ADD a4
-add $t0, $t0, $a3
+lw $t0, -40($fp)
+lw $t1, -24($fp)
+add $t0, $t0, $t1
+sw $t0, -40($fp)
    # #0 = #0 ADD a5
-lw $s0, -28($fp) # load a5
-add $t0, $t0, $s0
+lw $t0, -40($fp)
+lw $t1, -28($fp)
+add $t0, $t0, $t1
+sw $t0, -40($fp)
    # #0 = #0 ADD a6
-lw $s1, -32($fp) # load a6
-add $t0, $t0, $s1
+lw $t0, -40($fp)
+lw $t1, -32($fp)
+add $t0, $t0, $t1
+sw $t0, -40($fp)
    # temp = #0
-move $s2, $t0
+lw $t0, -40($fp)
+sw $t0, -36($fp)
    # @ret temp
-move $v0, $s2
+lw $v0, -36($fp)
 jr $ra
 nop
    # @func conFun
@@ -826,12 +1024,14 @@ nop
    # @func returnX
 returnX_E:
    # #0 = X ADD 1
-lw $s0, -44($gp) # load X
-addi $t0, $s0, 1
+lw $t0, -44($gp)
+addi $t0, $t0, 1
+sw $t0, -12($fp)
    # X = #0
-move $s0, $t0
+lw $t0, -12($fp)
+sw $t0, -44($gp)
    # @ret X
-move $v0, $s0
+lw $v0, -44($gp)
 jr $ra
 nop
    # @func main
@@ -846,40 +1046,40 @@ main_E:
    # @var INT j
    # @var INT itemp
    # True ARRSET 0 84
-li $s0, 84
-sw $s0, -0($gp)
+li $t0, 84
+sw $t0, -0($gp)
    # True ARRSET 1 114
-li $s1, 114
-sw $s1, -4($gp)
+li $t0, 114
+sw $t0, -4($gp)
    # True ARRSET 2 42
-li $s2, 42
-sw $s2, -8($gp)
+li $t0, 42
+sw $t0, -8($gp)
    # True ARRSET 3 47
-li $s3, 47
-sw $s3, -12($gp)
+li $t0, 47
+sw $t0, -12($gp)
    # False ARRSET 0 70
-li $s4, 70
-sw $s4, -16($gp)
+li $t0, 70
+sw $t0, -16($gp)
    # False ARRSET 1 97
-li $s5, 97
-sw $s5, -20($gp)
+li $t0, 97
+sw $t0, -20($gp)
    # False ARRSET 2 108
-li $s6, 108
-sw $s6, -24($gp)
+li $t0, 108
+sw $t0, -24($gp)
    # False ARRSET 3 43
-li $s7, 43
-sw $s7, -28($gp)
+li $t0, 43
+sw $t0, -28($gp)
    # False ARRSET 4 45
 li $t0, 45
 sw $t0, -32($gp)
    # @scanf CHAR chtemp
 li $v0, 12
 syscall
-move $t1, $v0
+sw $v0, -20($fp)
    # @push chtemp
    # @call ascii2int
-sw $t1, -20($fp) # store chtemp
-move $a0, $t1
+lw $t0, -20($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -889,24 +1089,23 @@ addi $sp, $sp, 16
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #0
-move $t0, $v0
+sw $v0, -56($fp)
    # a = #0
-move $s0, $t0
+lw $t0, -56($fp)
+sw $t0, -24($fp)
    # @printf STRING S_6
 li $v0, 4
 la $a0, S_6
 syscall
    # @printf INT a
 li $v0, 1
-move $a0, $s0
+lw $a0, -24($fp)
 syscall
    # @printf LINE
 li $a0, 10
 li $v0, 11
 syscall
    # @call _scanf
-sw $s0, -24($fp) # store a
-sw $t0, -56($fp) # store #0
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -916,16 +1115,17 @@ addi $sp, $sp, 16
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #0
-move $t0, $v0
+sw $v0, -56($fp)
    # chtemp = #0
-move $s0, $t0
+lw $t0, -56($fp)
+sw $t0, -20($fp)
    # @printf STRING S_7
 li $v0, 4
 la $a0, S_7
 syscall
    # @printf INT chtemp
 li $v0, 1
-move $a0, $s0
+lw $a0, -20($fp)
 syscall
    # @printf LINE
 li $a0, 10
@@ -936,13 +1136,11 @@ main_L_0_dobegin:
    # @scanf INT itemp
 li $v0, 5
 syscall
-move $s1, $v0
+sw $v0, -52($fp)
    # @push itemp
    # @call F
-sw $s0, -20($fp) # store chtemp
-sw $s1, -52($fp) # store itemp
-sw $t0, -56($fp) # store #0
-move $a0, $s1
+lw $t0, -52($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -952,10 +1150,10 @@ addi $sp, $sp, 36
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #0
-move $t0, $v0
+sw $v0, -56($fp)
    # @printf INT #0
 li $v0, 1
-move $a0, $t0
+lw $a0, -56($fp)
 syscall
    # @printf LINE
 li $a0, 10
@@ -964,12 +1162,12 @@ syscall
    # main_L_0_doend :
 main_L_0_doend:
    # b = 10
-li $s0, 10
+li $t0, 10
+sw $t0, -28($fp)
    # @push b
    # @call F
-sw $s0, -28($fp) # store b
-sw $t0, -56($fp) # store #0
-move $a0, $s0
+lw $t0, -28($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -979,14 +1177,19 @@ addi $sp, $sp, 36
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #0
-move $t0, $v0
+sw $v0, -56($fp)
    # b = #0
-move $s0, $t0
+lw $t0, -56($fp)
+sw $t0, -28($fp)
    # #0 = b NEQ 89
-li $s1, 89
-sne $t0, $s0, $s1
+lw $t0, -28($fp)
+li $t1, 89
+sne $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #0 main_L_1_else_begin
+lw $t0, -56($fp)
 beq $t0, $0, main_L_1_else_begin
+nop
    # @printf STRING S_8
 li $v0, 4
 la $a0, S_8
@@ -1003,82 +1206,113 @@ main_L_1_else_begin:
    # main_L_1_else_over :
 main_L_1_else_over:
    # i = 0
-li $s2, 0
+li $t0, 0
+sw $t0, -44($fp)
    # main_L_2_for_cond :
 main_L_2_for_cond:
    # #0 = i LT 3
-li $s3, 3
-slt $t0, $s2, $s3
+lw $t0, -44($fp)
+li $t1, 3
+slt $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #0 main_L_2_for_end
+lw $t0, -56($fp)
 beq $t0, $0, main_L_2_for_end
+nop
    # @j main_L_2_for_state
 j main_L_2_for_state
 nop
    # main_L_2_for_step :
 main_L_2_for_step:
    # i = i ADD 1
-addi $s2, $s2, 1
+lw $t0, -44($fp)
+addi $t0, $t0, 1
+sw $t0, -44($fp)
    # @j main_L_2_for_cond
 j main_L_2_for_cond
 nop
    # main_L_2_for_state :
 main_L_2_for_state:
    # array ARRSET i i
-sll $v0, $s2, 2
-sub $v0, $fp, $v0
-addi $v0, $v0, -32
-sw $s2, 0($v0)
+lw $t0, -44($fp)
+lw $t1, -44($fp)
+sll $t1, $t1, 2
+sub $t1, $fp, $t1
+addi $t1, $t1, -32
+sw $t0, 0($t1)
    # @j main_L_2_for_step
 j main_L_2_for_step
 nop
    # main_L_2_for_end :
 main_L_2_for_end:
    # #0 = i SUB 3
-addi $t0, $s2, -3
+lw $t0, -44($fp)
+addi $t0, $t0, -3
+sw $t0, -56($fp)
    # array ARRSET #0 10
-li $s4, 10
-sll $v0, $t0, 2
-sub $v0, $fp, $v0
-addi $v0, $v0, -32
-sw $s4, 0($v0)
+li $t0, 10
+lw $t1, -56($fp)
+sll $t1, $t1, 2
+sub $t1, $fp, $t1
+addi $t1, $t1, -32
+sw $t0, 0($t1)
    # b = 2
-li $s0, 2
+li $t0, 2
+sw $t0, -28($fp)
    # i = 1
-li $s2, 1
+li $t0, 1
+sw $t0, -44($fp)
    # main_L_3_for_cond :
 main_L_3_for_cond:
    # #0 = i GE 0
-sge $t0, $s2, $0
+lw $t0, -44($fp)
+li $t1, 0
+sge $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #0 main_L_3_for_end
+lw $t0, -56($fp)
 beq $t0, $0, main_L_3_for_end
+nop
    # @j main_L_3_for_state
 j main_L_3_for_state
 nop
    # main_L_3_for_step :
 main_L_3_for_step:
    # i = i SUB 1
-addi $s2, $s2, -1
+lw $t0, -44($fp)
+addi $t0, $t0, -1
+sw $t0, -44($fp)
    # @j main_L_3_for_cond
 j main_L_3_for_cond
 nop
    # main_L_3_for_state :
 main_L_3_for_state:
    # #1 = array ARRGET i
-sll $v0, $s2, 2
-sub $v0, $fp, $v0
-addi $v0, $v0, -32
-lw $t1, 0($v0)
+lw $t1, -44($fp)
+sll $t1, $t1, 2
+sub $t1, $fp, $t1
+addi $t1, $t1, -32
+lw $t0, 0($t1)
+sw $t0, -60($fp)
    # #2 = array ARRGET b
-sll $v0, $s0, 2
-sub $v0, $fp, $v0
-addi $v0, $v0, -32
-lw $t2, 0($v0)
+lw $t1, -28($fp)
+sll $t1, $t1, 2
+sub $t1, $fp, $t1
+addi $t1, $t1, -32
+lw $t0, 0($t1)
+sw $t0, -64($fp)
    # #3 = #1 GT #2
-sgt $t3, $t1, $t2
+lw $t0, -60($fp)
+lw $t1, -64($fp)
+sgt $t0, $t0, $t1
+sw $t0, -68($fp)
    # @bz #3 main_L_4_else_begin
-beq $t3, $0, main_L_4_else_begin
+lw $t0, -68($fp)
+beq $t0, $0, main_L_4_else_begin
+nop
    # b = i
-move $s0, $s2
+lw $t0, -44($fp)
+sw $t0, -28($fp)
    # @j main_L_4_else_over
 j main_L_4_else_over
 nop
@@ -1092,14 +1326,21 @@ nop
    # main_L_3_for_end :
 main_L_3_for_end:
    # #0 = array ARRGET b
-sll $v0, $s0, 2
-sub $v0, $fp, $v0
-addi $v0, $v0, -32
-lw $t0, 0($v0)
+lw $t1, -28($fp)
+sll $t1, $t1, 2
+sub $t1, $fp, $t1
+addi $t1, $t1, -32
+lw $t0, 0($t1)
+sw $t0, -56($fp)
    # #1 = #0 NEQ 10
-sne $t1, $t0, $s4
+lw $t0, -56($fp)
+li $t1, 10
+sne $t0, $t0, $t1
+sw $t0, -60($fp)
    # @bz #1 main_L_5_else_begin
-beq $t1, $0, main_L_5_else_begin
+lw $t0, -60($fp)
+beq $t0, $0, main_L_5_else_begin
+nop
    # @printf STRING S_9
 li $v0, 4
 la $a0, S_9
@@ -1121,53 +1362,71 @@ la $a0, S_10
 syscall
    # #0 = array ARRGET 0
 lw $t0, -32($fp)
+sw $t0, -56($fp)
    # #1 = array ARRGET 1
-lw $t1, -36($fp)
+lw $t0, -36($fp)
+sw $t0, -60($fp)
    # #2 = #0 ADD #1
-add $t2, $t0, $t1
+lw $t0, -56($fp)
+lw $t1, -60($fp)
+add $t0, $t0, $t1
+sw $t0, -64($fp)
    # #3 = array ARRGET 2
-lw $t3, -40($fp)
+lw $t0, -40($fp)
+sw $t0, -68($fp)
    # #2 = #2 ADD #3
-add $t2, $t2, $t3
+lw $t0, -64($fp)
+lw $t1, -68($fp)
+add $t0, $t0, $t1
+sw $t0, -64($fp)
    # #4 = #2 MUL 3
-mul $t4, $t2, 3
+lw $t0, -64($fp)
+mul $t0, $t0, 3
+sw $t0, -72($fp)
    # #4 = #4 DIV 3
-div $t4, $t4, 3
+lw $t0, -72($fp)
+div $t0, $t0, 3
+sw $t0, -72($fp)
    # #5 = -1
-li $t5, -1
+li $t0, -1
+sw $t0, -76($fp)
    # #5 = #5 ADD #4
-add $t5, $t5, $t4
+lw $t0, -76($fp)
+lw $t1, -72($fp)
+add $t0, $t0, $t1
+sw $t0, -76($fp)
    # #5 = #5 ADD 1
-addi $t5, $t5, 1
+lw $t0, -76($fp)
+addi $t0, $t0, 1
+sw $t0, -76($fp)
    # #5 = #5 ADD b
-add $t5, $t5, $s0
+lw $t0, -76($fp)
+lw $t1, -28($fp)
+add $t0, $t0, $t1
+sw $t0, -76($fp)
    # #5 = #5 SUB b
-sub $t5, $t5, $s0
+lw $t0, -76($fp)
+lw $t1, -28($fp)
+sub $t0, $t0, $t1
+sw $t0, -76($fp)
    # @printf INT #5
 li $v0, 1
-move $a0, $t5
+lw $a0, -76($fp)
 syscall
    # @printf LINE
 li $a0, 10
 li $v0, 11
 syscall
    # a = 13
-li $s5, 13
+li $t0, 13
+sw $t0, -24($fp)
    # @push a
    # @push 12
    # @call bg
-sw $s0, -28($fp) # store b
-sw $s2, -44($fp) # store i
-sw $s5, -24($fp) # store a
-sw $t0, -56($fp) # store #0
-sw $t1, -60($fp) # store #1
-sw $t2, -64($fp) # store #2
-sw $t3, -68($fp) # store #3
-sw $t4, -72($fp) # store #4
-sw $t5, -76($fp) # store #5
-li $s6, 12
-move $a1, $s6
-move $a0, $s5
+li $t0, 12
+sw $t0, -16($sp)
+lw $t0, -24($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1186,9 +1445,12 @@ addi $sp, $sp, 12
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # a = 0
-li $s0, 0
+li $t0, 0
+sw $t0, -24($fp)
    # @bz a main_L_6_else_begin
-beq $s0, $0, main_L_6_else_begin
+lw $t0, -24($fp)
+beq $t0, $0, main_L_6_else_begin
+nop
    # @printf STRING S_11
 li $v0, 4
 la $a0, S_11
@@ -1205,58 +1467,84 @@ main_L_6_else_begin:
    # main_L_6_else_over :
 main_L_6_else_over:
    # chtemp = 98
-li $s1, 98
+li $t0, 98
+sw $t0, -20($fp)
    # @bz chtemp main_L_7_else_begin
-beq $s1, $0, main_L_7_else_begin
+lw $t0, -20($fp)
+beq $t0, $0, main_L_7_else_begin
+nop
    # char_flag = 97
-li $s2, 97
+li $t0, 97
+sw $t0, -36($gp)
    # itemp = 0
-li $s3, 0
+li $t0, 0
+sw $t0, -52($fp)
    # main_L_8_dobegin :
 main_L_8_dobegin:
    # i = 1
-li $s4, 1
+li $t0, 1
+sw $t0, -44($fp)
    # main_L_9_for_cond :
 main_L_9_for_cond:
    # #0 = i LT 6
-li $s5, 6
-slt $t0, $s4, $s5
+lw $t0, -44($fp)
+li $t1, 6
+slt $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #0 main_L_9_for_end
+lw $t0, -56($fp)
 beq $t0, $0, main_L_9_for_end
+nop
    # @j main_L_9_for_state
 j main_L_9_for_state
 nop
    # main_L_9_for_step :
 main_L_9_for_step:
    # i = i ADD 1
-addi $s4, $s4, 1
+lw $t0, -44($fp)
+addi $t0, $t0, 1
+sw $t0, -44($fp)
    # @j main_L_9_for_cond
 j main_L_9_for_cond
 nop
    # main_L_9_for_state :
 main_L_9_for_state:
    # #1 = itemp ADD i
-add $t1, $s3, $s4
+lw $t0, -52($fp)
+lw $t1, -44($fp)
+add $t0, $t0, $t1
+sw $t0, -60($fp)
    # itemp = #1
-move $s3, $t1
+lw $t0, -60($fp)
+sw $t0, -52($fp)
    # @j main_L_9_for_step
 j main_L_9_for_step
 nop
    # main_L_9_for_end :
 main_L_9_for_end:
    # #0 = itemp LE char_flag
-sle $t0, $s3, $s2
+lw $t0, -52($fp)
+lw $t1, -36($gp)
+sle $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #0 main_L_8_doend
+lw $t0, -56($fp)
 beq $t0, $0, main_L_8_doend
+nop
    # @j main_L_8_dobegin
 j main_L_8_dobegin
 nop
    # main_L_8_doend :
 main_L_8_doend:
    # #0 = itemp LE char_flag
-sle $t0, $s3, $s2
+lw $t0, -52($fp)
+lw $t1, -36($gp)
+sle $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #0 main_L_10_else_begin
+lw $t0, -56($fp)
 beq $t0, $0, main_L_10_else_begin
+nop
    # @printf STRING S_12
 li $v0, 4
 la $a0, S_12
@@ -1288,48 +1576,45 @@ syscall
    # main_L_7_else_over :
 main_L_7_else_over:
    # n = 10
-li $s6, 10
+li $t0, 10
+sw $t0, -452($gp)
    # list ARRSET 10 9
-li $s7, 9
-sw $s7, -88($gp)
+li $t0, 9
+sw $t0, -88($gp)
    # list ARRSET 1 8
-li $t2, 8
-sw $t2, -52($gp)
+li $t0, 8
+sw $t0, -52($gp)
    # list ARRSET 2 6
-sw $s5, -56($gp)
+li $t0, 6
+sw $t0, -56($gp)
    # list ARRSET 3 4
-li $t3, 4
-sw $t3, -60($gp)
+li $t0, 4
+sw $t0, -60($gp)
    # list ARRSET 4 7
-li $t4, 7
-sw $t4, -64($gp)
+li $t0, 7
+sw $t0, -64($gp)
    # list ARRSET 5 3
-li $t5, 3
-sw $t5, -68($gp)
+li $t0, 3
+sw $t0, -68($gp)
    # list ARRSET 6 2
-li $t6, 2
-sw $t6, -72($gp)
+li $t0, 2
+sw $t0, -72($gp)
    # list ARRSET 7 1
-li $t7, 1
-sw $t7, -76($gp)
+li $t0, 1
+sw $t0, -76($gp)
    # list ARRSET 8 0
-sw $0, -80($gp)
+li $t0, 0
+sw $t0, -80($gp)
    # list ARRSET 9 5
-li $t8, 5
-sw $t8, -84($gp)
+li $t0, 5
+sw $t0, -84($gp)
    # @push 1
    # @push n
    # @call quicksort
-sw $s0, -24($fp) # store a
-sw $s1, -20($fp) # store chtemp
-sw $s2, -36($gp) # store char_flag
-sw $s3, -52($fp) # store itemp
-sw $s4, -44($fp) # store i
-sw $s6, -452($gp) # store n
-sw $t0, -56($fp) # store #0
-sw $t1, -60($fp) # store #1
-move $a1, $s6
-move $a0, $t7
+lw $t0, -452($gp)
+sw $t0, -16($sp)
+li $t0, 1
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1339,37 +1624,53 @@ addi $sp, $sp, 60
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # i = 1
-li $s0, 1
+li $t0, 1
+sw $t0, -44($fp)
    # main_L_11_for_cond :
 main_L_11_for_cond:
    # #0 = i LE n
-lw $s1, -452($gp) # load n
-sle $t0, $s0, $s1
+lw $t0, -44($fp)
+lw $t1, -452($gp)
+sle $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #0 main_L_11_for_end
+lw $t0, -56($fp)
 beq $t0, $0, main_L_11_for_end
+nop
    # @j main_L_11_for_state
 j main_L_11_for_state
 nop
    # main_L_11_for_step :
 main_L_11_for_step:
    # i = i ADD 1
-addi $s0, $s0, 1
+lw $t0, -44($fp)
+addi $t0, $t0, 1
+sw $t0, -44($fp)
    # @j main_L_11_for_cond
 j main_L_11_for_cond
 nop
    # main_L_11_for_state :
 main_L_11_for_state:
    # #1 = list ARRGET i
-sll $v0, $s0, 2
-sub $v0, $gp, $v0
-addi $v0, $v0, -48
-lw $t1, 0($v0)
+lw $t1, -44($fp)
+sll $t1, $t1, 2
+sub $t1, $gp, $t1
+addi $t1, $t1, -48
+lw $t0, 0($t1)
+sw $t0, -60($fp)
    # #2 = i SUB 1
-addi $t2, $s0, -1
+lw $t0, -44($fp)
+addi $t0, $t0, -1
+sw $t0, -64($fp)
    # #3 = #1 NEQ #2
-sne $t3, $t1, $t2
+lw $t0, -60($fp)
+lw $t1, -64($fp)
+sne $t0, $t0, $t1
+sw $t0, -68($fp)
    # @bz #3 main_L_12_else_begin
-beq $t3, $0, main_L_12_else_begin
+lw $t0, -68($fp)
+beq $t0, $0, main_L_12_else_begin
+nop
    # @printf STRING S_14
 li $v0, 4
 la $a0, S_14
@@ -1391,16 +1692,12 @@ nop
    # main_L_11_for_end :
 main_L_11_for_end:
    # itemp = 99
-li $s2, 99
+li $t0, 99
+sw $t0, -52($fp)
    # @push itemp
    # @call int2char
-sw $s0, -44($fp) # store i
-sw $s2, -52($fp) # store itemp
-sw $t0, -56($fp) # store #0
-sw $t1, -60($fp) # store #1
-sw $t2, -64($fp) # store #2
-sw $t3, -68($fp) # store #3
-move $a0, $s2
+lw $t0, -52($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1410,14 +1707,19 @@ addi $sp, $sp, 24
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #0
-move $t0, $v0
+sw $v0, -56($fp)
    # chtemp = #0
-move $s0, $t0
+lw $t0, -56($fp)
+sw $t0, -20($fp)
    # #0 = chtemp NEQ 97
-li $s1, 97
-sne $t0, $s0, $s1
+lw $t0, -20($fp)
+li $t1, 97
+sne $t0, $t0, $t1
+sw $t0, -56($fp)
    # @bz #0 main_L_13_else_begin
+lw $t0, -56($fp)
 beq $t0, $0, main_L_13_else_begin
+nop
    # @printf STRING S_15
 li $v0, 4
 la $a0, S_15
@@ -1435,10 +1737,8 @@ main_L_13_else_begin:
 main_L_13_else_over:
    # @push itemp
    # @call int2char
-sw $s0, -20($fp) # store chtemp
-sw $t0, -56($fp) # store #0
-lw $s2, -52($fp) # load itemp
-move $a0, $s2
+lw $t0, -52($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1448,11 +1748,11 @@ addi $sp, $sp, 24
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #0
-move $t0, $v0
+sw $v0, -56($fp)
    # @push #0
    # @call ascii2int
-sw $t0, -56($fp) # store #0
-move $a0, $t0
+lw $t0, -56($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1462,12 +1762,16 @@ addi $sp, $sp, 16
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #1
-move $t1, $v0
+sw $v0, -60($fp)
    # #2 = #1 GT 97
-li $s0, 97
-sgt $t2, $t1, $s0
+lw $t0, -60($fp)
+li $t1, 97
+sgt $t0, $t0, $t1
+sw $t0, -64($fp)
    # @bz #2 main_L_14_else_begin
-beq $t2, $0, main_L_14_else_begin
+lw $t0, -64($fp)
+beq $t0, $0, main_L_14_else_begin
+nop
    # @printf STRING S_16
 li $v0, 4
 la $a0, S_16
@@ -1485,10 +1789,8 @@ main_L_14_else_begin:
 main_L_14_else_over:
    # @push 2
    # @call int2char
-sw $t1, -60($fp) # store #1
-sw $t2, -64($fp) # store #2
-li $s1, 2
-move $a0, $s1
+li $t0, 2
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1498,11 +1800,11 @@ addi $sp, $sp, 24
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #0
-move $t0, $v0
+sw $v0, -56($fp)
    # @push #0
    # @call ascii2int
-sw $t0, -56($fp) # store #0
-move $a0, $t0
+lw $t0, -56($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1512,12 +1814,16 @@ addi $sp, $sp, 16
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #1
-move $t1, $v0
+sw $v0, -60($fp)
    # #2 = #1 GT 60
-li $s0, 60
-sgt $t2, $t1, $s0
+lw $t0, -60($fp)
+li $t1, 60
+sgt $t0, $t0, $t1
+sw $t0, -64($fp)
    # @bz #2 main_L_15_else_begin
-beq $t2, $0, main_L_15_else_begin
+lw $t0, -64($fp)
+beq $t0, $0, main_L_15_else_begin
+nop
    # @printf STRING S_17
 li $v0, 4
 la $a0, S_17
@@ -1536,10 +1842,8 @@ main_L_15_else_over:
    # @push itemp
    # @push chtemp
    # @call ascii2int
-sw $t1, -60($fp) # store #1
-sw $t2, -64($fp) # store #2
-lw $s1, -20($fp) # load chtemp
-move $a0, $s1
+lw $t0, -20($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1549,13 +1853,13 @@ addi $sp, $sp, 16
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #0
-move $t0, $v0
+sw $v0, -56($fp)
    # @push #0
    # @call bg
-sw $t0, -56($fp) # store #0
-move $a1, $t0
-lw $s0, -52($fp) # load itemp
-move $a0, $s0
+lw $t0, -56($fp)
+sw $t0, -16($sp)
+lw $t0, -52($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1566,6 +1870,7 @@ lw $ra, 0($sp)
 lw $fp, -4($sp)
    # #0 = list ARRGET 10
 lw $t0, -88($gp)
+sw $t0, -56($fp)
    # @push #0
    # @push 1
    # @push 2
@@ -1574,19 +1879,18 @@ lw $t0, -88($gp)
    # @push 5
    # @push 6
    # @call sum
-sw $t0, -56($fp) # store #0
-li $s0, 6
-sw $s0, -32($sp)
-li $s1, 5
-sw $s1, -28($sp)
-li $s2, 4
-move $a3, $s2
-li $s3, 49
-move $a2, $s3
-li $s4, 2
-move $a1, $s4
-li $s5, 1
-move $a0, $s5
+li $t0, 6
+sw $t0, -32($sp)
+li $t0, 5
+sw $t0, -28($sp)
+li $t0, 4
+sw $t0, -24($sp)
+li $t0, 49
+sw $t0, -20($sp)
+li $t0, 2
+sw $t0, -16($sp)
+li $t0, 1
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1596,16 +1900,15 @@ addi $sp, $sp, 44
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #1
-move $t1, $v0
+sw $v0, -60($fp)
    # @push #1
    # #2 = True ARRGET 2
-lw $t2, -8($gp)
+lw $t0, -8($gp)
+sw $t0, -64($fp)
    # @push #2
    # @push 20
    # @push 15
    # @call conFun
-sw $t1, -60($fp) # store #1
-sw $t2, -64($fp) # store #2
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1615,21 +1918,21 @@ addi $sp, $sp, 12
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #3
-move $t3, $v0
+sw $v0, -68($fp)
    # @push #3
    # @call sum
-sw $t3, -68($fp) # store #3
-sw $t3, -32($sp)
-li $s0, 15
-sw $s0, -28($sp)
-li $s1, 20
-move $a3, $s1
-lw $t2, -64($fp) # load #2
-move $a2, $t2
-lw $t1, -60($fp) # load #1
-move $a1, $t1
-lw $t0, -56($fp) # load #0
-move $a0, $t0
+lw $t0, -68($fp)
+sw $t0, -32($sp)
+li $t0, 15
+sw $t0, -28($sp)
+li $t0, 20
+sw $t0, -24($sp)
+lw $t0, -64($fp)
+sw $t0, -20($sp)
+lw $t0, -60($fp)
+sw $t0, -16($sp)
+lw $t0, -56($fp)
+sw $t0, -12($sp)
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1639,12 +1942,16 @@ addi $sp, $sp, 44
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #4
-move $t4, $v0
+sw $v0, -72($fp)
    # #5 = #4 NEQ 163
-li $s0, 163
-sne $t5, $t4, $s0
+lw $t0, -72($fp)
+li $t1, 163
+sne $t0, $t0, $t1
+sw $t0, -76($fp)
    # @bz #5 main_L_16_else_begin
-beq $t5, $0, main_L_16_else_begin
+lw $t0, -76($fp)
+beq $t0, $0, main_L_16_else_begin
+nop
    # @printf STRING S_18
 li $v0, 4
 la $a0, S_18
@@ -1709,12 +2016,10 @@ li $a0, 10
 li $v0, 11
 syscall
    # #0 = X ADD 0
-lw $s1, -44($gp) # load X
-addi $t0, $s1, 0
+lw $t0, -44($gp)
+addi $t0, $t0, 0
+sw $t0, -56($fp)
    # @call returnX
-sw $t0, -56($fp) # store #0
-sw $t4, -72($fp) # store #4
-sw $t5, -76($fp) # store #5
 sw $ra, 0($sp)
 sw $fp, -4($sp)
 add $fp, $sp, $0
@@ -1724,14 +2029,20 @@ addi $sp, $sp, 16
 lw $ra, 0($sp)
 lw $fp, -4($sp)
    # @get #1
-move $t1, $v0
+sw $v0, -60($fp)
    # #2 = #1 ADD 0
-addi $t2, $t1, 0
+lw $t0, -60($fp)
+addi $t0, $t0, 0
+sw $t0, -64($fp)
    # #3 = #0 EQ #2
-lw $t0, -56($fp) # load #0
-seq $t3, $t0, $t2
+lw $t0, -56($fp)
+lw $t1, -64($fp)
+seq $t0, $t0, $t1
+sw $t0, -68($fp)
    # @bz #3 main_L_17_else_begin
-beq $t3, $0, main_L_17_else_begin
+lw $t0, -68($fp)
+beq $t0, $0, main_L_17_else_begin
+nop
    # @printf STRING S_24
 li $v0, 4
 la $a0, S_24

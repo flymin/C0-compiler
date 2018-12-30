@@ -23,7 +23,7 @@ public:
 	bool global; // final
 	Type type; // final
 	int offset;
-	//int use_count = 0; // change
+	int use_count = 0; // change
 	Reg_state state; // change
 
 	Reg_recorder(string regname);
@@ -32,12 +32,12 @@ public:
 	void save();
 	
 	void load();
+	static void save_modi_regs(list<string>* save_list);
+	static void clear_and_init_all();
 	/*
-	static void record_occu_regs(list<string>* save_list);
 	static void save_occu_regs(list<string>* save_list, int offset);
 	static void load_occu_regs(list<string>* save_list, int offset);
 	static void save_modi_regs();
-	static void clear_and_init_all();
 	static void init_var_occu_regs();
 	static void init_all();
 	static void save_global_modi_regs();

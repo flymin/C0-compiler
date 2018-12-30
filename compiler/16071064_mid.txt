@@ -348,12 +348,12 @@ main_L_0_dobegin :
 @printf INT #0
 @printf LINE
 main_L_0_doend :
-b = 20
+b = 10
 @push b
 @call F
 @get #0
 b = #0
-#0 = b NEQ 10946
+#0 = b NEQ 89
 @bz #0 main_L_1_else_begin
 @printf STRING S_8
 @printf LINE

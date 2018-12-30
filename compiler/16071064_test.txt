@@ -163,9 +163,9 @@ void main()
 		scanf(itemp);
 		printf(F(itemp));
 	}while(1<0)
-	b = 20;
+	b = 10;
 	b = F(b);
-	if(b != 10946)
+	if(b != 89)
 		printf(" error1 ");
 	
 	for (i = 0; i < 3; i = i + 1) {

@@ -39,7 +39,6 @@ int ptr = 0;
 int cur_addr = 0;
 int para_read_count = 0;
 STRINT_MAP offset_map;
-STRINT_MAP reg_map;       // name-register map
 STRINT_MAP global_addr_map;
 
 vector<string> paras;
