@@ -11,9 +11,6 @@
 #include "grammar.h"
 #include "const.h"
 #include "table.h"
-#define IS_VAR(name) (name[0] == '_' || (name[0] >= 'a' && name[0] <= 'z') || \
-							(name[0] >= 'A' && name[0] <= 'Z'))
-#define IS_NUM(name) ((name[0] >= '0' && name[0] <= '9') || name[0] == '-')
 // for now we suppose all var in symtable
 #define GET_NEW_NAME(name) (get_name(node_map[name]))
 # define DEBUG 0
@@ -32,8 +29,8 @@ NODE_MAP node_map;			//变量-节点表
 vector<Node*> nodes;		//所有节点列表
 int temp_count = 0;
 Sym* cur_func_DAG = NULL;
-ifstream fin;
-ofstream fout;
+static ifstream fin;
+static ofstream fout;
 
 Node::Node(string value)
 {
@@ -331,7 +328,7 @@ void build_DAG(vector<string> code)
 		MIPS_OUTPUT(code[0] << " ARRSET " << use_new_name(code[2]) <<
 			" " << use_new_name(code[3]));
 	}
-	else if (code.size() == 5)
+	else if (code.size() == 5)	// ARRGET按照计算符处理，数组名整体作为一个变量
 	{
 		if (IS_VAR(code[0])) refresh_vars();
 		string op = code[3];

@@ -6,6 +6,11 @@
 #include <vector>
 #include "var.h"
 #include "table.h"
+
+#define IS_VAR(name) (name[0] == '_' || (name[0] >= 'a' && name[0] <= 'z') || \
+							(name[0] >= 'A' && name[0] <= 'Z'))
+#define IS_NUM(name) ((name[0] >= '0' && name[0] <= '9') || name[0] == '-')
+
 using namespace std;
 
 class Node;
@@ -47,7 +52,8 @@ void set_node(string name, Node* nodeptr, bool);
 Node* get_node(string name);
 void set_name(Node* node);
 string get_name(Node* node);
-string get_name(string old_name);
+//string get_name(string old_name);
+bool is_global_var(string name);
 void build_DAG(vector<string> code);
 string dag_main(string);
 string use_new_name(string name);

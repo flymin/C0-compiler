@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="const.h" />
+    <ClInclude Include="copy_opt.h" />
     <ClInclude Include="dag_opt.h" />
     <ClInclude Include="grammar.h" />
     <ClInclude Include="mid_code.h" />
@@ -30,6 +31,7 @@
     <ClInclude Include="words.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="copy_opt.cpp" />
     <ClCompile Include="dag_opt.cpp" />
     <ClCompile Include="grammar.cpp" />
     <ClCompile Include="main.cpp" />
