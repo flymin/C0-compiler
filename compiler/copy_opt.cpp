@@ -8,8 +8,10 @@
 #include "copy_opt.h"
 #include "table.h"
 #include "words.h"
+#include "main.h"
 #include <vector>
 #include <sstream>
+
 # define DEBUG 0
 # if DEBUG
 # define MIPS_LEFT cout << "<==="
@@ -605,7 +607,7 @@ void ass_read_medis()
 		{
 			// use
 			line_map[lineno] = new Line(true);
-			if (strs[1] != "string")
+			if (strs[1] != "STRING" && strs[1] != "LINE")
 			{
 				strs[2] = use(strs[2]);
 			}
@@ -632,32 +634,32 @@ void ass_read_medis()
 			init_blocks();			//标签作为基本快开始标志
 			MIPS_OUTPUT(line);
 		}
-		else if (strs.size() == 3 && !skip)
+		else if (strs.size() == 3 && !skip)		// X = X代码
 		{
 			// def | use
 			line_map[lineno] = new Line(false);
 			strs[2] = def(lineno, strs[0], strs[2]);
 			store_medi(strs);
 		}
-		else if (strs.size() == 5 && !skip)
+		else if (strs.size() == 4 && !skip) {	// ARRSET
+			strs[0] = use(strs[0]);
+			strs[2] = use(strs[2]);
+			strs[3] = use(strs[3]);
+			line_map[lineno] = new Line(true);
+			store_medi(strs);
+		}
+		else if (strs.size() == 5 && !skip)		// 所有带有赋值的代码
 		{
 			// def | use
 			strs[2] = use(strs[2]);
 			strs[4] = use(strs[4]);
-			if (strs[3] == "ARRSET")
-			{
-				line_map[lineno] = new Line(true);
-			}
-			else
-			{
-				line_map[lineno] = new Line(false);
-				def(lineno, strs[0]);
-			}
+			line_map[lineno] = new Line(false);
+			def(lineno, strs[0]);
 			store_medi(strs);
 		}
 		else if (!skip)
 		{
-			cout << "cal len not 3 or 5 in ass" << endl;
+			cout << line + " cal len not 3 or 5 in ass" << endl;
 		}
 	}
 	outed = true;
@@ -668,7 +670,7 @@ string ass_main(string filename, int *lc)
 	init_blocks();
 	line_count = 0;
 	fin.open(filename.c_str());
-	string ass_filename = ("ASS") + filename ;
+	string ass_filename = get_filename("ASS");
 	fout.open(ass_filename.c_str());
 	ass_read_medis();
 	fout.close();

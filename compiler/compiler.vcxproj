@@ -23,6 +23,7 @@
     <ClInclude Include="copy_opt.h" />
     <ClInclude Include="dag_opt.h" />
     <ClInclude Include="grammar.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="mid_code.h" />
     <ClInclude Include="reg_recorder.h" />
     <ClInclude Include="table.h" />

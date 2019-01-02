@@ -11,6 +11,8 @@
 #include "grammar.h"
 #include "const.h"
 #include "table.h"
+#include "main.h"
+
 // for now we suppose all var in symtable
 #define GET_NEW_NAME(name) (get_name(node_map[name]))
 # define DEBUG 0
@@ -519,7 +521,7 @@ void read_medis()
 
 string dag_main(string filename){
 	fin.open(filename.c_str());
-	string dag_filename = "DAG" + filename;
+	string dag_filename = get_filename("DAG");
 	if (!DEBUG)fout.open(dag_filename.c_str());
 	read_medis();
 	if (!DEBUG)fout.close();
