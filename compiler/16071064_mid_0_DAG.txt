@@ -36,6 +36,7 @@ _con = 1
 quicksort_L_4_else_begin :
 quicksort_L_3_else_begin :
 _temp = 0
+@bz _con quicksort_L_5_for_end
 quicksort_L_5_for_cond :
 @bz _con quicksort_L_5_for_end
 @j quicksort_L_5_for_state
@@ -67,6 +68,7 @@ _con = 1
 quicksort_L_9_else_begin :
 quicksort_L_8_else_begin :
 _temp = 0
+@bz _con quicksort_L_10_for_end
 quicksort_L_10_for_cond :
 @bz _con quicksort_L_10_for_end
 @j quicksort_L_10_for_state
@@ -303,7 +305,9 @@ b = #0
 @printf STRING S_8
 @printf LINE
 main_L_1_else_begin :
+#0 = 0 LT 3
 i = 0
+@bz #0 main_L_2_for_end
 main_L_2_for_cond :
 #0 = i LT 3
 @bz #0 main_L_2_for_end
@@ -316,35 +320,52 @@ main_L_2_for_state :
 array ARRSET i i
 @j main_L_2_for_step
 main_L_2_for_end :
+#0 = 0 LT 0
+j = 0
+@bz #0 main_L_3_for_end
+main_L_3_for_cond :
+#0 = j LT 0
+@bz #0 main_L_3_for_end
+@j main_L_3_for_state
+main_L_3_for_step :
+#0 = j
+j = #0 ADD 1
+@j main_L_3_for_cond
+main_L_3_for_state :
+array ARRSET j i
+@j main_L_3_for_step
+main_L_3_for_end :
 #0 = i SUB 3
 array ARRSET #0 10
 b = 2
 #1 = i
+#2 = 1 GE 0
 i = 1
-main_L_3_for_cond :
+@bz #2 main_L_4_for_end
+main_L_4_for_cond :
 #0 = i GE 0
-@bz #0 main_L_3_for_end
-@j main_L_3_for_state
-main_L_3_for_step :
+@bz #0 main_L_4_for_end
+@j main_L_4_for_state
+main_L_4_for_step :
 #0 = i
 i = #0 SUB 1
-@j main_L_3_for_cond
-main_L_3_for_state :
+@j main_L_4_for_cond
+main_L_4_for_state :
 #1 = array ARRGET i
 #2 = array ARRGET b
 #0 = #1 GT #2
-@bz #0 main_L_4_else_begin
+@bz #0 main_L_5_else_begin
 #3 = b
 b = i
-main_L_4_else_begin :
-@j main_L_3_for_step
-main_L_3_for_end :
+main_L_5_else_begin :
+@j main_L_4_for_step
+main_L_4_for_end :
 #1 = array ARRGET b
 #0 = #1 NEQ 10
-@bz #0 main_L_5_else_begin
+@bz #0 main_L_6_else_begin
 @printf STRING S_9
 @printf LINE
-main_L_5_else_begin :
+main_L_6_else_begin :
 @printf STRING S_10
 #5 = array ARRGET 0
 #6 = array ARRGET 1
@@ -365,45 +386,47 @@ main_L_5_else_begin :
 @call _printf
 a = 13
 a = 0
-@j main_L_6_else_begin
+@j main_L_7_else_begin
 @printf STRING S_11
 @printf LINE
-@j main_L_6_else_over
-main_L_6_else_begin :
-main_L_6_else_over :
-chtemp = 98
-@bz 98 main_L_7_else_begin
-char_flag = 97
-itemp = 0
-main_L_8_dobegin :
-i = 1
-main_L_9_for_cond :
-#0 = i LT 6
-@bz #0 main_L_9_for_end
-@j main_L_9_for_state
-main_L_9_for_step :
-#0 = i
-i = #0 ADD 1
-@j main_L_9_for_cond
-main_L_9_for_state :
-#0 = itemp
-itemp = #0 ADD i
-@j main_L_9_for_step
-main_L_9_for_end :
-#0 = itemp LE char_flag
-@bz #0 main_L_8_doend
-@j main_L_8_dobegin
-main_L_8_doend :
-#0 = itemp LE char_flag
-@bz #0 main_L_10_else_begin
-@printf STRING S_12
-@printf LINE
-main_L_10_else_begin :
 @j main_L_7_else_over
 main_L_7_else_begin :
+main_L_7_else_over :
+chtemp = 98
+@bz 98 main_L_8_else_begin
+char_flag = 97
+itemp = 0
+main_L_9_dobegin :
+#0 = 1 LT 6
+i = 1
+@bz #0 main_L_10_for_end
+main_L_10_for_cond :
+#0 = i LT 6
+@bz #0 main_L_10_for_end
+@j main_L_10_for_state
+main_L_10_for_step :
+#0 = i
+i = #0 ADD 1
+@j main_L_10_for_cond
+main_L_10_for_state :
+#0 = itemp
+itemp = #0 ADD i
+@j main_L_10_for_step
+main_L_10_for_end :
+#0 = itemp LE char_flag
+@bz #0 main_L_9_doend
+@j main_L_9_dobegin
+main_L_9_doend :
+#0 = itemp LE char_flag
+@bz #0 main_L_11_else_begin
+@printf STRING S_12
+@printf LINE
+main_L_11_else_begin :
+@j main_L_8_else_over
+main_L_8_else_begin :
 @printf STRING S_13
 @printf LINE
-main_L_7_else_over :
+main_L_8_else_over :
 list ARRSET 10 9
 list ARRSET 1 8
 list ARRSET 2 6
@@ -418,35 +441,37 @@ list ARRSET 9 5
 @push 10
 n = 10
 @call quicksort
+#0 = 1 LE n
 i = 1
-main_L_11_for_cond :
+@bz #0 main_L_12_for_end
+main_L_12_for_cond :
 #0 = i LE n
-@bz #0 main_L_11_for_end
-@j main_L_11_for_state
-main_L_11_for_step :
+@bz #0 main_L_12_for_end
+@j main_L_12_for_state
+main_L_12_for_step :
 #0 = i
 i = #0 ADD 1
-@j main_L_11_for_cond
-main_L_11_for_state :
+@j main_L_12_for_cond
+main_L_12_for_state :
 #1 = list ARRGET i
 #2 = i SUB 1
 #0 = #1 NEQ #2
-@bz #0 main_L_12_else_begin
+@bz #0 main_L_13_else_begin
 @printf STRING S_14
 @printf LINE
-main_L_12_else_begin :
-@j main_L_11_for_step
-main_L_11_for_end :
+main_L_13_else_begin :
+@j main_L_12_for_step
+main_L_12_for_end :
 @push 99
 @call int2char
 @get #0
 itemp = 99
 #1 = #0 NEQ 97
 chtemp = #0
-@bz #1 main_L_13_else_begin
+@bz #1 main_L_14_else_begin
 @printf STRING S_15
 @printf LINE
-main_L_13_else_begin :
+main_L_14_else_begin :
 @push itemp
 @call int2char
 @get #0
@@ -454,10 +479,10 @@ main_L_13_else_begin :
 @call ascii2int
 @get #1
 #2 = #1 GT 97
-@bz #2 main_L_14_else_begin
+@bz #2 main_L_15_else_begin
 @printf STRING S_16
 @printf LINE
-main_L_14_else_begin :
+main_L_15_else_begin :
 @push 2
 @call int2char
 @get #0
@@ -465,10 +490,10 @@ main_L_14_else_begin :
 @call ascii2int
 @get #1
 #2 = #1 GT 60
-@bz #2 main_L_15_else_begin
+@bz #2 main_L_16_else_begin
 @printf STRING S_17
 @printf LINE
-main_L_15_else_begin :
+main_L_16_else_begin :
 @push itemp
 @push chtemp
 @call ascii2int
@@ -496,10 +521,10 @@ main_L_15_else_begin :
 @call sum
 @get #5
 #6 = #5 NEQ 163
-@bz #6 main_L_16_else_begin
+@bz #6 main_L_17_else_begin
 @printf STRING S_18
 @printf LINE
-main_L_16_else_begin :
+main_L_17_else_begin :
 @printf STRING S_19
 @printf LINE
 @printf STRING S_20
@@ -517,8 +542,8 @@ main_L_16_else_begin :
 #2 = X ADD 0
 #3 = #0 ADD 0
 #1 = #2 EQ #3
-@bz #1 main_L_17_else_begin
+@bz #1 main_L_18_else_begin
 @printf STRING S_24
 @printf LINE
-main_L_17_else_begin :
+main_L_18_else_begin :
 @ret 

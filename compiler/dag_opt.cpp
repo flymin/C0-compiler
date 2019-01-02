@@ -506,7 +506,7 @@ void read_medis()
 		}
 		else if (strs[0] == "@free") {}
 		else {
-			// 在标签处划分基本快
+			// 在标签处划分基本块
 			if (strs[1] == ":")
 			{
 				init_DAG();

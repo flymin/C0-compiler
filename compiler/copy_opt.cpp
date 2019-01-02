@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <list>
+#include <regex>
 #include "var.h"
 #include "tar.h"
 #include "grammar.h"
@@ -595,41 +596,64 @@ void ass_read_medis()
 		}
 		else if (strs[0] == "@j" && !skip)
 		{
-			//@j与目标标签之间符合skip要求直接连带@j skip掉，这种情况也不用划分基本块
-			streampos pos = fin.tellg();	//保存当前流指针位置
+			// 调整了语法分析阶段for循环的语句顺序，这里删除死代码
+			//regex e("(for_end)$");
 			string temp_line;
-			while (getline(fin, temp_line)) {
-				istringstream temp_is(temp_line);
-				string temp_str;
-				vector<string> temp_strs;
-				while (temp_is >> temp_str) {
-					temp_strs.push_back(temp_str);
-				}
-				if (temp_strs[0] == "@ret" || temp_strs[0] == "@exit" || temp_strs[0] == "@func") {
-					// 恢复，继续
-					fin.seekg(pos);
-					break;
-				}
-				else if (temp_strs[0] == "@free"){}
-				else if (temp_strs[1] == ":") {
-					if (temp_strs[0] == strs[1]) {	//跳过
-						//str = temp_str;
-						strs.assign(temp_strs.begin(), temp_strs.end());
-						line = temp_line;
-						goto label;
+			if (strs[1].find("for_end") != string::npos) {
+				while (getline(fin, temp_line)) {
+					istringstream temp_is(temp_line);
+					string temp_str;
+					vector<string> temp_strs;
+					while (temp_is >> temp_str) {
+						temp_strs.push_back(temp_str);
 					}
-					else {
-						//恢复，继续
-						fin.seekg(pos);
-						break;
+					if (temp_strs.size() == 2 && temp_strs[1] == ":") {
+						if (temp_strs[0] == strs[1]) {	//跳过
+														//str = temp_str;
+							strs.assign(temp_strs.begin(), temp_strs.end());
+							line = temp_line;
+							break;
+						}
 					}
 				}
 			}
-			// output | skip
-			line_map[lineno] = new Line(true);
-			output_medis();
-			MIPS_OUTPUT(line);
-			skip = true;
+			else {
+				//@j与目标标签之间符合skip要求直接连带@j skip掉，这种情况也不用划分基本块
+				//这个处理配合DAG的b-j转换可以达到删除死代码的效果
+				streampos pos = fin.tellg();	//保存当前流指针位置
+				while (getline(fin, temp_line)) {
+					istringstream temp_is(temp_line);
+					string temp_str;
+					vector<string> temp_strs;
+					while (temp_is >> temp_str) {
+						temp_strs.push_back(temp_str);
+					}
+					if (temp_strs[0] == "@ret" || temp_strs[0] == "@exit" || temp_strs[0] == "@func") {
+						// 恢复，继续
+						fin.seekg(pos);
+						break;
+					}
+					else if (temp_strs[0] == "@free") {}
+					else if (temp_strs[1] == ":") {
+						if (temp_strs[0] == strs[1]) {	//跳过
+							//str = temp_str;
+							strs.assign(temp_strs.begin(), temp_strs.end());
+							line = temp_line;
+							goto label;
+						}
+						else {
+							//恢复，继续
+							fin.seekg(pos);
+							break;
+						}
+					}
+				}
+				// output | skip
+				line_map[lineno] = new Line(true);
+				output_medis();
+				MIPS_OUTPUT(line);
+				skip = true;
+			}
 		}
 		else if (strs[0] == "@jal" && !skip)
 		{

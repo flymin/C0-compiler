@@ -1,4 +1,5 @@
 #include<iostream>
+#include <sstream>
 #include<fstream>
 #include<string>
 #include "var.h"
@@ -27,6 +28,7 @@ extern int line_no;
 extern int line_index;			//需要预读字符判断时，针对指针进行调整
 								//预读只在当前行进行
 extern char line_buffer[LINE_MAX_LENGTH];
+extern fstream midfile;
 
 /*本文件中使用的全局变量*/
 #define print_gram	false
@@ -1585,6 +1587,10 @@ void forstate() {
 	Ret_item exp, cond;
 	Symbol op;
 	int step;
+
+	stringstream code_storage;
+	streampos condstart;
+
 	string cond_label, end_label, state_label, step_label;
 	cond_label = new_label(this_func, "for_cond", false);
 	end_label = new_label(this_func, "for_end", false);
@@ -1634,9 +1640,9 @@ void forstate() {
 		assign_mid(temp1->name, exp.name);
 	}
 	//根据表达式结果生成赋值语句
+	condstart = midfile.tellp();
 	getsym_check();
 stage2:
-	label_mid(cond_label);
 	condition(&cond);
 	if (symbol != SEMI) {
 		//error:缺少分号
@@ -1648,6 +1654,15 @@ stage2:
 	else if (!cond.certain) {
 		branch_zero_mid(cond.name, end_label);
 	}
+	// 复制条件表达式部分输出
+	//streampos condend = midfile.tellp();
+	midfile.seekg(condstart);
+	code_storage << midfile.rdbuf();
+
+	label_mid(cond_label);
+	//输出到label之后
+	midfile << code_storage.str();
+
 	jump_mid(state_label);
 	label_mid(step_label);
 	getsym_check();
