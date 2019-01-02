@@ -19,9 +19,7 @@
 #0 = left GT right
 @bz #0 quicksort_L_0_else_begin
 @ret 
-@j quicksort_L_0_else_over
 quicksort_L_0_else_begin :
-quicksort_L_0_else_over :
 #0 = list ARRGET left
 temp = #0
 i = left
@@ -36,12 +34,8 @@ _con = 0
 #3 = i LT j
 @bz #3 quicksort_L_4_else_begin
 _con = 1
-@j quicksort_L_4_else_over
 quicksort_L_4_else_begin :
-quicksort_L_4_else_over :
-@j quicksort_L_3_else_over
 quicksort_L_3_else_begin :
-quicksort_L_3_else_over :
 _temp = 0
 quicksort_L_5_for_cond :
 @bz _con quicksort_L_5_for_end
@@ -59,12 +53,8 @@ _con = 0
 #3 = i LT j
 @bz #3 quicksort_L_7_else_begin
 _con = 1
-@j quicksort_L_7_else_over
 quicksort_L_7_else_begin :
-quicksort_L_7_else_over :
-@j quicksort_L_6_else_over
 quicksort_L_6_else_begin :
-quicksort_L_6_else_over :
 @j quicksort_L_5_for_step
 quicksort_L_5_for_end :
 _con = 0
@@ -74,12 +64,8 @@ _con = 0
 #3 = i LT j
 @bz #3 quicksort_L_9_else_begin
 _con = 1
-@j quicksort_L_9_else_over
 quicksort_L_9_else_begin :
-quicksort_L_9_else_over :
-@j quicksort_L_8_else_over
 quicksort_L_8_else_begin :
-quicksort_L_8_else_over :
 _temp = 0
 quicksort_L_10_for_cond :
 @bz _con quicksort_L_10_for_end
@@ -97,12 +83,8 @@ _con = 0
 #3 = i LT j
 @bz #3 quicksort_L_12_else_begin
 _con = 1
-@j quicksort_L_12_else_over
 quicksort_L_12_else_begin :
-quicksort_L_12_else_over :
-@j quicksort_L_11_else_over
 quicksort_L_11_else_begin :
-quicksort_L_11_else_over :
 @j quicksort_L_10_for_step
 quicksort_L_10_for_end :
 #1 = i LT j
@@ -112,16 +94,12 @@ t = #2
 #2 = list ARRGET j
 list ARRSET i #2
 list ARRSET j t
-@j quicksort_L_13_else_over
 quicksort_L_13_else_begin :
-quicksort_L_13_else_over :
 #1 = i NEQ j
 @bz #1 quicksort_L_2_doend
 @j quicksort_L_2_dobegin
 quicksort_L_2_doend :
-@j quicksort_L_1_else_over
 quicksort_L_1_else_begin :
-quicksort_L_1_else_over :
 #0 = list ARRGET i
 list ARRSET left #0
 list ARRSET i temp
@@ -139,15 +117,11 @@ list ARRSET i temp
 #0 = no EQ 0
 @bz #0 F_L_0_else_begin
 @ret 1
-@j F_L_0_else_over
 F_L_0_else_begin :
-F_L_0_else_over :
 #0 = no EQ 1
 @bz #0 F_L_1_else_begin
 @ret 1
-@j F_L_1_else_over
 F_L_1_else_begin :
-F_L_1_else_over :
 #0 = no SUB 1
 @push #0
 @call F
@@ -190,13 +164,9 @@ bg_L_2_else_begin :
 @bz #3 bg_L_4_else_begin
 @printf STRING S_1
 @printf LINE
-@j bg_L_4_else_over
 bg_L_4_else_begin :
-bg_L_4_else_over :
 bg_L_2_else_over :
-@j bg_L_1_else_over
 bg_L_1_else_begin :
-bg_L_1_else_over :
 True ARRSET 2 84
 @ret 
 @func _printf
@@ -209,15 +179,11 @@ True ARRSET 2 84
 @j _printf_L_0_else_begin
 @printf STRING S_4
 @printf LINE
-@j _printf_L_0_else_over
 _printf_L_0_else_begin :
-_printf_L_0_else_over :
 @j _printf_L_1_else_begin
 @printf STRING S_5
 @printf LINE
-@j _printf_L_1_else_over
 _printf_L_1_else_begin :
-_printf_L_1_else_over :
 @ret 
 @func _scanf
 @var CHAR temp
@@ -228,60 +194,40 @@ _printf_L_1_else_over :
 #0 = no EQ 43
 @bz #0 int2char_L_0_else_begin
 @ret 43
-@j int2char_L_0_else_over
 int2char_L_0_else_begin :
-int2char_L_0_else_over :
 #0 = no EQ 45
 @bz #0 int2char_L_1_else_begin
 @ret 45
-@j int2char_L_1_else_over
 int2char_L_1_else_begin :
-int2char_L_1_else_over :
 #0 = no EQ 42
 @bz #0 int2char_L_2_else_begin
 @ret 42
-@j int2char_L_2_else_over
 int2char_L_2_else_begin :
-int2char_L_2_else_over :
 #0 = no EQ 47
 @bz #0 int2char_L_3_else_begin
 @ret 47
-@j int2char_L_3_else_over
 int2char_L_3_else_begin :
-int2char_L_3_else_over :
 #0 = no LE 57
 @bz #0 int2char_L_4_else_begin
 #1 = no GE 48
 @bz #1 int2char_L_5_else_begin
 @ret 49
-@j int2char_L_5_else_over
 int2char_L_5_else_begin :
-int2char_L_5_else_over :
-@j int2char_L_4_else_over
 int2char_L_4_else_begin :
-int2char_L_4_else_over :
 #0 = no LE 90
 @bz #0 int2char_L_6_else_begin
 #1 = no GE 65
 @bz #1 int2char_L_7_else_begin
 @ret 65
-@j int2char_L_7_else_over
 int2char_L_7_else_begin :
-int2char_L_7_else_over :
-@j int2char_L_6_else_over
 int2char_L_6_else_begin :
-int2char_L_6_else_over :
 #0 = no LE 122
 @bz #0 int2char_L_8_else_begin
 #1 = no GE 97
 @bz #1 int2char_L_9_else_begin
 @ret 97
-@j int2char_L_9_else_over
 int2char_L_9_else_begin :
-int2char_L_9_else_over :
-@j int2char_L_8_else_over
 int2char_L_8_else_begin :
-int2char_L_8_else_over :
 @ret 48
 @func ascii2int
 @para CHAR chtemp
@@ -357,9 +303,7 @@ b = #0
 @bz #0 main_L_1_else_begin
 @printf STRING S_8
 @printf LINE
-@j main_L_1_else_over
 main_L_1_else_begin :
-main_L_1_else_over :
 i = 0
 main_L_2_for_cond :
 #0 = i LT 3
@@ -389,9 +333,7 @@ main_L_3_for_state :
 #3 = #1 GT #2
 @bz #3 main_L_4_else_begin
 b = i
-@j main_L_4_else_over
 main_L_4_else_begin :
-main_L_4_else_over :
 @j main_L_3_for_step
 main_L_3_for_end :
 #0 = array ARRGET b
@@ -399,9 +341,7 @@ main_L_3_for_end :
 @bz #1 main_L_5_else_begin
 @printf STRING S_9
 @printf LINE
-@j main_L_5_else_over
 main_L_5_else_begin :
-main_L_5_else_over :
 @printf STRING S_10
 #0 = array ARRGET 0
 #1 = array ARRGET 1
@@ -455,9 +395,7 @@ main_L_8_doend :
 @bz #0 main_L_10_else_begin
 @printf STRING S_12
 @printf LINE
-@j main_L_10_else_over
 main_L_10_else_begin :
-main_L_10_else_over :
 @j main_L_7_else_over
 main_L_7_else_begin :
 @printf STRING S_13
@@ -492,9 +430,7 @@ main_L_11_for_state :
 @bz #3 main_L_12_else_begin
 @printf STRING S_14
 @printf LINE
-@j main_L_12_else_over
 main_L_12_else_begin :
-main_L_12_else_over :
 @j main_L_11_for_step
 main_L_11_for_end :
 itemp = 99
@@ -506,9 +442,7 @@ chtemp = #0
 @bz #0 main_L_13_else_begin
 @printf STRING S_15
 @printf LINE
-@j main_L_13_else_over
 main_L_13_else_begin :
-main_L_13_else_over :
 @push itemp
 @call int2char
 @get #0
@@ -519,9 +453,7 @@ main_L_13_else_over :
 @bz #2 main_L_14_else_begin
 @printf STRING S_16
 @printf LINE
-@j main_L_14_else_over
 main_L_14_else_begin :
-main_L_14_else_over :
 @push 2
 @call int2char
 @get #0
@@ -532,9 +464,7 @@ main_L_14_else_over :
 @bz #2 main_L_15_else_begin
 @printf STRING S_17
 @printf LINE
-@j main_L_15_else_over
 main_L_15_else_begin :
-main_L_15_else_over :
 @push itemp
 @push chtemp
 @call ascii2int
@@ -565,9 +495,7 @@ main_L_15_else_over :
 @bz #5 main_L_16_else_begin
 @printf STRING S_18
 @printf LINE
-@j main_L_16_else_over
 main_L_16_else_begin :
-main_L_16_else_over :
 @printf STRING S_19
 @printf LINE
 @printf STRING S_20
@@ -588,7 +516,5 @@ main_L_16_else_over :
 @bz #3 main_L_17_else_begin
 @printf STRING S_24
 @printf LINE
-@j main_L_17_else_over
 main_L_17_else_begin :
-main_L_17_else_over :
 @ret 

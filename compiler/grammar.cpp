@@ -1528,8 +1528,6 @@ void ifstate() {
 			branch_zero_mid(cond.name, else_label);
 		}
 		statement();
-		jump_mid(over_label);
-		label_mid(else_label);
 	}
 	else {
 		//error: if缺少条件
@@ -1562,6 +1560,8 @@ void ifstate() {
 	}
 	checkelse:
 	if (symbol == ELSY) {
+		jump_mid(over_label);
+		label_mid(else_label);
 		getsym_check();
 		if (this_func->return_check) {
 			this_func->return_check_if = true;
@@ -1569,8 +1569,11 @@ void ifstate() {
 		statement();
 		this_func->return_check_else = false;		//实际没有跳出，false
 		this_func->return_check &= this_func->return_check_if;
+		label_mid(over_label);
 	}
-	label_mid(over_label);
+	else {
+		label_mid(else_label);
+	}
 	print_gra("This is an if statement");
 }
 

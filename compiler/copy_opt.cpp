@@ -39,42 +39,38 @@ static ofstream fout;
 
 Sym* cur_func_ASS = NULL;
 typedef map<int, Line*> LINE_MAP;
-LINE_MAP line_map;
+LINE_MAP line_map;		// int-Line map
 typedef map<string, Block*> BLOCK_MAP;
-BLOCK_MAP block_map;
+BLOCK_MAP block_map;	// string-Block map
 typedef map<string, string> TEMP_MAP;
-vector<string> temp_storage;
-int new_temp_count = 0;
-TEMP_MAP temp_map;
-int lineno = 0;
-bool skip = false;
+vector<string> temp_storage;	// 临时变量的存储区
+int new_temp_count = 0;			// 历史变量计数
+TEMP_MAP temp_map;	// string-string map
+int lineno = 0;		// 中间代码行号
+bool skip = false;	//表示当前基本快是否到达，删除代码
 stringstream code_storage;
 
-bool has_line(int line)
-{
+// 判断line map中是否包含line
+bool has_line(int line) {
 	return (line_map.end() != line_map.find(line));
 }
 
-void save_used_to_line(Block* useblock)
-{
-	if (has_line(useblock->def_line))    // defined by "="
-	{
+void save_used_to_line(Block* useblock) {
+	if (has_line(useblock->def_line)) {  // defined by "="
 		useblock->last_used_line = lineno;  // seems not necessary
 		Line* line = line_map[useblock->def_line];
 		line->active = true;    // set line active
 	}
 }
 
-bool has_block(string name)
-{
+// 判断block map中包含这个Block
+bool has_block(string name) {
 	return (block_map.find(name) != block_map.end());
 }
 
-string use(string usename);
-
 /* @REQUIRES:
-* @MODIFIES: block_map
-* @EFFECTS:
+*  @MODIFIES: block_map
+*  @EFFECTS:
 *  has_block(defname) => remove old block
 *                     => remove all blocks whose nature is defname
 *  usename == "" => nature = NULL
@@ -145,7 +141,7 @@ string use(string usename)
 		Block* useblock_nature = block_map[usename]->get_nature();
 		// cout << "use:" << usename << endl;
 		save_used_to_line(useblock_nature);
-		return useblock_nature->name;
+		return useblock_nature->name;	// 复制传播！将nature的name作为这个use的name返回
 	}
 	else
 	{
@@ -153,6 +149,8 @@ string use(string usename)
 	}
 }
 
+// 将生成的中间代码暂存在code_storage buffer中
+// code_storage buffer 是一个字符流，中间包括\n换行符
 void store_medi(vector<string> code)
 {
 	int len = code.size();
@@ -171,7 +169,7 @@ void store_medi(vector<string> code)
 // @exit/label/@func 划分blocks
 void init_blocks()
 {
-	new_temp_count = 0;
+	new_temp_count = 0;			//根据每个基本块分配临时变量
 	temp_storage.clear();
 	LINE_MAP::iterator line_it = line_map.begin();
 	while (line_it != line_map.end())
@@ -193,6 +191,7 @@ void init_blocks()
 	skip = false;
 }
 
+// output medi中用来生成新的临时变量
 string get_new_temp(string tempname)
 {
 	if (temp_map.find(tempname) != temp_map.end())
@@ -216,6 +215,7 @@ string get_new_temp(string tempname)
 	}
 }
 
+// 通过产生@free工作来释放中间变量
 void remove_temp(string tempname)
 {
 	TEMP_MAP::iterator it = temp_map.find(tempname);
@@ -272,8 +272,7 @@ bool is_last_use(string oldname, int lineno)
 }
 
 template <class A, class B>
-bool has_key(const map<A, B> &m, const A key)
-{
+bool has_key(const map<A, B> &m, const A key) {
 	return (m.find(key) != m.end());
 }
 
@@ -297,6 +296,8 @@ void set_last_use_before_output(bool is_return)
 	}
 }
 
+// 输出一个基本块的中间代码
+// 其中插入了last use temp的free动作
 void output_medis(bool is_return = false)
 {
 	set_last_use_before_output(is_return);
@@ -403,6 +404,7 @@ void output_medis(bool is_return = false)
 bool outed = false;
 
 // @REQUIRES: len(strs) == 5
+// 针对运算指令进行优化，将可以计算的常数算出
 void expre_opt(vector<string>* strs)
 {
 	if (strs->size() != 5 || (*strs)[0][0] == '@')
@@ -581,7 +583,7 @@ void ass_read_medis()
 		}
 		else if (strs[0] == "@bz" && !skip)
 		{
-			if (is_num(strs[1]) != 0)
+			if (is_num(strs[1]) && atoi(strs[1].c_str()))
 			{
 				continue;
 			}
@@ -593,6 +595,36 @@ void ass_read_medis()
 		}
 		else if (strs[0] == "@j" && !skip)
 		{
+			//@j与目标标签之间符合skip要求直接连带@j skip掉，这种情况也不用划分基本块
+			streampos pos = fin.tellg();	//保存当前流指针位置
+			string temp_line;
+			while (getline(fin, temp_line)) {
+				istringstream temp_is(temp_line);
+				string temp_str;
+				vector<string> temp_strs;
+				while (temp_is >> temp_str) {
+					temp_strs.push_back(temp_str);
+				}
+				if (temp_strs[0] == "@ret" || temp_strs[0] == "@exit" || temp_strs[0] == "@func") {
+					// 恢复，继续
+					fin.seekg(pos);
+					break;
+				}
+				else if (temp_strs[0] == "@free"){}
+				else if (temp_strs[1] == ":") {
+					if (temp_strs[0] == strs[1]) {	//跳过
+						//str = temp_str;
+						strs.assign(temp_strs.begin(), temp_strs.end());
+						line = temp_line;
+						goto label;
+					}
+					else {
+						//恢复，继续
+						fin.seekg(pos);
+						break;
+					}
+				}
+			}
 			// output | skip
 			line_map[lineno] = new Line(true);
 			output_medis();
@@ -629,6 +661,7 @@ void ass_read_medis()
 		else if (strs[0] == "@free") {}
 		else if (strs[1] == ":")
 		{
+		label:
 			// output | stop
 			output_medis();
 			init_blocks();			//标签作为基本快开始标志

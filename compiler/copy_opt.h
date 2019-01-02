@@ -18,7 +18,7 @@ class Block
 public:
 	int def_line;
 	string name;
-	Block* nature = NULL;
+	Block* nature = NULL;	// 指向当前Block的数据来源
 	int last_used_line = -1;
 
 	Block(int line, string name)
@@ -27,8 +27,7 @@ public:
 		this->name = name;
 	}
 
-	Block* get_nature()
-	{
+	Block* get_nature() {	// def block的nature为自己，useblock的nature为定义点
 		Block* block = this;
 		while (block->nature != NULL)
 		{
@@ -38,6 +37,7 @@ public:
 	}
 };
 
+string use(string usename);
 string ass_main(string, int*);
 
 #endif // ASS_OPT_H_INCLUDED

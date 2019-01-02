@@ -61,8 +61,6 @@ jr $ra
 nop
    # quicksort_L_0_else_begin :
 quicksort_L_0_else_begin:
-   # quicksort_L_0_else_over :
-quicksort_L_0_else_over:
    # temp = list ARRGET left
 sll $v0, $a0, 2
 sub $v0, $gp, $v0
@@ -98,20 +96,10 @@ slt $t0, $s1, $s2
 beq $t0, $0, quicksort_L_4_else_begin
    # _con = 1
 li $s3, 1
-   # @j quicksort_L_4_else_over
-j quicksort_L_4_else_over
-nop
    # quicksort_L_4_else_begin :
 quicksort_L_4_else_begin:
-   # quicksort_L_4_else_over :
-quicksort_L_4_else_over:
-   # @j quicksort_L_3_else_over
-j quicksort_L_3_else_over
-nop
    # quicksort_L_3_else_begin :
 quicksort_L_3_else_begin:
-   # quicksort_L_3_else_over :
-quicksort_L_3_else_over:
    # _temp = 0
 li $s4, 0
    # quicksort_L_5_for_cond :
@@ -151,20 +139,10 @@ slt $t0, $s1, $s2
 beq $t0, $0, quicksort_L_7_else_begin
    # _con = 1
 li $s3, 1
-   # @j quicksort_L_7_else_over
-j quicksort_L_7_else_over
-nop
    # quicksort_L_7_else_begin :
 quicksort_L_7_else_begin:
-   # quicksort_L_7_else_over :
-quicksort_L_7_else_over:
-   # @j quicksort_L_6_else_over
-j quicksort_L_6_else_over
-nop
    # quicksort_L_6_else_begin :
 quicksort_L_6_else_begin:
-   # quicksort_L_6_else_over :
-quicksort_L_6_else_over:
    # @j quicksort_L_5_for_step
 j quicksort_L_5_for_step
 nop
@@ -189,20 +167,10 @@ slt $t0, $s1, $s2
 beq $t0, $0, quicksort_L_9_else_begin
    # _con = 1
 li $s3, 1
-   # @j quicksort_L_9_else_over
-j quicksort_L_9_else_over
-nop
    # quicksort_L_9_else_begin :
 quicksort_L_9_else_begin:
-   # quicksort_L_9_else_over :
-quicksort_L_9_else_over:
-   # @j quicksort_L_8_else_over
-j quicksort_L_8_else_over
-nop
    # quicksort_L_8_else_begin :
 quicksort_L_8_else_begin:
-   # quicksort_L_8_else_over :
-quicksort_L_8_else_over:
    # _temp = 0
 li $s4, 0
    # quicksort_L_10_for_cond :
@@ -242,20 +210,10 @@ slt $t0, $s1, $s2
 beq $t0, $0, quicksort_L_12_else_begin
    # _con = 1
 li $s3, 1
-   # @j quicksort_L_12_else_over
-j quicksort_L_12_else_over
-nop
    # quicksort_L_12_else_begin :
 quicksort_L_12_else_begin:
-   # quicksort_L_12_else_over :
-quicksort_L_12_else_over:
-   # @j quicksort_L_11_else_over
-j quicksort_L_11_else_over
-nop
    # quicksort_L_11_else_begin :
 quicksort_L_11_else_begin:
-   # quicksort_L_11_else_over :
-quicksort_L_11_else_over:
    # @j quicksort_L_10_for_step
 j quicksort_L_10_for_step
 nop
@@ -287,13 +245,8 @@ sll $v0, $s2, 2
 sub $v0, $gp, $v0
 addi $v0, $v0, -48
 sw $s5, 0($v0)
-   # @j quicksort_L_13_else_over
-j quicksort_L_13_else_over
-nop
    # quicksort_L_13_else_begin :
 quicksort_L_13_else_begin:
-   # quicksort_L_13_else_over :
-quicksort_L_13_else_over:
    # #0 = i NEQ j
 sne $t0, $s1, $s2
    # @free #0
@@ -304,13 +257,8 @@ j quicksort_L_2_dobegin
 nop
    # quicksort_L_2_doend :
 quicksort_L_2_doend:
-   # @j quicksort_L_1_else_over
-j quicksort_L_1_else_over
-nop
    # quicksort_L_1_else_begin :
 quicksort_L_1_else_begin:
-   # quicksort_L_1_else_over :
-quicksort_L_1_else_over:
    # #0 = list ARRGET i
 sll $v0, $s1, 2
 sub $v0, $gp, $v0
@@ -386,8 +334,6 @@ jr $ra
 nop
    # F_L_0_else_begin :
 F_L_0_else_begin:
-   # F_L_0_else_over :
-F_L_0_else_over:
    # #0 = no EQ 1
 li $s0, 1
 seq $t0, $a0, $s0
@@ -400,8 +346,6 @@ jr $ra
 nop
    # F_L_1_else_begin :
 F_L_1_else_begin:
-   # F_L_1_else_over :
-F_L_1_else_over:
    # #0 = no SUB 1
 addi $t0, $a0, -1
    # @push #0
@@ -533,22 +477,12 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j bg_L_4_else_over
-j bg_L_4_else_over
-nop
    # bg_L_4_else_begin :
 bg_L_4_else_begin:
-   # bg_L_4_else_over :
-bg_L_4_else_over:
    # bg_L_2_else_over :
 bg_L_2_else_over:
-   # @j bg_L_1_else_over
-j bg_L_1_else_over
-nop
    # bg_L_1_else_begin :
 bg_L_1_else_begin:
-   # bg_L_1_else_over :
-bg_L_1_else_over:
    # True ARRSET 2 84
 li $s5, 84
 sw $s5, -8($gp)
@@ -581,20 +515,10 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j _printf_L_0_else_begin
-j _printf_L_0_else_begin
-nop
    # _printf_L_0_else_begin :
 _printf_L_0_else_begin:
-   # _printf_L_0_else_over :
-_printf_L_0_else_over:
-   # @j _printf_L_1_else_begin
-j _printf_L_1_else_begin
-nop
    # _printf_L_1_else_begin :
 _printf_L_1_else_begin:
-   # _printf_L_1_else_over :
-_printf_L_1_else_over:
    # @ret
 jr $ra
 nop
@@ -624,8 +548,6 @@ jr $ra
 nop
    # int2char_L_0_else_begin :
 int2char_L_0_else_begin:
-   # int2char_L_0_else_over :
-int2char_L_0_else_over:
    # #0 = no EQ 45
 li $s1, 45
 seq $t0, $a0, $s1
@@ -638,8 +560,6 @@ jr $ra
 nop
    # int2char_L_1_else_begin :
 int2char_L_1_else_begin:
-   # int2char_L_1_else_over :
-int2char_L_1_else_over:
    # #0 = no EQ 42
 li $s2, 42
 seq $t0, $a0, $s2
@@ -652,8 +572,6 @@ jr $ra
 nop
    # int2char_L_2_else_begin :
 int2char_L_2_else_begin:
-   # int2char_L_2_else_over :
-int2char_L_2_else_over:
    # #0 = no EQ 47
 li $s3, 47
 seq $t0, $a0, $s3
@@ -666,8 +584,6 @@ jr $ra
 nop
    # int2char_L_3_else_begin :
 int2char_L_3_else_begin:
-   # int2char_L_3_else_over :
-int2char_L_3_else_over:
    # #0 = no LE 57
 li $s4, 57
 sle $t0, $a0, $s4
@@ -686,15 +602,8 @@ jr $ra
 nop
    # int2char_L_5_else_begin :
 int2char_L_5_else_begin:
-   # int2char_L_5_else_over :
-int2char_L_5_else_over:
-   # @j int2char_L_4_else_over
-j int2char_L_4_else_over
-nop
    # int2char_L_4_else_begin :
 int2char_L_4_else_begin:
-   # int2char_L_4_else_over :
-int2char_L_4_else_over:
    # #0 = no LE 90
 li $s6, 90
 sle $t0, $a0, $s6
@@ -713,15 +622,8 @@ jr $ra
 nop
    # int2char_L_7_else_begin :
 int2char_L_7_else_begin:
-   # int2char_L_7_else_over :
-int2char_L_7_else_over:
-   # @j int2char_L_6_else_over
-j int2char_L_6_else_over
-nop
    # int2char_L_6_else_begin :
 int2char_L_6_else_begin:
-   # int2char_L_6_else_over :
-int2char_L_6_else_over:
    # #0 = no LE 122
 li $t1, 122
 sle $t0, $a0, $t1
@@ -740,15 +642,8 @@ jr $ra
 nop
    # int2char_L_9_else_begin :
 int2char_L_9_else_begin:
-   # int2char_L_9_else_over :
-int2char_L_9_else_over:
-   # @j int2char_L_8_else_over
-j int2char_L_8_else_over
-nop
    # int2char_L_8_else_begin :
 int2char_L_8_else_begin:
-   # int2char_L_8_else_over :
-int2char_L_8_else_over:
    # @ret 48
 li $v0, 48
 jr $ra
@@ -964,13 +859,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_1_else_over
-j main_L_1_else_over
-nop
    # main_L_1_else_begin :
 main_L_1_else_begin:
-   # main_L_1_else_over :
-main_L_1_else_over:
    # i = 0
 li $s2, 0
    # main_L_2_for_cond :
@@ -1053,13 +943,8 @@ sgt $t0, $t0, $t1
 beq $t0, $0, main_L_4_else_begin
    # b = i
 move $s1, $s2
-   # @j main_L_4_else_over
-j main_L_4_else_over
-nop
    # main_L_4_else_begin :
 main_L_4_else_begin:
-   # main_L_4_else_over :
-main_L_4_else_over:
    # @j main_L_3_for_step
 j main_L_3_for_step
 nop
@@ -1083,13 +968,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_5_else_over
-j main_L_5_else_over
-nop
    # main_L_5_else_begin :
 main_L_5_else_begin:
-   # main_L_5_else_over :
-main_L_5_else_over:
    # @printf STRING S_10
 li $v0, 4
 la $a0, S_10
@@ -1156,9 +1036,6 @@ lw $ra, 0($sp)
 lw $fp, -4($sp)
    # a = 0
 li $s0, 0
-   # @j main_L_6_else_begin
-j main_L_6_else_begin
-nop
    # main_L_6_else_begin :
 main_L_6_else_begin:
    # main_L_6_else_over :
@@ -1223,13 +1100,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_10_else_over
-j main_L_10_else_over
-nop
    # main_L_10_else_begin :
 main_L_10_else_begin:
-   # main_L_10_else_over :
-main_L_10_else_over:
    # @j main_L_7_else_over
 j main_L_7_else_over
 nop
@@ -1338,13 +1210,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_12_else_over
-j main_L_12_else_over
-nop
    # main_L_12_else_begin :
 main_L_12_else_begin:
-   # main_L_12_else_over :
-main_L_12_else_over:
    # @j main_L_11_for_step
 j main_L_11_for_step
 nop
@@ -1384,13 +1251,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_13_else_over
-j main_L_13_else_over
-nop
    # main_L_13_else_begin :
 main_L_13_else_begin:
-   # main_L_13_else_over :
-main_L_13_else_over:
    # @push itemp
    # @call int2char
 sw $s0, -52($fp) # store itemp
@@ -1434,13 +1296,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_14_else_over
-j main_L_14_else_over
-nop
    # main_L_14_else_begin :
 main_L_14_else_begin:
-   # main_L_14_else_over :
-main_L_14_else_over:
    # @push 2
    # @call int2char
 li $s1, 2
@@ -1483,13 +1340,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_15_else_over
-j main_L_15_else_over
-nop
    # main_L_15_else_begin :
 main_L_15_else_begin:
-   # main_L_15_else_over :
-main_L_15_else_over:
    # @push itemp
    # @push chtemp
    # @call ascii2int
@@ -1609,13 +1461,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_16_else_over
-j main_L_16_else_over
-nop
    # main_L_16_else_begin :
 main_L_16_else_begin:
-   # main_L_16_else_over :
-main_L_16_else_over:
    # @printf STRING S_19
 li $v0, 4
 la $a0, S_19
@@ -1689,13 +1536,8 @@ syscall
 li $a0, 10
 li $v0, 11
 syscall
-   # @j main_L_17_else_over
-j main_L_17_else_over
-nop
    # main_L_17_else_begin :
 main_L_17_else_begin:
-   # main_L_17_else_over :
-main_L_17_else_over:
    # @ret
 jr $ra
 nop

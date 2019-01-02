@@ -712,7 +712,7 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 	}
 }
 
-//根据中间代码类型判断解析方式
+// 非动作指令，根据中间代码类型判断解析方式
 void name_handle(vector<string> strs) {
 	int len = strs.size();
 	if (len <= 1) {
@@ -916,21 +916,19 @@ void readline_tar() {
 		else if (strs[0] == "@exit") {
 
 		}
-		else if (strs[0] == "@free")
-		{
+		else if (strs[0] == "@free") {
 			/*if (!is_temp(strs[1]) || get_temp_no(strs[1]) >= temp_max)
 			{
 			cout << "FREE " << get_temp_no(strs[0]) << " " << temp_max << endl;
 			}*/
-			free_temp_set.insert(strs[1]);
+			free_temp_set.insert(strs[1]);	// free temp 用来记录，真正的free操作在下一条中间代码解析完成之后
 			continue;
 		}
 		else {
 			name_handle(strs);
 		}
-		set<string>::iterator it = free_temp_set.begin();
-		while (it != free_temp_set.end())
-		{
+		set<string>::iterator it = free_temp_set.begin();	// 释放free_temp
+		while (it != free_temp_set.end()) {
 			name_regmap.erase(*it);
 			it++;
 		}
