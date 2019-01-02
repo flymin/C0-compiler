@@ -39,6 +39,9 @@
     <ClInclude Include="reg_recorder.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="dag_opt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,6 +66,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="reg_recorder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="dag_opt.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -148,6 +148,12 @@ void const_declare() {
 						const_num = num;
 						//editsymbol()将值填入符号表
 						temp->value = const_num;
+						if (!this_func) {
+							temp->global = true;
+						}
+						else {
+							temp->global = false;
+						}
 						getsym_check();
 						if (symbol == COMMA) {
 							getsym_check();
@@ -201,6 +207,12 @@ void const_declare() {
 						const_num = num;
 						//editsymbol()将值填入符号表
 						temp->value = const_num;
+						if (!this_func) {
+							temp->global = true;
+						}
+						else {
+							temp->global = false;
+						}
 						getsym_check();
 						if (symbol == COMMA) {
 							getsym_check();
@@ -370,6 +382,12 @@ void var_declare() {
 		if (kind != ARRAY) {
 			//insymbol(kind, type)插入符号表，返回插入位置
 			temp = pushTable(token, VAR, type);
+			if (!this_func) {
+				temp->global = true;
+			}
+			else {
+				temp->global = false;
+			}
 			getsym_check();
 			if (symbol == COMMA) {
 				getsym_check();
@@ -400,6 +418,12 @@ void var_declare() {
 				getsym_check();
 			add_length:
 				temp->paranum = array_length;
+				if (!this_func) {
+					temp->global = true;
+				}
+				else {
+					temp->global = false;
+				}
 				if (symbol != RBKT) {
 					//error:缺失中括号
 					gram_error("缺失中括号！");
