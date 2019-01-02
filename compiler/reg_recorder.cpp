@@ -34,6 +34,18 @@ Reg_recorder::Reg_recorder(string regname)
 
 void Reg_recorder::clear_and_init()
 {
+	this->save();
+	this->init();
+	this->use_count = use_counter++;
+	REG_MAP::iterator it = name_regmap.end();
+	it = find_if(name_regmap.begin(), name_regmap.end(), map_value_finder(this->regname));
+	if (it != name_regmap.end()) {
+		name_regmap.erase(it);
+	}
+}
+
+void Reg_recorder::clear_and_init_no_save()
+{
 	//this->save();
 	this->init();
 	this->use_count = use_counter++;
@@ -153,7 +165,7 @@ void Reg_recorder::clear_and_init_all()
 	while (it != reg_regmap.end())
 	{
 		Reg_recorder* rec = it->second;
-		rec->clear_and_init();
+		rec->clear_and_init_no_save();
 		it++;
 	}
 }

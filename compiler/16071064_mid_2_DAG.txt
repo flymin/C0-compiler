@@ -1,530 +1,223 @@
-@array CHAR True 4
-@array CHAR False 5
-@var CHAR char_flag
-@var INT int_flag
-@var INT X
-@array INT list 101
-@var INT n
 @call main
 @exit
-@func quicksort
-@para INT left
-@para INT right
-@var INT i
-@var INT j
-@var INT t
-@var INT temp
-@var INT _temp
-@var INT _con
-#0 = left GT right
-@bz #0 quicksort_L_0_else_begin
-@ret
-quicksort_L_0_else_begin :
-temp = list ARRGET left
-i = left
-#0 = left NEQ right
-j = right
-@bz #0 quicksort_L_1_else_begin
-quicksort_L_2_dobegin :
-#0 = list ARRGET j
-#1 = #0 GE temp
-_con = 0
-@bz #1 quicksort_L_3_else_begin
-#2 = i LT j
-@bz #2 quicksort_L_4_else_begin
-_con = 1
-quicksort_L_4_else_begin :
-quicksort_L_3_else_begin :
-_temp = 0
-@bz _con quicksort_L_5_for_end
-quicksort_L_5_for_cond :
-@bz _con quicksort_L_5_for_end
-@j quicksort_L_5_for_state
-quicksort_L_5_for_step :
-#0 = _temp
-_temp = #0 ADD 1
-@j quicksort_L_5_for_cond
-quicksort_L_5_for_state :
-#0 = j
-j = #0 SUB 1
-#1 = list ARRGET j
-#2 = #1 GE temp
-_con = 0
-@bz #2 quicksort_L_6_else_begin
-#3 = i LT j
-@bz #3 quicksort_L_7_else_begin
-_con = 1
-quicksort_L_7_else_begin :
-quicksort_L_6_else_begin :
-@j quicksort_L_5_for_step
-quicksort_L_5_for_end :
-#0 = list ARRGET i
-#1 = #0 LE temp
-_con = 0
-@bz #1 quicksort_L_8_else_begin
-#2 = i LT j
-@bz #2 quicksort_L_9_else_begin
-_con = 1
-quicksort_L_9_else_begin :
-quicksort_L_8_else_begin :
-_temp = 0
-@bz _con quicksort_L_10_for_end
-quicksort_L_10_for_cond :
-@bz _con quicksort_L_10_for_end
-@j quicksort_L_10_for_state
-quicksort_L_10_for_step :
-#0 = _temp
-_temp = #0 ADD 1
-@j quicksort_L_10_for_cond
-quicksort_L_10_for_state :
-#0 = i
-i = #0 ADD 1
-#1 = list ARRGET i
-#2 = #1 LE temp
-_con = 0
-@bz #2 quicksort_L_11_else_begin
-#3 = i LT j
-@bz #3 quicksort_L_12_else_begin
-_con = 1
-quicksort_L_12_else_begin :
-quicksort_L_11_else_begin :
-@j quicksort_L_10_for_step
-quicksort_L_10_for_end :
-#0 = i LT j
-@bz #0 quicksort_L_13_else_begin
-t = list ARRGET i
-#1 = list ARRGET j
-list ARRSET i #1
-list ARRSET j t
-quicksort_L_13_else_begin :
-#0 = i NEQ j
-@bz #0 quicksort_L_2_doend
-@j quicksort_L_2_dobegin
-quicksort_L_2_doend :
-quicksort_L_1_else_begin :
-#0 = list ARRGET i
-list ARRSET left #0
-list ARRSET i temp
-@push left
-#1 = i SUB 1
-@push #1
-@call quicksort
-#2 = i ADD 1
-@push #2
-@push right
-@call quicksort
-@ret
-@func F
-@para INT no
-#0 = no EQ 0
-@bz #0 F_L_0_else_begin
+@func factorial
+@para INT n
+#0 = n LE 1
+@bz #0 factorial_L_0_else_begin
 @ret 1
-F_L_0_else_begin :
-#0 = no EQ 1
-@bz #0 F_L_1_else_begin
-@ret 1
-F_L_1_else_begin :
-#0 = no SUB 1
+factorial_L_0_else_begin :
+#0 = n SUB 1
 @push #0
-@call F
+@call factorial
 @get #1
-#2 = no SUB 2
-@push #2
-@call F
-@get #3
-#4 = #1 ADD #3
-@ret #4
-@func bg
-@para INT a
-@para INT b
+#2 = n MUL #1
+@ret #2
+factorial_L_0_else_over :
+@func mod
+@para INT x
+@para INT y
+#1 = x
+#0 = #1 DIV y
+#2 = #0 MUL y
+x = #1 SUB #2
+@ret x
+@func swap
+@para INT x
+@para INT y
 @var INT temp
-@var INT i
-#0 = a GT b
-@bz #0 bg_L_0_else_begin
-temp = 3
-@j bg_L_0_else_over
-bg_L_0_else_begin :
-temp = 4
-bg_L_0_else_over :
-#0 = temp GE 3
-@bz #0 bg_L_1_else_begin
-#1 = temp NEQ 4
-@bz #1 bg_L_2_else_begin
-#2 = True ARRGET temp
-#3 = #2 NEQ 47
-@bz #3 bg_L_3_else_begin
 @printf STRING S_0
+@printf INT x
 @printf LINE
-@j bg_L_3_else_over
-bg_L_3_else_begin :
-@ret
-bg_L_3_else_over :
-@j bg_L_2_else_over
-bg_L_2_else_begin :
-#0 = False ARRGET temp
-#1 = #0 NEQ 45
-@bz #1 bg_L_4_else_begin
 @printf STRING S_1
+@printf INT y
 @printf LINE
-bg_L_4_else_begin :
-bg_L_2_else_over :
-bg_L_1_else_begin :
-True ARRSET 2 84
-@ret
-@func _printf
 @printf STRING S_2
-@printf CHAR 84
+@printf INT y
 @printf LINE
 @printf STRING S_3
-@printf CHAR 95
+@printf INT x
 @printf LINE
-_printf_L_0_else_begin :
-_printf_L_1_else_begin :
+temp = x
 @ret
-@func _scanf
-@var CHAR temp
-@scanf CHAR temp
-@ret temp
-@func int2char
-@para INT no
-#0 = no EQ 43
-@bz #0 int2char_L_0_else_begin
-@ret 43
-int2char_L_0_else_begin :
-#0 = no EQ 45
-@bz #0 int2char_L_1_else_begin
-@ret 45
-int2char_L_1_else_begin :
-#0 = no EQ 42
-@bz #0 int2char_L_2_else_begin
-@ret 42
-int2char_L_2_else_begin :
-#0 = no EQ 47
-@bz #0 int2char_L_3_else_begin
-@ret 47
-int2char_L_3_else_begin :
-#0 = no LE 57
-@bz #0 int2char_L_4_else_begin
-#1 = no GE 48
-@bz #1 int2char_L_5_else_begin
-@ret 49
-int2char_L_5_else_begin :
-int2char_L_4_else_begin :
-#0 = no LE 90
-@bz #0 int2char_L_6_else_begin
-#1 = no GE 65
-@bz #1 int2char_L_7_else_begin
-@ret 65
-int2char_L_7_else_begin :
-int2char_L_6_else_begin :
-#0 = no LE 122
-@bz #0 int2char_L_8_else_begin
-#1 = no GE 97
-@bz #1 int2char_L_9_else_begin
-@ret 97
-int2char_L_9_else_begin :
-int2char_L_8_else_begin :
-@ret 48
-@func ascii2int
-@para CHAR chtemp
-@ret chtemp
-@func sum
-@para INT a1
-@para INT a2
-@para CHAR a3
-@para INT a4
-@para INT a5
-@para INT a6
-@var INT temp
-#0 = a1 ADD a2
-#1 = #0 ADD a3
-#2 = #1 ADD a4
-#3 = #2 ADD a5
-temp = #3 ADD a6
-@ret temp
-@func conFun
-@ret 10
-@func returnX
-#0 = X
-X = #0 ADD 1
-@ret X
-@func main
-@var CHAR proc
-@var CHAR iproc
-@var CHAR chtemp
-@var INT a
-@var INT b
-@array INT array 3
+@func complete_num
+@para INT val
+@array INT k 128
 @var INT i
 @var INT j
-@var INT itemp
-True ARRSET 0 84
-True ARRSET 1 114
-True ARRSET 2 42
-True ARRSET 3 47
-False ARRSET 0 70
-False ARRSET 1 97
-False ARRSET 2 108
-False ARRSET 3 43
-False ARRSET 4 45
-@scanf CHAR chtemp
-@push chtemp
-@call ascii2int
-@get #0
-@printf STRING S_6
-@printf INT #0
-@printf LINE
-@call _scanf
+@var INT n
+@var INT s
+@var INT x1
+@var INT m
+@var INT k2
+@var INT h
+@var INT leap
+@var INT x2
+@var INT a
+@var INT b
+@var INT c
+j = val
+complete_num_L_0_dobegin :
+n = -1
+s = j
+i = 1
+complete_num_L_1_dobegin :
+#0 = j DIV i
+x1 = #0 MUL i
+@push j
+@push i
+@call mod
 @get #1
-@printf STRING S_7
-@printf INT #1
+#2 = #1 EQ 0
+@bz #2 complete_num_L_2_else_begin
+#3 = n
+n = #3 ADD 1
+#4 = s
+s = #4 SUB i
+#5 = n GE 128
+@bz #5 complete_num_L_3_else_begin
+@printf STRING S_4
 @printf LINE
-a = #0
-chtemp = #1
-main_L_0_dobegin :
-@scanf INT itemp
-@push itemp
-@call F
-@get #0
-@printf INT #0
-@printf LINE
-main_L_0_doend :
-@push 10
-@call F
-@get #0
-#1 = #0 NEQ 89
-b = #0
-@bz #1 main_L_1_else_begin
-@printf STRING S_8
-@printf LINE
-main_L_1_else_begin :
-i = 0
-@bz 1 main_L_2_for_end
-main_L_2_for_cond :
-#0 = i LT 3
-@bz #0 main_L_2_for_end
-@j main_L_2_for_state
-main_L_2_for_step :
+@j complete_num_L_3_else_over
+complete_num_L_3_else_begin :
+k ARRSET n i
+complete_num_L_3_else_over :
+@j complete_num_L_2_else_over
+complete_num_L_2_else_begin :
+complete_num_L_2_else_over :
 #0 = i
 i = #0 ADD 1
-@j main_L_2_for_cond
-main_L_2_for_state :
-array ARRSET i i
-@j main_L_2_for_step
-main_L_2_for_end :
-j = 0
-@j main_L_3_for_end
-main_L_3_for_cond :
-#0 = j LT 0
-@bz #0 main_L_3_for_end
-@j main_L_3_for_state
-main_L_3_for_step :
+#1 = i LT j
+@bz #1 complete_num_L_1_doend
+@j complete_num_L_1_dobegin
+complete_num_L_1_doend :
+#0 = s EQ 0
+@bz #0 complete_num_L_4_else_begin
+@printf STRING S_5
+@printf INT j
+@printf LINE
+i = 0
+complete_num_L_5_dobegin :
+@printf STRING S_6
+#0 = k ARRGET i
+@printf INT #0
+@printf LINE
+#1 = i
+i = #1 ADD 1
+#2 = i LE n
+@bz #2 complete_num_L_5_doend
+@j complete_num_L_5_dobegin
+complete_num_L_5_doend :
+@printf STRING S_7
+@printf LINE
+@j complete_num_L_4_else_over
+complete_num_L_4_else_begin :
+complete_num_L_4_else_over :
 #0 = j
 j = #0 ADD 1
-@j main_L_3_for_cond
-main_L_3_for_state :
-array ARRSET j i
-@j main_L_3_for_step
-main_L_3_for_end :
-#0 = i SUB 3
-array ARRSET #0 10
-b = 2
-#1 = i
-i = 1
-@bz 1 main_L_4_for_end
-main_L_4_for_cond :
-#0 = i GE 0
-@bz #0 main_L_4_for_end
-@j main_L_4_for_state
-main_L_4_for_step :
-#0 = i
-i = #0 SUB 1
-@j main_L_4_for_cond
-main_L_4_for_state :
-#0 = array ARRGET i
-#2 = array ARRGET b
-#1 = #0 GT #2
-@bz #1 main_L_5_else_begin
-#3 = b
-b = i
-main_L_5_else_begin :
-@j main_L_4_for_step
-main_L_4_for_end :
-#0 = array ARRGET b
-#1 = #0 NEQ 10
-@bz #1 main_L_6_else_begin
-@printf STRING S_9
+#1 = j LT 1024
+@bz #1 complete_num_L_0_doend
+@j complete_num_L_0_dobegin
+complete_num_L_0_doend :
+@printf STRING S_8
 @printf LINE
-main_L_6_else_begin :
-@printf STRING S_10
-#0 = array ARRGET 0
-#1 = array ARRGET 1
-#2 = #0 ADD #1
-#9 = array ARRGET 2
-#3 = #2 ADD #9
-#4 = #3 MUL 3
-#5 = #4 DIV 3
-#6 = -1 ADD #5
-#7 = #6 ADD 1
-#8 = #7 ADD b
-#10 = #8 SUB b
-@printf INT #10
-@printf LINE
-@push 13
-@push 12
-@call bg
-@call _printf
 a = 0
-main_L_7_else_begin :
-main_L_7_else_over :
-chtemp = 98
-char_flag = 97
-itemp = 0
-main_L_9_dobegin :
-i = 1
-@bz 1 main_L_10_for_end
-main_L_10_for_cond :
-#0 = i LT 6
-@bz #0 main_L_10_for_end
-@j main_L_10_for_state
-main_L_10_for_step :
+i = 0
+complete_num_L_6_dobegin :
+b = a MUL i
+c = j MUL n
+#0 = a
+a = #0 MUL i
+#1 = a
+#2 = #1 ADD b
+a = #2 ADD c
+#3 = i
+i = #3 ADD 1
+#4 = i LT 1024
+@bz #4 complete_num_L_6_doend
+@j complete_num_L_6_dobegin
+complete_num_L_6_doend :
+b = a
+i = 0
+complete_num_L_7_dobegin :
+#0 = b
+b = #0 ADD i
+#1 = i
+i = #1 ADD 1
+#2 = i LT 1024
+@bz #2 complete_num_L_7_doend
+@j complete_num_L_7_dobegin
+complete_num_L_7_doend :
+@printf STRING S_9
+@printf INT b
+@printf LINE
+@printf STRING S_8
+@printf LINE
+h = 0
+leap = 1
+m = 2
+complete_num_L_8_dobegin :
+k2 = m DIV 2
+i = 2
+complete_num_L_9_dobegin :
+#0 = m DIV i
+x2 = #0 MUL i
+@push m
+@push i
+@call mod
+@get #1
+#2 = #1 EQ 0
+@bz #2 complete_num_L_10_else_begin
+leap = 0
+@j complete_num_L_10_else_over
+complete_num_L_10_else_begin :
+complete_num_L_10_else_over :
 #0 = i
 i = #0 ADD 1
-@j main_L_10_for_cond
-main_L_10_for_state :
-#0 = itemp
-itemp = #0 ADD i
-@j main_L_10_for_step
-main_L_10_for_end :
-#0 = itemp LE char_flag
-@bz #0 main_L_9_doend
-@j main_L_9_dobegin
-main_L_9_doend :
-#0 = itemp LE char_flag
-@bz #0 main_L_11_else_begin
-@printf STRING S_12
+#1 = i LE k2
+@bz #1 complete_num_L_9_doend
+@j complete_num_L_9_dobegin
+complete_num_L_9_doend :
+#0 = leap EQ 1
+@bz #0 complete_num_L_11_else_begin
+@printf STRING S_10
+@printf INT m
 @printf LINE
-main_L_11_else_begin :
-@j main_L_8_else_over
-main_L_8_else_begin :
-@printf STRING S_13
+#1 = h
+h = #1 ADD 1
+#2 = h DIV 10
+x2 = #2 MUL 10
+#3 = x2 EQ h
+@bz #3 complete_num_L_12_else_begin
+@printf STRING S_7
 @printf LINE
-main_L_8_else_over :
-list ARRSET 10 9
-list ARRSET 1 8
-list ARRSET 2 6
-list ARRSET 3 4
-list ARRSET 4 7
-list ARRSET 5 3
-list ARRSET 6 2
-list ARRSET 7 1
-list ARRSET 8 0
-list ARRSET 9 5
-@push 1
+@j complete_num_L_12_else_over
+complete_num_L_12_else_begin :
+complete_num_L_12_else_over :
+@j complete_num_L_11_else_over
+complete_num_L_11_else_begin :
+complete_num_L_11_else_over :
+leap = 1
+#0 = m
+m = #0 ADD 1
+#1 = m LE 1024
+@bz #1 complete_num_L_8_doend
+@j complete_num_L_8_dobegin
+complete_num_L_8_doend :
+@printf STRING S_11
+@printf INT h
+@printf LINE
+@ret
+@func main
+@var INT n
 @push 10
-n = 10
-@call quicksort
-#0 = 1 LE n
-i = 1
-@bz #0 main_L_12_for_end
-main_L_12_for_cond :
-#0 = i LE n
-@bz #0 main_L_12_for_end
-@j main_L_12_for_state
-main_L_12_for_step :
-#0 = i
-i = #0 ADD 1
-@j main_L_12_for_cond
-main_L_12_for_state :
-#0 = list ARRGET i
-#2 = i SUB 1
-#1 = #0 NEQ #2
-@bz #1 main_L_13_else_begin
-@printf STRING S_14
-@printf LINE
-main_L_13_else_begin :
-@j main_L_12_for_step
-main_L_12_for_end :
-@push 99
-@call int2char
+@call factorial
 @get #0
-itemp = 99
-#1 = #0 NEQ 97
-chtemp = #0
-@bz #1 main_L_14_else_begin
-@printf STRING S_15
+@printf STRING S_12
+@printf INT #0
 @printf LINE
-main_L_14_else_begin :
-@push itemp
-@call int2char
-@get #0
-@push #0
-@call ascii2int
-@get #1
-#2 = #1 GT 97
-@bz #2 main_L_15_else_begin
-@printf STRING S_16
-@printf LINE
-main_L_15_else_begin :
-@push 2
-@call int2char
-@get #0
-@push #0
-@call ascii2int
-@get #1
-#2 = #1 GT 60
-@bz #2 main_L_16_else_begin
-@printf STRING S_17
-@printf LINE
-main_L_16_else_begin :
-@push itemp
-@push chtemp
-@call ascii2int
-@get #0
-@push #0
-@call bg
-#1 = list ARRGET 10
-@push #1
-@push 1
-@push 2
-@push 49
-@push 4
 @push 5
-@push 6
-@call sum
-@get #2
-@push #2
-#3 = True ARRGET 2
-@push #3
-@push 20
-@push 15
-@call conFun
-@get #4
-@push #4
-@call sum
-@get #5
-#6 = #5 NEQ 163
-@bz #6 main_L_17_else_begin
-@printf STRING S_18
-@printf LINE
-main_L_17_else_begin :
-@printf STRING S_19
-@printf LINE
-@printf STRING S_20
-@printf LINE
-@printf STRING S_21
-@printf LINE
-@printf STRING S_22
-@printf LINE
-@printf CHAR 49
-@printf LINE
-@printf STRING S_23
-@printf LINE
-@call returnX
-@get #0
-#1 = X EQ #0
-@bz #1 main_L_18_else_begin
-@printf STRING S_24
-@printf LINE
-main_L_18_else_begin :
+@push 10
+@call swap
+@push 2
+@call complete_num
 @ret

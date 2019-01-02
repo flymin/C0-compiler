@@ -28,6 +28,7 @@ public:
 
 	Reg_recorder(string regname);
 	void clear_and_init();
+	void clear_and_init_no_save();
 	void init();
 	void save();
 	

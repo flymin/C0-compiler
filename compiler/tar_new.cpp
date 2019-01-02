@@ -129,6 +129,10 @@ bool has_name(string name){
 	return (name_regmap.find(name) != name_regmap.end());
 }
 
+bool has_reg(string reg) {
+	return (reg_regmap.find(reg) != reg_regmap.end());
+}
+
 //初始化寄存器使用记录
 void init_reg_map(){
 	for (int i = 0; i < 8; i++){
@@ -519,6 +523,7 @@ void call_tar(string funcname) {
 
 void init_func(string funcname) {
 	offset_map.clear();
+	Reg_recorder::clear_and_init_all();
 	cur_func = findFunc((char*)funcname.data());
 	//TODO ptr需要加上s寄存器的空间
 	ptr = 12;
@@ -526,7 +531,6 @@ void init_func(string funcname) {
 	cur_addr = 12;
 	para_read_count = 0;
 	MIPS_OUTPUT(funcname << "_E:");
-	Reg_recorder::clear_and_init_all();
 }
 
 //计算指令
@@ -704,6 +708,10 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 
 	}
 	else {
+		if (has_reg("$v0")) {
+			Reg_recorder *rec = reg_regmap.find("$v0")->second;
+			rec->clear_and_init();
+		}
 		MIPS_OUTPUT("sll $v0, "<< get_reg(off_str, false) <<", 2");  // offset *= 4
 		MIPS_OUTPUT("sub $v0, " << point_reg << ", $v0");
 
@@ -868,6 +876,14 @@ void readline_tar() {
 
 		}
 		else if (strs[0] == "@printf") {
+			if (has_reg("$a0")) {
+				Reg_recorder *rec = reg_regmap.find("$a0")->second;
+				rec->clear_and_init();
+			}
+			if (has_reg("$v0")) {
+				Reg_recorder *rec = reg_regmap.find("$v0")->second;
+				rec->clear_and_init();
+			}
 			if (strs[1] == "LINE") {
 				MIPS_OUTPUT("li $a0, 10");
 				MIPS_OUTPUT("li $v0, 11");
@@ -904,6 +920,14 @@ void readline_tar() {
 			}
 		}
 		else if (strs[0] == "@scanf") {
+			if (has_reg("$a0")) {
+				Reg_recorder *rec = reg_regmap.find("$a0")->second;
+				rec->clear_and_init();
+			}
+			if (has_reg("$v0")) {
+				Reg_recorder *rec = reg_regmap.find("$v0")->second;
+				rec->clear_and_init();
+			}
 			if (strs[1] == "INT") {
 				MIPS_OUTPUT("li $v0, 5");
 			}
@@ -921,7 +945,7 @@ void readline_tar() {
 			{
 			cout << "FREE " << get_temp_no(strs[0]) << " " << temp_max << endl;
 			}*/
-			free_temp_set.insert(strs[1]);	// free temp 用来记录，真正的free操作在下一条中间代码解析完成之后
+			//free_temp_set.insert(strs[1]);	// free temp 用来记录，真正的free操作在下一条中间代码解析完成之后
 			continue;
 		}
 		else {
