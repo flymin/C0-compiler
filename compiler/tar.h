@@ -14,6 +14,10 @@
 
 #define NEW_TAR
 
+#ifdef NEW_TAR
+bool has_name(string name);
+#endif
+
 class map_value_finder
 {
 public:
@@ -42,6 +46,7 @@ void tar_code();
 bool is_temp(string name);
 
 int get_temp_no(string name);
+string get_reg(string name, bool is_def);
 
 
 #endif

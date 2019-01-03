@@ -48,6 +48,9 @@
     <ClInclude Include="main.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="live_var.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -78,6 +81,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="copy_opt.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="live_var.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

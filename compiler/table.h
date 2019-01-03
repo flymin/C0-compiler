@@ -32,5 +32,6 @@ Sym* findFunc(char* name);
 Sym* pushTable(char* name, Kind kind, Type type);
 int ClearSymTable();
 void sema_error(std::string info);
+bool is_local_var(std::string curfunc, std::string name);
 
 #endif

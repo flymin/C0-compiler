@@ -15,6 +15,17 @@ extern bool success;
 extern int line_no;
 extern char line_buffer[LINE_MAX_LENGTH];
 
+bool is_local_var(string curfunc, string name) {
+	Sym *func = findFunc((char *)curfunc.data());
+	Sym *var = findSym(func, (char *)name.data());
+	if (!var) {
+		return false;
+	}
+	else {
+		return !var->global;
+	}
+}
+
 void sema_error(string info){
 	success = false;
 	cout << line_buffer << endl;

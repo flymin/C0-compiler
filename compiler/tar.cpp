@@ -249,7 +249,7 @@ void call_tar(string funcname) {
 		MIPS_OUTPUT("sw $fp, -4($sp)");
 		//MIPS_OUTPUT("sw $sp, -8($sp)");
 		// refresh $fp
-		MIPS_OUTPUT("add $fp, $sp, $0");
+		MIPS_OUTPUT("addu $fp, $sp, $0");
 		MIPS_OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
 		// jump
 		MIPS_OUTPUT("jal " << funcname << "_E");
@@ -262,7 +262,7 @@ void call_tar(string funcname) {
 		// refresh $fp
 		//MIPS_OUTPUT("add $sp, $fp, $gp");
 		//global pointer有初始值，直接使用全局空间
-		MIPS_OUTPUT("add $fp, $sp, $0");
+		MIPS_OUTPUT("addu $fp, $sp, $0");
 		MIPS_OUTPUT("sw $ra, 0($sp)");
 		MIPS_OUTPUT("sw $fp, -4($sp)");
 		//MIPS_OUTPUT("sw $sp, 8($sp)");
@@ -304,12 +304,12 @@ void cal_tar(string op, string tar_str, string cal_str1, string cal_str2) {
 	}
 
 	if (op == "ADD") {
-		mips << (is_immed2 ? "addi" : "add");
+		mips << (is_immed2 ? "addi" : "addu");
 		is_cal = true;
 
 	}
 	else if (op == "SUB") {
-		mips << (is_immed2 ? "addi" : "sub");
+		mips << (is_immed2 ? "addi" : "subu");
 		if (is_immed2) immed2 = -immed2;   // turn negative
 		is_cal = true;
 
@@ -487,7 +487,7 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 		//}
 		load(off_str, "$t1");
 		MIPS_OUTPUT("sll $t1, $t1, 2");  // offset *= 4
-		MIPS_OUTPUT("sub $t1, " << point_reg << ", $t1");
+		MIPS_OUTPUT("subu $t1, " << point_reg << ", $t1");
 
 		MIPS_OUTPUT("addi $t1, $t1, -" << offset);  // add array base
 		MIPS_OUTPUT(op << " " << reg << ", 0($t1)");

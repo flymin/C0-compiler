@@ -6,6 +6,7 @@
 # include "reg_recorder.h"
 # include "table.h"
 # include "tar.h"
+# include "live_var.h"
 # define DEBUG 0
 # if DEBUG
 # define MIPS_LEFT cout
@@ -37,137 +38,232 @@ void Reg_recorder::clear_and_init()
 	this->save();
 	this->init();
 	this->use_count = use_counter++;
-	REG_MAP::iterator it = name_regmap.end();
-	it = find_if(name_regmap.begin(), name_regmap.end(), map_value_finder(this->regname));
-	if (it != name_regmap.end()) {
-		name_regmap.erase(it);
-	}
-}
-
-void Reg_recorder::clear_and_init_no_save()
-{
-	//this->save();
-	this->init();
-	this->use_count = use_counter++;
-	REG_MAP::iterator it = name_regmap.end();
-	it = find_if(name_regmap.begin(), name_regmap.end(), map_value_finder(this->regname));
-	if (it != name_regmap.end()) {
-		name_regmap.erase(it);
-	}
 }
 
 void Reg_recorder::init()
 {
 	// erase map
-	//if (has_name(this->name))
-	//{
-		//name_regmap.erase(name_regmap.find(this->name)); // map erase
-	//}
+	if (has_name(this->name))
+	{
+		name_regmap.erase(name_regmap.find(this->name)); // map erase
+	}
 	// init
 	this->name = "";
 	this->state = INACTIVE;
 }
 
+
 void Reg_recorder::save()
 {
-	int addr;
-	Sym* var;
 	if (this->state == MODIFIED)
 	{
 		// cout << "SAVE" << this->name << endl;
 		// store old value
-		
-		if (is_temp(this->name)) {
-			addr = 4 * get_temp_no(this->name) + temp_base_addr;
-			MIPS_OUTPUT("sw " << this->regname << ", -" << addr << "($fp) # store " << this->name);
-		}
-		else {
-			var = findSym(cur_func, (char*)this->name.data());
-			if (var->global) { // is global variable
-				MIPS_OUTPUT("sw " << this->regname << ", -" << global_addr_map[var->name] << "($gp) # store " << this->name);
-			}
-			else {
-				MIPS_OUTPUT("sw " << this->regname << ", -" << offset_map[var->name] << "($fp) # store " << this->name);
-			}
-		}
-		/*if (this->global)
+		if (this->global)
 		{
-			MIPS_OUTPUT( "sw" << " "
-				<< this->regname << ", -" << this->offset
+			MIPS_OUTPUT("sw " << this->regname << ", -" << this->offset
 				<< "($gp) # store " << this->name);
 		}
 		else
 		{
-			MIPS_OUTPUT( "sw" << " "
-				<< this->regname << ", -" << this->offset
+			MIPS_OUTPUT("sw " << this->regname << ", -" << this->offset
 				<< "($fp) # store " << this->name);
 		}
-		*/
 	}
 }
 
-void Reg_recorder::load()
-{
+
+/*
+void Reg_recorder::save() {
 	int addr;
 	Sym* var;
-	if (is_num(this->name)) {
-		MIPS_OUTPUT("li " << this->regname << ", " << this->name);
-	}
-	else {
+	if (this->state == MODIFIED) {
 		if (is_temp(this->name)) {
 			addr = 4 * get_temp_no(this->name) + temp_base_addr;
-			MIPS_OUTPUT("lw " << this->regname << ", -" << addr << "($fp) # load " << this->name);
+			MIPS_OUTPUT("sw " << this->regname << ", -" << addr << "($fp)");
 		}
 		else {
-			var = findSym(cur_func, (char*)this->name.data());
+			var = findSym(cur_func, (char*)(this->name).data());
 			if (var->global) { // is global variable
-				MIPS_OUTPUT("lw " << this->regname << ", -" << global_addr_map[var->name] << "($gp) # load " << this->name);
+				MIPS_OUTPUT("sw " << this->regname << ", -" << global_addr_map[var->name] << "($gp)");
 			}
 			else {
-				MIPS_OUTPUT("lw " << this->regname << ", -" << offset_map[var->name] << "($fp) # load " << this->name);
+				MIPS_OUTPUT("sw " << this->regname << ", -" << offset_map[var->name] << "($fp)");
 			}
 		}
 	}
-	/*
+	
+}
+*/
+
+void Reg_recorder::load()
+{
+	if (is_num(this->name))
+	{
+		MIPS_OUTPUT("li " << this->regname << ", " << this->name);
+	}
 	else if (offset != -1 && this->global)   // is global variable
 	{
-		MIPS_OUTPUT("lw" << " "
-			<< this->regname << ", -" << this->offset
+		MIPS_OUTPUT("lw " << this->regname << ", -" << this->offset
 			<< "($gp) # load " << this->name);
 	}
 	else if (offset != -1)
 	{
-		MIPS_OUTPUT("lw" << " "
-			<< this->regname << ", -" << this->offset
+		MIPS_OUTPUT("lw " << this->regname << ", -" << this->offset
 			<< "($fp) # load " << this->name);
 	}
-	*/
 }
 
-void Reg_recorder::save_modi_regs(list<string>* save_list)
+// before call
+void Reg_recorder::record_occu_regs(list<string>* save_list)
+{
+	REG_MAP::iterator it = reg_regmap.begin();
+	while (it != reg_regmap.end())
+	{
+		Reg_recorder* rec = it->second;
+		if (rec->state == OCCUPIED)
+		{
+			save_list->push_back(rec->regname);
+		}
+		it++;
+	}
+}
+
+// before call
+void Reg_recorder::save_occu_regs(list<string>* save_list, int offset)
+{
+	list<string>::iterator it = save_list->begin();
+	while (it != save_list->end())
+	{
+		MIPS_OUTPUT("sw " << *it << ", -" << offset << "($sp)");
+		offset += 4;
+		it++;
+	}
+}
+
+// after call
+void Reg_recorder::load_occu_regs(list<string>* save_list, int offset)
+{
+	list<string>::iterator it = save_list->begin();
+	while (it != save_list->end())
+	{
+		MIPS_OUTPUT("lw " << *it << ", -" << offset << "($sp)");
+		offset += 4;
+		it++;
+	}
+}
+
+// before call | before branch
+void Reg_recorder::save_modi_regs()
 {
 	REG_MAP::iterator it = reg_regmap.begin();
 	while (it != reg_regmap.end())
 	{
 		Reg_recorder* rec = it->second;
 		rec->save(); // only MODIFIED can save
-		if (rec->state == MODIFIED) {
-			save_list->push_back(rec->regname);
-			rec->state = INACTIVE;
-		}
 		it++;
 	}
 }
 
+// meet label
 void Reg_recorder::clear_and_init_all()
 {
 	REG_MAP::iterator it = reg_regmap.begin();
 	while (it != reg_regmap.end())
 	{
 		Reg_recorder* rec = it->second;
-		rec->clear_and_init_no_save();
+		rec->clear_and_init();
 		it++;
 	}
+}
+
+// before branch
+void Reg_recorder::init_var_occu_regs()
+{
+	REG_MAP::iterator it = reg_regmap.begin();
+	while (it != reg_regmap.end())
+	{
+		Reg_recorder* rec = it->second;
+		if (rec->state == OCCUPIED && rec->name[1] == 's')
+		{
+			rec->init();
+		}
+		it++;
+	}
+}
+
+// before ret
+void Reg_recorder::init_all()
+{
+	REG_MAP::iterator it = reg_regmap.begin();
+	while (it != reg_regmap.end())
+	{
+		Reg_recorder* rec = it->second;
+		rec->init();
+		it++;
+	}
+}
+
+// before ret
+void Reg_recorder::save_global_modi_regs()
+{
+	REG_MAP::iterator it = reg_regmap.begin();
+	while (it != reg_regmap.end())
+	{
+		Reg_recorder* rec = it->second;
+		if (rec->global)
+		{
+			rec->save();
+		}
+		it++;
+	}
+}
+
+void Reg_recorder::local_modi_regs(void(Reg_recorder::*func)(), bool not_reverse = true)
+{
+	REG_MAP::iterator it = reg_regmap.begin();
+	while (it != reg_regmap.end())
+	{
+		Reg_recorder* rec = it->second;
+		if (is_local_var(cur_func->name, cur_label, rec->name) ^ (!not_reverse))
+		{
+			// if (!not_reverse) cout << "LOCAL" << rec->name << endl;
+			(rec->*func)();
+		}
+		it++;
+	}
+}
+
+// a, #0, #8, global_a, local_a, not_occup_a
+
+
+void Reg_recorder::before_branch_jump()
+{
+	Reg_recorder::local_modi_regs(&Reg_recorder::save, false);
+	Reg_recorder::init_var_occu_regs();
+	Reg_recorder::local_modi_regs(&Reg_recorder::init, true);
+}
+
+void Reg_recorder::before_call()
+{
+
+}
+
+void Reg_recorder::after_call()
+{
+
+}
+
+void Reg_recorder::before_label()
+{
+	Reg_recorder::local_modi_regs(&Reg_recorder::save, false);
+	Reg_recorder::init_all();
+}
+
+void Reg_recorder::before_return()
+{
+	Reg_recorder::save_global_modi_regs();
+	Reg_recorder::init_all();
 }
 
 #endif

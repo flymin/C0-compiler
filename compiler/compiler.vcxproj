@@ -23,6 +23,7 @@
     <ClInclude Include="copy_opt.h" />
     <ClInclude Include="dag_opt.h" />
     <ClInclude Include="grammar.h" />
+    <ClInclude Include="live_var.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="mid_code.h" />
     <ClInclude Include="reg_recorder.h" />
@@ -35,6 +36,7 @@
     <ClCompile Include="copy_opt.cpp" />
     <ClCompile Include="dag_opt.cpp" />
     <ClCompile Include="grammar.cpp" />
+    <ClCompile Include="live_var.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mid_code.cpp" />
     <ClCompile Include="reg_recorder.cpp" />
