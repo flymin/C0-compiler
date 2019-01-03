@@ -135,7 +135,7 @@ void Reg_recorder::save_occu_regs(list<string>* save_list, int offset)
 	list<string>::iterator it = save_list->begin();
 	while (it != save_list->end())
 	{
-		MIPS_OUTPUT("sw " << *it << ", -" << offset << "($sp)");
+		MIPS_OUTPUT("sw " << *it << ", " << offset << "($sp)");
 		offset += 4;
 		it++;
 	}
@@ -147,7 +147,7 @@ void Reg_recorder::load_occu_regs(list<string>* save_list, int offset)
 	list<string>::iterator it = save_list->begin();
 	while (it != save_list->end())
 	{
-		MIPS_OUTPUT("lw " << *it << ", -" << offset << "($sp)");
+		MIPS_OUTPUT("lw " << *it << ", " << offset << "($sp)");
 		offset += 4;
 		it++;
 	}

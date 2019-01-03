@@ -482,6 +482,14 @@ void call_tar(string funcname) {
 		// store paras
 		int len = func->paranum;
 		int i;
+
+		list<string> reg_save_list;
+		Reg_recorder::record_occu_regs(&reg_save_list);
+		int store_count = 0;
+		int stack_offset = (reg_save_list.size() + store_count) * 4;
+		Reg_recorder::save_occu_regs(&reg_save_list, store_count * 4);
+		MIPS_OUTPUT("addi $sp, $sp, -" << stack_offset);
+
 		for (i = len-1; i >= 4; i--) {
 			//addr用来参数被调函数中的offset
 			//temp_addr应该指向被调函数栈中的参数开始区域
@@ -513,31 +521,31 @@ void call_tar(string funcname) {
 		MIPS_OUTPUT("lw $ra, 0($sp)");
 		MIPS_OUTPUT("lw $fp, -4($sp)");
 		*/
-		list<string> reg_save_list;
-		Reg_recorder::record_occu_regs(&reg_save_list);
-		int store_count = 1;
-		int stack_offset = (reg_save_list.size() + store_count) * 4;
-		MIPS_OUTPUT("addi $sp, $sp, -" << stack_offset);
+		Reg_recorder::clear_and_init_all();		//only use $fp and $gp, no $sp
 		MIPS_OUTPUT("sw $ra, 0($sp)");
-		Reg_recorder::save_occu_regs(&reg_save_list, store_count * 4);
+		MIPS_OUTPUT("sw $fp, -4($sp)");
 		//Reg_recorder::save_global_modi_regs();
-		Reg_recorder::clear_and_init_all();
+		
 
 		// refresh $fp
-		int fp_offset = cur_addr + len * 4;
-		MIPS_OUTPUT("addi $fp, $fp, " << fp_offset);
+		//int fp_offset = cur_addr + len * 4;
+		//MIPS_OUTPUT("addi $fp, $sp, -" << fp_offset);
+		MIPS_OUTPUT("add $fp, $sp, $0");
+		MIPS_OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
 		// jump
 		MIPS_OUTPUT("jal " << funcname << "_E");
 		// load regs
 
-		MIPS_OUTPUT("addi $fp, $fp, -" << fp_offset);
+		//MIPS_OUTPUT("addi $fp, $fp, " << fp_offset);
+		MIPS_OUTPUT("addi $sp, $sp, " << temp_addr + 4 * func->paranum + func->psize);
 		MIPS_OUTPUT("lw $ra, 0($sp)");
+		MIPS_OUTPUT("lw $fp, -4($sp)");
+		MIPS_OUTPUT("addi $sp, $sp, " << stack_offset);
+		MIPS_OUTPUT("# BEGIN");
 		init_global_regs(); // [fix]
 		Reg_recorder::load_occu_regs(&reg_save_list, store_count * 4);
-		MIPS_OUTPUT("# BEGIN");
 
 		MIPS_OUTPUT("#END");
-		MIPS_OUTPUT("addi $sp, $sp, " << stack_offset);
 	}
 	else {
 		/*Reg_recorder::clear_and_init_all();

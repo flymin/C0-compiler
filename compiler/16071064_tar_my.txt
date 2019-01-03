@@ -1,0 +1,662 @@
+.data
+S_0: .asciiz " x = "
+S_1: .asciiz " y = "
+S_2: .asciiz " SWAP x = "
+S_3: .asciiz " SWAP y = "
+S_4: .asciiz " OVERFLOW!          "
+S_5: .asciiz " complete number: "
+S_6: .asciiz "  "
+S_7: .asciiz "          "
+S_8: .asciiz " ---------------------------------------------------------------          "
+S_9: .asciiz " b = "
+S_10: .asciiz " "
+S_11: .asciiz "          The total is "
+S_12: .asciiz " 10! = "
+.text
+   # @call main
+addi $fp, $fp, 0
+addu $fp, $fp, $gp
+jal main_E
+li $v0, 10
+syscall
+   # @exit
+   # @func factorial
+factorial_E:
+   # @label 0
+   # @para INT n
+move, $s0, $a0
+   # #0 = n LE 1
+li $s1, 1
+sle $t0, $s0, $s1
+   # @free #0
+   # @bz #0 factorial_L_0_else_begin
+beq $t0, $0, factorial_L_0_else_begin
+   # @label 1
+   # @ret 1
+li $v0, 1
+jr $ra
+   # factorial_L_0_else_begin :
+factorial_L_0_else_begin:
+   # #0 = n SUB 1
+addi $t0, $s0, -1
+   # @push #0
+   # @call factorial
+sw $s0, 0($sp)
+sw $t0, 4($sp)
+addi $sp, $sp, -8
+move $a0, $t0
+sw $ra, 0($sp)
+sw $fp, -4($sp)
+add $fp, $sp, $0
+addi $sp, $sp, -32
+jal factorial_E
+addi $sp, $sp, 32
+lw $ra, 0($sp)
+lw $fp, -4($sp)
+addi $sp, $sp, 8
+# BEGIN
+lw $s0, 0($sp)
+lw $t0, 4($sp)
+#END
+   # @get #1
+move $t1, $v0
+   # #1 = n MUL #1
+mul $t1, $s0, $t1
+   # @free #1
+   # @ret #1
+move $v0, $t1
+jr $ra
+   # factorial_L_0_else_over :
+factorial_L_0_else_over:
+   # @func mod
+mod_E:
+   # @label 0
+   # @para INT x
+move, $s1, $a0
+   # @para INT y
+move, $s0, $a1
+   # #0 = x DIV y
+div $t0, $s1, $s0
+   # #0 = #0 MUL y
+mul $t0, $t0, $s0
+   # @free #0
+   # x = x SUB #0
+subu $s1, $s1, $t0
+   # @ret x
+move $v0, $s1
+jr $ra
+   # @func swap
+swap_E:
+   # @label 0
+   # @para INT x
+move, $s1, $a0
+   # @para INT y
+move, $s0, $a1
+   # @var INT temp
+   # @printf STRING S_0
+li $v0, 4
+la $a0, S_0
+syscall
+   # @printf INT x
+li $v0, 1
+move $a0, $s1
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @printf STRING S_1
+li $v0, 4
+la $a0, S_1
+syscall
+   # @printf INT y
+li $v0, 1
+move $a0, $s0
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @printf STRING S_2
+li $v0, 4
+la $a0, S_2
+syscall
+   # @printf INT y
+li $v0, 1
+move $a0, $s0
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @printf STRING S_3
+li $v0, 4
+la $a0, S_3
+syscall
+   # @printf INT x
+li $v0, 1
+move $a0, $s1
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @ret
+jr $ra
+   # @func complete_num
+complete_num_E:
+   # @label 0
+   # @para INT val
+move, $s0, $a0
+   # @array INT k 128
+   # @var INT i
+   # @var INT j
+   # @var INT n
+   # @var INT s
+   # @var INT x1
+   # @var INT m
+   # @var INT k2
+   # @var INT h
+   # @var INT leap
+   # @var INT x2
+   # @var INT a
+   # @var INT b
+   # @var INT c
+   # j = val
+move $s3, $s0
+   # complete_num_L_0_dobegin :
+complete_num_L_0_dobegin:
+   # n = -1
+li $s2, -1
+   # s = j
+move $s0, $s3
+   # i = 1
+li $s1, 1
+   # complete_num_L_1_dobegin :
+complete_num_L_1_dobegin:
+   # #0 = j DIV i
+div $t0, $s3, $s1
+   # @free #0
+   # x1 = #0 MUL i
+mul $s4, $t0, $s1
+   # @push j
+   # @push i
+   # @call mod
+sw $s0, 0($sp)
+sw $s1, 4($sp)
+sw $s2, 8($sp)
+sw $s3, 12($sp)
+addi $sp, $sp, -16
+move $a1, $s1
+move $a0, $s3
+sw $s4, -544($fp) # store x1
+sw $ra, 0($sp)
+sw $fp, -4($sp)
+add $fp, $sp, $0
+addi $sp, $sp, -28
+jal mod_E
+addi $sp, $sp, 28
+lw $ra, 0($sp)
+lw $fp, -4($sp)
+addi $sp, $sp, 16
+# BEGIN
+lw $s0, 0($sp)
+lw $s1, 4($sp)
+lw $s2, 8($sp)
+lw $s3, 12($sp)
+#END
+   # @get #0
+move $t0, $v0
+   # #0 = #0 EQ 0
+seq $t0, $t0, $0
+   # @free #0
+   # @bz #0 complete_num_L_2_else_begin
+beq $t0, $0, complete_num_L_2_else_begin
+   # @label 1
+   # n = n ADD 1
+addi $s2, $s2, 1
+   # s = s SUB i
+subu $s0, $s0, $s1
+   # #0 = n GE 128
+li $s4, 128
+sge $t0, $s2, $s4
+   # @free #0
+   # @bz #0 complete_num_L_3_else_begin
+beq $t0, $0, complete_num_L_3_else_begin
+   # @label 2
+   # @printf STRING S_4
+li $v0, 4
+la $a0, S_4
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @j complete_num_L_3_else_over
+j complete_num_L_3_else_over
+nop
+   # complete_num_L_3_else_begin :
+complete_num_L_3_else_begin:
+   # k ARRSET n i
+sll $v0, $s2, 2
+sub $v0, $fp, $v0
+addi $v0, $v0, -16
+sw $s1, 0($v0)
+   # complete_num_L_3_else_over :
+complete_num_L_3_else_over:
+   # @j complete_num_L_2_else_over
+j complete_num_L_2_else_over
+nop
+   # complete_num_L_2_else_begin :
+complete_num_L_2_else_begin:
+   # complete_num_L_2_else_over :
+complete_num_L_2_else_over:
+   # i = i ADD 1
+addi $s1, $s1, 1
+   # #0 = i LT j
+slt $t0, $s1, $s3
+   # @free #0
+   # @bz #0 complete_num_L_1_doend
+beq $t0, $0, complete_num_L_1_doend
+   # @label 3
+   # @j complete_num_L_1_dobegin
+j complete_num_L_1_dobegin
+nop
+   # complete_num_L_1_doend :
+complete_num_L_1_doend:
+   # #0 = s EQ 0
+seq $t0, $s0, $0
+   # @free #0
+   # @bz #0 complete_num_L_4_else_begin
+beq $t0, $0, complete_num_L_4_else_begin
+   # @label 4
+   # @printf STRING S_5
+li $v0, 4
+la $a0, S_5
+syscall
+   # @printf INT j
+li $v0, 1
+move $a0, $s3
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # i = 0
+li $s0, 0
+   # complete_num_L_5_dobegin :
+complete_num_L_5_dobegin:
+   # @printf STRING S_6
+li $v0, 4
+la $a0, S_6
+syscall
+   # #0 = k ARRGET i
+sll $v0, $s0, 2
+sub $v0, $fp, $v0
+addi $v0, $v0, -16
+lw $t0, 0($v0)
+   # @free #0
+   # @printf INT #0
+li $v0, 1
+move $a0, $t0
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # i = i ADD 1
+addi $s0, $s0, 1
+   # #0 = i LE n
+sle $t0, $s0, $s2
+   # @free #0
+   # @bz #0 complete_num_L_5_doend
+beq $t0, $0, complete_num_L_5_doend
+   # @label 5
+   # @j complete_num_L_5_dobegin
+j complete_num_L_5_dobegin
+nop
+   # complete_num_L_5_doend :
+complete_num_L_5_doend:
+   # @printf STRING S_7
+li $v0, 4
+la $a0, S_7
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @j complete_num_L_4_else_over
+j complete_num_L_4_else_over
+nop
+   # complete_num_L_4_else_begin :
+complete_num_L_4_else_begin:
+   # complete_num_L_4_else_over :
+complete_num_L_4_else_over:
+   # j = j ADD 1
+addi $s3, $s3, 1
+   # #0 = j LT 1024
+li $s5, 1024
+slt $t0, $s3, $s5
+   # @free #0
+   # @bz #0 complete_num_L_0_doend
+beq $t0, $0, complete_num_L_0_doend
+   # @label 6
+   # @j complete_num_L_0_dobegin
+j complete_num_L_0_dobegin
+nop
+   # complete_num_L_0_doend :
+complete_num_L_0_doend:
+   # @printf STRING S_8
+li $v0, 4
+la $a0, S_8
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # a = 0
+li $s1, 0
+   # i = 0
+li $s0, 0
+   # complete_num_L_6_dobegin :
+complete_num_L_6_dobegin:
+   # b = a MUL i
+mul $s6, $s1, $s0
+   # c = j MUL n
+mul $s7, $s3, $s2
+   # a = a MUL i
+mul $s1, $s1, $s0
+   # #0 = a ADD b
+addu $t0, $s1, $s6
+   # @free #0
+   # a = #0 ADD c
+addu $s1, $t0, $s7
+   # i = i ADD 1
+addi $s0, $s0, 1
+   # #0 = i LT 1024
+li $t1, 1024
+slt $t0, $s0, $t1
+   # @free #0
+   # @bz #0 complete_num_L_6_doend
+beq $t0, $0, complete_num_L_6_doend
+   # @label 7
+   # @j complete_num_L_6_dobegin
+j complete_num_L_6_dobegin
+nop
+   # complete_num_L_6_doend :
+complete_num_L_6_doend:
+   # b = a
+move $s0, $s1
+   # i = 0
+li $s2, 0
+   # complete_num_L_7_dobegin :
+complete_num_L_7_dobegin:
+   # b = b ADD i
+addu $s0, $s0, $s2
+   # i = i ADD 1
+addi $s2, $s2, 1
+   # #0 = i LT 1024
+li $t2, 1024
+slt $t0, $s2, $t2
+   # @free #0
+   # @bz #0 complete_num_L_7_doend
+beq $t0, $0, complete_num_L_7_doend
+   # @label 8
+   # @j complete_num_L_7_dobegin
+j complete_num_L_7_dobegin
+nop
+   # complete_num_L_7_doend :
+complete_num_L_7_doend:
+   # @printf STRING S_9
+li $v0, 4
+la $a0, S_9
+syscall
+   # @printf INT b
+li $v0, 1
+move $a0, $s0
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @printf STRING S_8
+li $v0, 4
+la $a0, S_8
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # h = 0
+li $s4, 0
+   # leap = 1
+li $s2, 1
+   # m = 2
+li $s3, 2
+   # complete_num_L_8_dobegin :
+complete_num_L_8_dobegin:
+   # k2 = m DIV 2
+sra $s0, $s3, 1
+   # i = 2
+li $s1, 2
+   # complete_num_L_9_dobegin :
+complete_num_L_9_dobegin:
+   # #0 = m DIV i
+div $t0, $s3, $s1
+   # @free #0
+   # x2 = #0 MUL i
+mul $t3, $t0, $s1
+   # @push m
+   # @push i
+   # @call mod
+sw $s0, 0($sp)
+sw $s1, 4($sp)
+sw $s2, 8($sp)
+sw $s3, 12($sp)
+sw $s4, 16($sp)
+addi $sp, $sp, -20
+move $a1, $s1
+move $a0, $s3
+sw $t3, -564($fp) # store x2
+sw $ra, 0($sp)
+sw $fp, -4($sp)
+add $fp, $sp, $0
+addi $sp, $sp, -28
+jal mod_E
+addi $sp, $sp, 28
+lw $ra, 0($sp)
+lw $fp, -4($sp)
+addi $sp, $sp, 20
+# BEGIN
+lw $s0, 0($sp)
+lw $s1, 4($sp)
+lw $s2, 8($sp)
+lw $s3, 12($sp)
+lw $s4, 16($sp)
+#END
+   # @get #0
+move $t0, $v0
+   # #0 = #0 EQ 0
+seq $t0, $t0, $0
+   # @free #0
+   # @bz #0 complete_num_L_10_else_begin
+beq $t0, $0, complete_num_L_10_else_begin
+   # @label 9
+   # leap = 0
+li $s2, 0
+   # @j complete_num_L_10_else_over
+j complete_num_L_10_else_over
+nop
+   # complete_num_L_10_else_begin :
+complete_num_L_10_else_begin:
+   # complete_num_L_10_else_over :
+complete_num_L_10_else_over:
+   # i = i ADD 1
+addi $s1, $s1, 1
+   # #0 = i LE k2
+sle $t0, $s1, $s0
+   # @free #0
+   # @bz #0 complete_num_L_9_doend
+beq $t0, $0, complete_num_L_9_doend
+   # @label 10
+   # @j complete_num_L_9_dobegin
+j complete_num_L_9_dobegin
+nop
+   # complete_num_L_9_doend :
+complete_num_L_9_doend:
+   # #0 = leap EQ 1
+li $s5, 1
+seq $t0, $s2, $s5
+   # @free #0
+   # @bz #0 complete_num_L_11_else_begin
+beq $t0, $0, complete_num_L_11_else_begin
+   # @label 11
+   # @printf STRING S_10
+li $v0, 4
+la $a0, S_10
+syscall
+   # @printf INT m
+li $v0, 1
+move $a0, $s3
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # h = h ADD 1
+addi $s4, $s4, 1
+   # #0 = h DIV 10
+div $t0, $s4, 10
+   # @free #0
+   # x2 = #0 MUL 10
+mul $s6, $t0, 10
+   # #0 = x2 EQ h
+seq $t0, $s6, $s4
+   # @free #0
+   # @bz #0 complete_num_L_12_else_begin
+beq $t0, $0, complete_num_L_12_else_begin
+   # @label 12
+   # @printf STRING S_7
+li $v0, 4
+la $a0, S_7
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @j complete_num_L_12_else_over
+j complete_num_L_12_else_over
+nop
+   # complete_num_L_12_else_begin :
+complete_num_L_12_else_begin:
+   # complete_num_L_12_else_over :
+complete_num_L_12_else_over:
+   # @j complete_num_L_11_else_over
+j complete_num_L_11_else_over
+nop
+   # complete_num_L_11_else_begin :
+complete_num_L_11_else_begin:
+   # complete_num_L_11_else_over :
+complete_num_L_11_else_over:
+   # leap = 1
+li $s2, 1
+   # m = m ADD 1
+addi $s3, $s3, 1
+   # #0 = m LE 1024
+li $s7, 1024
+sle $t0, $s3, $s7
+   # @free #0
+   # @bz #0 complete_num_L_8_doend
+beq $t0, $0, complete_num_L_8_doend
+   # @label 13
+   # @j complete_num_L_8_dobegin
+j complete_num_L_8_dobegin
+nop
+   # complete_num_L_8_doend :
+complete_num_L_8_doend:
+   # @printf STRING S_11
+li $v0, 4
+la $a0, S_11
+syscall
+   # @printf INT h
+li $v0, 1
+move $a0, $s4
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @ret
+jr $ra
+   # @func main
+main_E:
+   # @label 0
+   # @var INT n
+   # @push 10
+   # @call factorial
+addi $sp, $sp, -0
+li $t1, 10
+move $a0, $t1
+sw $ra, 0($sp)
+sw $fp, -4($sp)
+add $fp, $sp, $0
+addi $sp, $sp, -32
+jal factorial_E
+addi $sp, $sp, 32
+lw $ra, 0($sp)
+lw $fp, -4($sp)
+addi $sp, $sp, 0
+# BEGIN
+#END
+   # @get #0
+move $t0, $v0
+   # @printf STRING S_12
+li $v0, 4
+la $a0, S_12
+syscall
+   # @free #0
+   # @printf INT #0
+li $v0, 1
+move $a0, $t0
+syscall
+   # @printf LINE
+li $a0, 10
+li $v0, 11
+syscall
+   # @push 5
+   # @push 10
+   # @call swap
+addi $sp, $sp, -0
+li $s0, 10
+move $a1, $s0
+li $s1, 5
+move $a0, $s1
+sw $ra, 0($sp)
+sw $fp, -4($sp)
+add $fp, $sp, $0
+addi $sp, $sp, -24
+jal swap_E
+addi $sp, $sp, 24
+lw $ra, 0($sp)
+lw $fp, -4($sp)
+addi $sp, $sp, 0
+# BEGIN
+#END
+   # @push 2
+   # @call complete_num
+addi $sp, $sp, -0
+li $s0, 2
+move $a0, $s0
+sw $ra, 0($sp)
+sw $fp, -4($sp)
+add $fp, $sp, $0
+addi $sp, $sp, -592
+jal complete_num_E
+addi $sp, $sp, 592
+lw $ra, 0($sp)
+lw $fp, -4($sp)
+addi $sp, $sp, 0
+# BEGIN
+#END
+   # @ret
+jr $ra

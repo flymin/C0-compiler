@@ -237,6 +237,7 @@ void main()
 	bg(itemp, ascii2int(chtemp));
 	
 	if(sum(list[10], sum(1,2,'1',4,5,6), True[2], 20, con, conFun()) != 163){
+		printf(sum(list[10], sum(1,2,'1',4,5,6), True[2], 20, con, conFun()));
 		printf(" error8 ");
 	}
 	
