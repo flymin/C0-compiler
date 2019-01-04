@@ -35,7 +35,7 @@ extern fstream midfile;
 bool mark = false;		//这是为获取下一行设置的标记
 Type return_type = VOID;
 Sym *this_func;
-int temp_max;
+int max_temp_reg;
 bool return_last = false;
 int error_sym = 0;
 
@@ -582,7 +582,7 @@ para_end:
 
 void func_declare() {
 	print_gra("\tFunc declare start");
-	temp_max = 0;
+	max_temp_reg = 0;
 	Sym *temp = NULL;
 	int stack_size;
 	temp = func_head();
@@ -659,7 +659,7 @@ func_body:
 	}
 	stack_size = ClearSymTable();	//出口处统计局部变量需要的栈大小
 	temp->vsize = stack_size;
-	temp->psize = stack_size + 4 * temp_max;
+	temp->psize = stack_size + 4 * max_temp_reg;
 	print_gra("This is a func declare\n");
 	getsym_check();
 }
@@ -1923,7 +1923,7 @@ void statement() {
 		}
 	}
 	//print_gra("This is a statement");
-	temp_max = max(*max_element(temp_counts.begin(), temp_counts.end()), temp_max);
+	max_temp_reg = max(*max_element(temp_counts.begin(), temp_counts.end()), max_temp_reg);
 	temp_counts.pop_back();
 }
 
@@ -1943,7 +1943,7 @@ void composed_state() {
 void main_state() {
 	Sym *temp;
 	int stack_size;
-	temp_max = 0;
+	max_temp_reg = 0;
 	temp = func_head();
 	this_func = temp;
 	if (!temp) {
@@ -1977,7 +1977,7 @@ void main_state() {
 	return_mid();
 	stack_size = ClearSymTable();	//出口处统计局部变量需要的栈大小
 	temp->vsize = stack_size;
-	temp->psize = stack_size + 4 * temp_max;
+	temp->psize = stack_size + 4 * max_temp_reg;
 	print_gra("This is a main function");
 }
 

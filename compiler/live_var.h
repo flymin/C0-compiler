@@ -6,36 +6,36 @@
 #include <map>
 using namespace std;
 
-class Code_block;
-extern map<string, map<string, Code_block*>*> func_cblock_map;
+class Fund_block;
+extern map<string, map<string, Fund_block*>*> func_fblock_map;
 
-class Var_node
+class Data_node
 {
 public:
 	string name;
-	Var_node* redirect_ptr = NULL;
-	set<Var_node*> conflicts;
+	Data_node* redirect_ptr = NULL;
+	set<Data_node*> conflicts;
 	int conf_count = 0;
 	int regno = -1;
-	Var_node(string name);
-	Var_node* get_terminal_ptr();
+	Data_node(string name);
+	Data_node* get_terminal_ptr();
 	void set_regno(int reg_max);
 	void cut_conflicts();
 };
 
-class Code_block
+class Fund_block
 {
 public:
 	string label;
-	set<Code_block*> prevs;
-	set<Code_block*> nexts;
+	set<Fund_block*> prevs;
+	set<Fund_block*> nexts;
 	set<string> uses;
 	set<string> defs;
-	map<string, Var_node*> ins; // same values as outs
-	map<string, Var_node*> outs; // can be enlarge, but not modified
-	map<string, Var_node*> lives; // ins | outs
+	map<string, Data_node*> ins; // same values as outs
+	map<string, Data_node*> outs; // can be enlarge, but not modified
+	map<string, Data_node*> lives; // ins | outs
 
-	Code_block(string label);
+	Fund_block(string label);
 	void print_info();
 	bool has_def(string name);
 	bool has_use(string name);

@@ -7,7 +7,7 @@
 using namespace std;
 
 extern int use_counter;
-extern string cur_label; // need not init
+extern string cur_label;
 
 
 typedef enum
@@ -36,14 +36,11 @@ public:
 	static void record_occu_regs(list<string>* save_list);
 	static void save_occu_regs(list<string>* save_list, int offset);
 	static void load_occu_regs(list<string>* save_list, int offset);
-	static void save_modi_regs();
 	static void clear_and_init_all();
 	static void init_var_occu_regs();
 	static void init_all();
 	static void save_global_modi_regs();
 	static void before_branch_jump();
-	static void before_call();
-	static void after_call();
 	static void before_label();
 	static void before_return();
 	static void local_modi_regs(void(Reg_recorder::*func)(), bool not_reverse);

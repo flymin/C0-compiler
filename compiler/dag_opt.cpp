@@ -17,13 +17,13 @@
 #define GET_NEW_NAME(name) (get_name(node_map[name]))
 # define DEBUG 0
 # if DEBUG
-# define MIPS_LEFT cout << "<==="
-# define MIPS_RIGHT "===>" << endl
+# define OUT_LEFT cout << "<==="
+# define OUT_RIGHT "===>" << endl
 # else
-# define MIPS_LEFT fout
-# define MIPS_RIGHT endl
+# define OUT_LEFT fout
+# define OUT_RIGHT endl
 # endif // DEBUG
-# define MIPS_OUTPUT(x) MIPS_LEFT << x << MIPS_RIGHT
+# define OUTPUT(x) OUT_LEFT << x << OUT_RIGHT
 
 using namespace std;
 
@@ -66,7 +66,7 @@ void Node::make_certain()
 	this->rptr->make_certain();
 	string var1 = get_name(this->lptr);
 	string var2 = get_name(this->rptr);
-	MIPS_OUTPUT(get_name(this) << " = " << var1 <<
+	OUTPUT(get_name(this) << " = " << var1 <<
 		" " << this->content << " " << var2);
 	this->is_certain = true;
 }
@@ -100,7 +100,7 @@ NODE_MAP::iterator export_code(NODE_MAP::iterator it) {
 	set_name(it->second);
 	it->second->make_certain();
 	if (it->first != get_name(it->second)) {  // var = temp，对var进行赋值
-		MIPS_OUTPUT(it->first << " = " << get_name(it->second));
+		OUTPUT(it->first << " = " << get_name(it->second));
 		node_map.erase(it++); // why erase?
 							  // need not to set name cause it's the end of the block
 	}
@@ -245,7 +245,7 @@ void set_name(Node* node)
 		while (it != node_map.end()) {
 			if (IS_VAR(it->first) && it->second == node)
 			{
-				MIPS_OUTPUT(it->first << " = " << node->name);
+				OUTPUT(it->first << " = " << node->name);
 				node->content = it->first;
 				node->name = it->first;
 				return;
@@ -273,7 +273,7 @@ void set_name(Node* node)
 	{
 		node->no = temp_count++;
 		ss << "#" << node->no;
-		MIPS_OUTPUT(ss.str() << " = " << node->name);
+		OUTPUT(ss.str() << " = " << node->name);
 	}
 	else
 	{
@@ -327,7 +327,7 @@ void build_DAG(vector<string> code)
 			}
 		}
 
-		MIPS_OUTPUT(code[0] << " ARRSET " << use_new_name(code[2]) <<
+		OUTPUT(code[0] << " ARRSET " << use_new_name(code[2]) <<
 			" " << use_new_name(code[3]));
 	}
 	else if (code.size() == 5)	// ARRGET按照计算符处理，数组名整体作为一个变量
@@ -400,47 +400,47 @@ void read_medis()
 		}
 		if (strs[0] == "@var" || strs[0] == "@array")
 		{
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@para")
 		{
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@func")
 		{
 			cur_func_DAG = findFunc((char *)strs[1].data());
 			assert(cur_func_DAG != NULL);
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@push")
 		{
-			MIPS_OUTPUT("@push " << use_new_name(strs[1]));
+			OUTPUT("@push " << use_new_name(strs[1]));
 		}
 		else if (strs[0] == "@call")
 		{
 			record_global_vars();
 			refresh_global_vars();
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@get")
 		{
 			if (IS_VAR(strs[1])) refresh_vars();
 			remove_var(strs[1]);    // var <- function return value
 			string name = use_new_name(strs[1]);
-			MIPS_OUTPUT("@get " << name);
+			OUTPUT("@get " << name);
 		}
 		else if (strs[0] == "@ret"){	// return 语句作为基本块的出口，刷新基本快
 			if (strs.size() == 1){
 				refresh_global_vars();
 				init_DAG();
-				MIPS_OUTPUT(line);
+				OUTPUT(line);
 			}
 			else
 			{
 				string var1 = use_new_name(strs[1]);
 				refresh_global_vars();
 				init_DAG();
-				MIPS_OUTPUT("@ret " << var1);
+				OUTPUT("@ret " << var1);
 			}
 		}
 		else if (strs[0] == "@be")
@@ -449,13 +449,13 @@ void read_medis()
 				GET_NEW_NAME(strs[1]) == GET_NEW_NAME(strs[2])) { // have same node
 				// 相同节点的前提下使用无条件跳转指令
 				refresh_vars();
-				MIPS_OUTPUT("@j " << strs[3]);
+				OUTPUT("@j " << strs[3]);
 			}
 			else {
 				string var1 = use_new_name(strs[1]);
 				string var2 = use_new_name(strs[2]);
 				refresh_vars();
-				MIPS_OUTPUT("@be " << var1 << " " << var2 << " " << strs[3]);
+				OUTPUT("@be " << var1 << " " << var2 << " " << strs[3]);
 			}
 		}
 		else if (strs[0] == "@bz")
@@ -463,46 +463,46 @@ void read_medis()
 			if (has_node(strs[1]) && GET_NEW_NAME(strs[1]) == "0")
 			{
 				refresh_vars();
-				MIPS_OUTPUT("@j " << strs[2]);
+				OUTPUT("@j " << strs[2]);
 			}
 			else
 			{
 				string var1 = use_new_name(strs[1]);
 				refresh_vars();
-				MIPS_OUTPUT("@bz " << var1 << " " << strs[2]);
+				OUTPUT("@bz " << var1 << " " << strs[2]);
 			}
 
 		}
 		else if (strs[0] == "@j")
 		{
 			refresh_vars();
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@jal")
 		{
 			refresh_vars();
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@printf")
 		{
 			if (strs[1] == "STRING" || strs[1] == "LINE")
 			{
-				MIPS_OUTPUT(line);
+				OUTPUT(line);
 			}
 			else
 			{
-				MIPS_OUTPUT("@printf " << strs[1] << " " << use_new_name(strs[2]));
+				OUTPUT("@printf " << strs[1] << " " << use_new_name(strs[2]));
 			}
 		}
 		else if (strs[0] == "@scanf")
 		{
 			refresh_vars();
 			remove_var(strs[2]);
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@exit")
 		{
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@free") {}
 		else {
@@ -510,7 +510,7 @@ void read_medis()
 			if (strs[1] == ":")
 			{
 				init_DAG();
-				MIPS_OUTPUT(line);
+				OUTPUT(line);
 			}
 			else {	//基本的赋值语句
 				build_DAG(strs);
@@ -521,7 +521,7 @@ void read_medis()
 
 string dag_main(string filename){
 	fin.open(filename.c_str());
-	string dag_filename = get_filename("DAG");
+	string dag_filename = generate_filename("DAG");
 	if (!DEBUG)fout.open(dag_filename.c_str());
 	read_medis();
 	if (!DEBUG)fout.close();

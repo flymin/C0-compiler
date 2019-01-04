@@ -8,5 +8,7 @@
 #define maxTab 512
 #define MAX_BLOCK_NUM 32
 
+# define REG_MAX 8
+
 
 #endif

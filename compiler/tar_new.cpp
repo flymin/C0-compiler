@@ -23,21 +23,20 @@ using namespace std;
 #ifdef NEW_TAR
 
 #if 0
-#define MIPS_LEFT cout
-#define MIPS_RIGHT endl
+#define OUT_LEFT cout
+#define OUT_RIGHT endl
 #else
-#define MIPS_LEFT tarfile
-#define MIPS_RIGHT endl
+#define OUT_LEFT tarfile
+#define OUT_RIGHT endl
 #endif // DEBUG
-#define MIPS_OUTPUT(x) MIPS_LEFT << x << MIPS_RIGHT
+#define OUTPUT(x) OUT_LEFT << x << OUT_RIGHT
 
 /*extern from main.cpp*/
 extern ofstream tarfile;
 extern fstream midfile;
 
 /*本文件中的全局变量*/
-//const int reg_count = 8;      // the number of registers
-const int temp_max = 8;      // the number of registers
+const int max_temp_reg = 8;      // the number of registers
 Sym* cur_func = NULL;
 int temp_base_addr = 0;
 int ptr = 0;
@@ -46,11 +45,13 @@ int para_read_count = 0;	// 函数初始化部分计算para序号
 STRINT_MAP offset_map;
 STRINT_MAP global_addr_map;
 REG_MAP reg_regmap;       // reg-recorder map，记录寄存器的分配情况
-REG_MAP name_regmap;       // name-recorder map，记录变量的分配情况
+REG_MAP var_regmap;       // name-recorder map，记录变量的分配情况
 
 string cur_label = ""; // need not init
 vector<string> paras;
 set<string> free_temp_set;	//空闲的临时寄存器池，依靠中间代码维护，中间代码中需要在指定位置产生@free动作
+
+/*功能函数和判断函数*/
 
 template <typename T>
 T get_element(string name, map<string, T> from_map) {
@@ -62,7 +63,7 @@ T get_element(string name, map<string, T> from_map) {
 }
 
 bool has_name(string name) {
-	return (name_regmap.find(name) != name_regmap.end());
+	return (var_regmap.find(name) != var_regmap.end());
 }
 
 bool is_temp(string name) {
@@ -99,15 +100,15 @@ void save(string varname, string reg) {
 	Sym* var;
 	if (is_temp(varname)) {
 		addr = 4 * get_temp_no(varname) + temp_base_addr;
-		MIPS_OUTPUT("sw " << reg << ", -" << addr << "($fp)");
+		OUTPUT("sw " << reg << ", -" << addr << "($fp)");
 	}
 	else {
 		var = findSym(cur_func, (char*)varname.data());
 		if (var->global) { // is global variable
-			MIPS_OUTPUT("sw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
+			OUTPUT("sw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
 		}
 		else {
-			MIPS_OUTPUT("sw " << reg << ", -" << offset_map[var->name] << "($fp)");
+			OUTPUT("sw " << reg << ", -" << offset_map[var->name] << "($fp)");
 		}
 	}
 }
@@ -117,31 +118,27 @@ void load(string varname, string reg) {
 	Sym* var;
 	if (is_temp(varname)) {
 		addr = 4* get_temp_no(varname) + temp_base_addr;
-		MIPS_OUTPUT("lw " << reg << ", -" << addr << "($fp)");
+		OUTPUT("lw " << reg << ", -" << addr << "($fp)");
 	}
 	else {
 		var = findSym(cur_func, (char*)varname.data());
 		if (var->global) { // is global variable
-			MIPS_OUTPUT("lw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
+			OUTPUT("lw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
 		}
 		else {
-			MIPS_OUTPUT("lw " << reg << ", -" << offset_map[var->name] << "($fp)");
+			OUTPUT("lw " << reg << ", -" << offset_map[var->name] << "($fp)");
 		}
 	}
 }
 */
 
+/************
+**初始化函数**
+************/
 
-/*
-bool has_reg(string reg) {
-	return (reg_regmap.find(reg) != reg_regmap.end());
-}
-*/
-
-void init_global_regs()
-{
-	map<string, Var_node*> *vn_map = &((*(func_cblock_map[cur_func->name]))[cur_label]->lives);
-	map<string, Var_node*>::iterator it = vn_map->begin();
+void init_global_regs() {
+	map<string, Data_node*> *vn_map = &((*(func_fblock_map[cur_func->name]))[cur_label]->lives);
+	map<string, Data_node*>::iterator it = vn_map->begin();
 	while (it != vn_map->end())
 	{
 		if (it->second->regno != -1)
@@ -166,7 +163,7 @@ void init_reg_map(){
 		string regname = ss.str();
 		reg_regmap.insert(REG_MAP::value_type(regname, new Reg_recorder(regname)));
 	}
-	/*
+	/* a寄存器只用来传参，不作为变量寄存器使用
 	for (int i = 0; i < 4; i++) {
 		stringstream ss;
 		ss << "$a" << i;
@@ -184,12 +181,11 @@ void init_func(string funcname) {
 	temp_base_addr = ptr;
 	cur_addr = 12;
 	para_read_count = 0;
-	MIPS_OUTPUT(funcname << "_E:");
+	OUTPUT(funcname << "_E:");
 }
 
 void init_var(Sym* var_item) {
 	if (var_item->kind == ARRAY) {
-		//var_item->ref = ptr;
 		if (cur_func == NULL) {
 			var_item->global = true;
 			global_addr_map[var_item->name] = ptr;
@@ -199,39 +195,8 @@ void init_var(Sym* var_item) {
 			offset_map[var_item->name] = ptr;
 		}
 		ptr += 4 * var_item->paranum;
-		//TODO 暂时所有变量都按照4字节计算，之后修改
-		/*
-		if (var_item->type == CHAR){
-		if (int_ptr > char_ptr){
-		char_ptr = int_ptr;
-		}
-		if (cur_func == NULL){
-		global_addr_map[var_item->get_name()] = char_ptr;
-		}
-		else{
-		offset_map[var_item->get_name()] = char_ptr;
-		}
-		char_ptr += var_item->get_len();
-		}
-		else if (var_item->type == INT){
-		if (char_ptr > int_ptr){
-		int_ptr = round_up(char_ptr, 4);
-		}
-		if (cur_func == NULL){
-		global_addr_map[var_item->get_name()] = int_ptr;
-		}
-		else{
-		offset_map[var_item->get_name()] = int_ptr;
-		}
-		int_ptr += 4 * var_item->paranum;
-		}
-		else{
-		error_debug("unknown type");
-		}
-		*/
 	}
 	else {
-		//var_item->ref = ptr;
 		if (cur_func == NULL) {
 			var_item->global = true;
 			global_addr_map[var_item->name] = ptr;
@@ -241,71 +206,39 @@ void init_var(Sym* var_item) {
 			offset_map[var_item->name] = ptr;
 		}
 		ptr += 4;
-		/*
-		if (var_item->get_type() == CHAR){
-		if (char_ptr % 4 == 0 && int_ptr > char_ptr){
-		char_ptr = int_ptr;
-		}
-		if (cur_func == NULL){
-		global_addr_map[var_item->get_name()] = char_ptr;
-		}
-		else{
-		offset_map[var_item->get_name()] = char_ptr;
-		}
-		//(cur_func == NULL ? global_addr_map : offset_map).insert(STRINT_MAP::value_type(var_item->get_name(), char_ptr));
-		char_ptr += 1;
-		}
-		else if (var_item->get_type() == INT){
-		if (char_ptr > int_ptr){
-		int_ptr = round_up(char_ptr, 4);
-		}
-		if (cur_func == NULL){
-		global_addr_map[var_item->get_name()] = int_ptr;
-		}
-		else{
-		offset_map[var_item->get_name()] = int_ptr;
-		}
-		//(cur_func == NULL ? global_addr_map : offset_map).insert(STRINT_MAP::value_type(var_item->get_name(), int_ptr));
-		int_ptr += 4;
-		}
-		else
-		{
-		//error_debug("unknown type");
-		}
-		*/
 	}
-	//temp_base_addr = round_up((int_ptr > char_ptr) ? int_ptr : char_ptr, 4);
 	temp_base_addr = ptr;
 }
 
+/**************
+**代码生成函数**
+**************/
 
 void assign_para_tar(Sym* para) {
 	assert(cur_addr >= 12);
 	int addr = cur_addr + para_read_count * 4;
 	para->paranum = addr;
 	if (para_read_count < 4){
-		MIPS_OUTPUT("move, " << get_reg(para->name, true) << ", $a" << para_read_count);
+		OUTPUT("move, " << get_reg(para->name, true) << ", $a" << para_read_count);
 	}
-	else
-	{
-		MIPS_OUTPUT("lw " << get_reg(para->name, true) << ", -" << addr << "($fp)");
+	else {
+		OUTPUT("lw " << get_reg(para->name, true) << ", -" << addr << "($fp)");
 	}
 	para_read_count++;
 }
 
 // 找到引用计数中最小的一个寄存器进行分配
-Reg_recorder* get_min_use_recorder(){
+Reg_recorder* get_min_use_reg(){
 	int min_use_count = -1;
 	Reg_recorder* rec_selected = NULL;
 	REG_MAP::iterator it = reg_regmap.begin();
-	while (it != reg_regmap.end())
-	{
-		Reg_recorder* rec = it->second;
-		if (rec->state != OCCUPIED &&
-			(min_use_count == -1 || rec->use_count < min_use_count))
+	while (it != reg_regmap.end()) {
+		Reg_recorder* reg_record = it->second;
+		if (reg_record->state != OCCUPIED &&
+			(min_use_count == -1 || reg_record->use_count < min_use_count))
 		{
-			min_use_count = rec->use_count;
-			rec_selected = rec;
+			min_use_count = reg_record->use_count;
+			rec_selected = reg_record;
 		}
 		it++;
 	}
@@ -313,8 +246,7 @@ Reg_recorder* get_min_use_recorder(){
 }
 
 template <class T>
-bool set_has_ele(const set<T> &s, const T ele)
-{
+bool set_has_ele(const set<T> &s, const T ele) {
 	return (s.find(ele) != s.end());
 }
 
@@ -331,103 +263,94 @@ string get_reg(string name, bool is_def)
 	if (name == "$at"){
 		return "$at";
 	}
-	Reg_recorder* rec = NULL;
+	Reg_recorder* reg_record = NULL;
 	// 该变量已经分配寄存器
 	if (has_name(name)){
 		// cout << "HAS:" << name << endl;
-		rec = name_regmap[name];
-		rec->name = name;
-		rec->use_count = use_counter++;
-		if (rec->state == INACTIVE && is_def) {// value may be modified
-			rec->state = MODIFIED;
+		reg_record = var_regmap[name];
+		reg_record->name = name;
+		reg_record->use_count = use_counter++;
+		if (reg_record->state == INACTIVE && is_def) {// value may be modified
+			reg_record->state = MODIFIED;
 		}
 		if (set_has_ele(free_temp_set, name)) {// @free
-			rec->state = INACTIVE;
+			reg_record->state = INACTIVE;
 			//free_temp_set.erase(name);
 			free_name = name;
 		}
-		return rec->regname;
+		return reg_record->regname;
 	}
 	// occupy $t
 	int regno = -1;
 	if (is_temp(name) &&
-		(regno = get_temp_no(name)) < temp_max)
-	{
+		(regno = get_temp_no(name)) < max_temp_reg) {
 		stringstream ss;
 		ss << "$t" << regno;
-		// cout << "========" << ss.str() << "========\n";
-		rec = reg_regmap[ss.str()];
-		rec->clear_and_init();
-		rec->name = name; // "#?"
-		rec->type = INT; // temp
-		rec->global = false;
-		rec->offset = temp_base_addr + get_temp_no(name) * 4;
-		rec->state = OCCUPIED;
+		reg_record = reg_regmap[ss.str()];
+		reg_record->clear_and_init();
+		reg_record->name = name; // "#?"
+		reg_record->type = INT; // temp
+		reg_record->global = false;
+		reg_record->offset = temp_base_addr + get_temp_no(name) * 4;
+		reg_record->state = OCCUPIED;
 	}
 	// occupy $s
 	/* 根据函数名、基本块名找到当前变量对应的s寄存器 */
 	else if ((regno = get_regno(cur_func->name, cur_label, name))
-		!= -1)
-	{
+		!= -1) {
 		stringstream ss;
 		ss << "$s" << regno;
-		rec = reg_regmap[ss.str()];
-		rec->clear_and_init();
-		rec->name = name;
-		rec->type = findSym(cur_func, (char*)name.data())->type;
-		rec->global = false;
-		rec->offset = offset_map[name];
-		rec->state = OCCUPIED;
+		reg_record = reg_regmap[ss.str()];
+		reg_record->clear_and_init();
+		reg_record->name = name;
+		reg_record->type = findSym(cur_func, (char*)name.data())->type;
+		reg_record->global = false;
+		reg_record->offset = offset_map[name];
+		reg_record->state = OCCUPIED;
 	}
 	// select one not be occupied
-	else
-	{
+	else {
 		Sym* var = findSym(cur_func, (char*)name.data());
-		rec = get_min_use_recorder();
-		if (rec == NULL)
-		{
+		reg_record = get_min_use_reg();
+		if (reg_record == NULL) {
 			//error_debug("cannot find recorder~");
 		}
-		rec->clear_and_init();
-		rec->name = name;
-		rec->state = is_def ? MODIFIED : INACTIVE;
-		if (is_temp(name)) // temp
-		{
-			rec->type = INT;
-			rec->global = false;
-			//rec->offset = temp_base_addr + (get_temp_no(name) - temp_max) * 4;
-			rec->offset = temp_base_addr + get_temp_no(name) * 4;
+		reg_record->clear_and_init();
+		reg_record->name = name;
+		reg_record->state = is_def ? MODIFIED : INACTIVE;
+		if (is_temp(name)) {// temp
+			reg_record->type = INT;
+			reg_record->global = false;
+			//reg_record->offset = temp_base_addr + (get_temp_no(name) - max_temp_reg) * 4;
+			reg_record->offset = temp_base_addr + get_temp_no(name) * 4;
 		}
 		else if (is_num(name)) {// const value
-			rec->type = INT;
-			rec->global = false;
-			rec->offset = -1;
+			reg_record->type = INT;
+			reg_record->global = false;
+			reg_record->offset = -1;
 		}
 		else if(var) {	// var, 变量中对const变量的引用在中间代码已经消除
-			if (!var->global) // local var
-			{
-				rec->type = var->type;
-				rec->global = false;
-				rec->offset = offset_map[name];
+			if (!var->global) {// local var
+				reg_record->type = var->type;
+				reg_record->global = false;
+				reg_record->offset = offset_map[name];
 			}
-			else if (var->global) // global var
-			{
-				rec->type = var->type;
-				rec->global = true;
-				rec->offset = global_addr_map[name];
+			else if (var->global) {// global var
+				reg_record->type = var->type;
+				reg_record->global = true;
+				reg_record->offset = global_addr_map[name];
 			}
 		}
-		else
-		{
+		else {
 			//error_debug("unknown value type in tar");
 		}
 	}
-	if (!is_def && rec->state != OCCUPIED)
+	if (!is_def && reg_record->state != OCCUPIED)
 	{
-		rec->load();
+		reg_record->load();
 	}
-	name_regmap.insert(REG_MAP::value_type(name, rec));
-	return rec->regname;
+	var_regmap.insert(REG_MAP::value_type(name, reg_record));
+	return reg_record->regname;
 }
 
 //判断是否为2的整数幂
@@ -438,8 +361,7 @@ bool is_power(int number) {
 //返回log2的值，求指数
 int log2(int number) {	
 	int result = 0;
-	while (number > 1)
-	{
+	while (number > 1) {
 		number >>= 1;
 		result++;
 	}
@@ -447,29 +369,25 @@ int log2(int number) {
 }
 
 // 使用移位操作的乘除法运算输出
-void output_shift_mul_div(string op, string tar, string str_cal, int num_cal) {
-	bool nega = num_cal < 0;
-	int pos_num_cal = nega ? -num_cal : num_cal;
+void output_shift(string op, string tar, string str_cal, int num_cal) {
+	bool neg = num_cal < 0;
+	int pos_num_cal = neg ? -num_cal : num_cal;
 	string usereg = get_reg(str_cal, false);
 	string defreg = get_reg(tar, true);
-	if (op == "DIV")
-	{
-		MIPS_OUTPUT("sra " << defreg << ", " << usereg << ", " << log2(pos_num_cal));
+	if (op == "DIV") {
+		OUTPUT("sra " << defreg << ", " << usereg << ", " << log2(pos_num_cal));
 	}
-	else if (op == "MUL")
-	{
-		MIPS_OUTPUT("sll " << defreg << ", " << usereg << ", " << log2(pos_num_cal));
+	else if (op == "MUL") {
+		OUTPUT("sll " << defreg << ", " << usereg << ", " << log2(pos_num_cal));
 	}
-	if (nega)
-	{
-		MIPS_OUTPUT("sub " << defreg << ", $0, " << defreg);
+	if (neg) {
+		OUTPUT("sub " << defreg << ", $0, " << defreg);
 	}
 }
 
 /*	push参数，清空paras，保存现场（sp、fp、ra、s）
-	TODO 由于没有分配寄存器，未保存s寄存器
 	调用者负责清理现场，保存使用的寄存器，标记所有变量都在内存中
-	调用结束之后不必回复现场，只处理返回值即可
+	调用结束之后恢复现场，处理返回值
 */
 void call_tar(string funcname) {
 	Sym* var = NULL;	//实参的结构指针
@@ -477,18 +395,19 @@ void call_tar(string funcname) {
 	func = findFunc((char*)funcname.data());
 	int temp_addr;
 	temp_addr = 12;//ra,fp,sp
-	//保存寄存器结束
 	if (funcname != "main") {
 		// store paras
 		int len = func->paranum;
 		int i;
 
+		//开始保存寄存器
 		list<string> reg_save_list;
 		Reg_recorder::record_occu_regs(&reg_save_list);
 		int store_count = 0;
 		int stack_offset = (reg_save_list.size() + store_count) * 4;
 		Reg_recorder::save_occu_regs(&reg_save_list, store_count * 4);
-		MIPS_OUTPUT("addi $sp, $sp, -" << stack_offset);
+		OUTPUT("addi $sp, $sp, -" << stack_offset);
+		//保存寄存器结束
 
 		for (i = len-1; i >= 4; i--) {
 			//addr用来参数被调函数中的offset
@@ -497,79 +416,49 @@ void call_tar(string funcname) {
 			string paraname = paras.back();
 			//paras.erase(paras.begin());
 			paras.pop_back();
-			MIPS_OUTPUT("sw " << get_reg(paraname, false) <<", -"<< addr << "($sp)");
+			OUTPUT("sw " << get_reg(paraname, false) <<", -"<< addr << "($sp)");
 		}
 		for (; i >= 0; i--){
 			string paraname = paras.back();
 			paras.pop_back();
-			MIPS_OUTPUT("move $a" << i << ", " << get_reg(paraname, false));
-			REG_MAP::iterator it = name_regmap.end();
+			OUTPUT("move $a" << i << ", " << get_reg(paraname, false));
+			REG_MAP::iterator it = var_regmap.end();
 		}
 		// 这里需要清理变量到寄存器的映射
-		/*
-		Reg_recorder::clear_and_init_all();
-		MIPS_OUTPUT("sw $ra, 0($sp)");
-		MIPS_OUTPUT("sw $fp, -4($sp)");
-		//MIPS_OUTPUT("sw $sp, -8($sp)");
-		// refresh $fp
-		MIPS_OUTPUT("add $fp, $sp, $0");
-		MIPS_OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
-		// jump
-		MIPS_OUTPUT("jal " << funcname << "_E");
-		// load regs
-		MIPS_OUTPUT("addi $sp, $sp, " << temp_addr + 4 * func->paranum + func->psize);
-		MIPS_OUTPUT("lw $ra, 0($sp)");
-		MIPS_OUTPUT("lw $fp, -4($sp)");
-		*/
 		Reg_recorder::clear_and_init_all();		//only use $fp and $gp, no $sp
-		MIPS_OUTPUT("sw $ra, 0($sp)");
-		MIPS_OUTPUT("sw $fp, -4($sp)");
+		OUTPUT("sw $ra, 0($sp)");
+		OUTPUT("sw $fp, -4($sp)");
 		//Reg_recorder::save_global_modi_regs();
 		
 
 		// refresh $fp
-		//int fp_offset = cur_addr + len * 4;
-		//MIPS_OUTPUT("addi $fp, $sp, -" << fp_offset);
-		MIPS_OUTPUT("add $fp, $sp, $0");
-		MIPS_OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
+		OUTPUT("add $fp, $sp, $0");
+		OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
 		// jump
-		MIPS_OUTPUT("jal " << funcname << "_E");
+		OUTPUT("jal " << funcname << "_E");
 		// load regs
 
-		//MIPS_OUTPUT("addi $fp, $fp, " << fp_offset);
-		MIPS_OUTPUT("addi $sp, $sp, " << temp_addr + 4 * func->paranum + func->psize);
-		MIPS_OUTPUT("lw $ra, 0($sp)");
-		MIPS_OUTPUT("lw $fp, -4($sp)");
-		MIPS_OUTPUT("addi $sp, $sp, " << stack_offset);
-		MIPS_OUTPUT("# BEGIN");
+		OUTPUT("addi $sp, $sp, " << temp_addr + 4 * func->paranum + func->psize);
+		OUTPUT("lw $ra, 0($sp)");
+		OUTPUT("lw $fp, -4($sp)");
+		OUTPUT("addi $sp, $sp, " << stack_offset);
+		OUTPUT("# BEGIN");
 		init_global_regs(); // [fix]
 		Reg_recorder::load_occu_regs(&reg_save_list, store_count * 4);
 
-		MIPS_OUTPUT("#END");
+		OUTPUT("#END");
 	}
 	else {
-		/*Reg_recorder::clear_and_init_all();
-		// refresh $fp
-		//MIPS_OUTPUT("add $sp, $fp, $gp");
 		//global pointer有初始值，直接使用全局空间
-		MIPS_OUTPUT("add $fp, $sp, $0");
-		MIPS_OUTPUT("sw $ra, 0($sp)");
-		MIPS_OUTPUT("sw $fp, -4($sp)");
-		//MIPS_OUTPUT("sw $sp, 8($sp)");
-		MIPS_OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
+		OUTPUT("add $fp, $sp, $0");
+		OUTPUT("sw $ra, 0($sp)");
+		OUTPUT("sw $fp, -4($sp)");
+		//OUTPUT("sw $sp, 8($sp)");
+		OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
 		// jump
-		MIPS_OUTPUT("jal " << funcname << "_E");
-		MIPS_OUTPUT("li $v0, 10");		//程序出口调用
-		MIPS_OUTPUT("syscall");
-		*/
-		// refresh $fp
-		MIPS_OUTPUT("addi $fp, $fp, " << cur_addr);
-		MIPS_OUTPUT("addu $fp, $fp, $gp");
-		// jump
-		MIPS_OUTPUT("jal " << funcname << "_E");
-		//MIPS_OUTPUT("nop");
-		MIPS_OUTPUT("li $v0, 10");
-		MIPS_OUTPUT("syscall");
+		OUTPUT("jal " << funcname << "_E");
+		OUTPUT("li $v0, 10");		//程序出口调用
+		OUTPUT("syscall");
 	}
 }
 
@@ -607,12 +496,12 @@ void cal_tar(string op, string tar_str, string cal_str1, string cal_str2) {
 	else if (op == "MUL") {
 		if (is_immed1 && is_power(immed1))
 		{
-			output_shift_mul_div(op, tar_str, cal_str2, immed1);
+			output_shift(op, tar_str, cal_str2, immed1);
 			return;
 		}
 		if (is_immed2 && is_power(immed2))
 		{
-			output_shift_mul_div(op, tar_str, cal_str1, immed2);
+			output_shift(op, tar_str, cal_str1, immed2);
 			return;
 		}
 		mips << "mul";
@@ -620,9 +509,8 @@ void cal_tar(string op, string tar_str, string cal_str1, string cal_str2) {
 
 	}
 	else if (op == "DIV") {
-		if (is_immed2 && is_power(immed2))
-		{
-			output_shift_mul_div(op, tar_str, cal_str1, immed2);
+		if (is_immed2 && is_power(immed2)) {
+			output_shift(op, tar_str, cal_str1, immed2);
 			return;
 		}
 		mips << "div";
@@ -665,25 +553,21 @@ void cal_tar(string op, string tar_str, string cal_str1, string cal_str2) {
 
 	string name1 = get_reg(cal_str1, false);
 	string name2 = "";
-	if (is_immed2 && is_cal)
-	{
+	if (is_immed2 && is_cal) {
 		stringstream ss;
 		ss << immed2;
 		name2 = ss.str();
 	}
-	else
-	{
+	else {
 		name2 = get_reg(cal_str2, false);
 	}
-	if (is_num(tar_str))
-	{
+	if (is_num(tar_str)) {
 		//error_debug("tar is number");
 	}
-	else
-	{
+	else {
 		mips << " " << get_reg(tar_str, true) << ", " << name1 << ", " << name2;
 	}
-	MIPS_OUTPUT(mips.str());
+	OUTPUT(mips.str());
 }
 
 /*true赋值，false取数*/
@@ -702,7 +586,7 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 	string reg;
 	reg = get_reg(var, !is_set);
 	if (value_is_immed && !is_set) {
-		//MIPS_OUTPUT("li $t0, " << var);
+		//OUTPUT("li $t0, " << var);
 		//if (!is_set) {
 			//error_debug("array to a value");
 		//}
@@ -711,15 +595,6 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 	// get op
 	string op;
 	op = is_set ? "sw" : "lw";
-	/*
-	string op;
-	if (type == INT) {
-		op = is_set ? "sw" : "lw";
-	}
-	else {
-		op = is_set ? "sb" : "lb";
-	}
-	*/
 
 	int offset;
 	string point_reg;
@@ -742,19 +617,16 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 	if (offset_is_immed) {
 		int ele_offset;
 		sscanf_s(off_str.c_str(), "%d", &ele_offset);
-		//if (type == INT) {
-		//	ele_offset *= 4;
-		//}
 		ele_offset *= 4;
-		MIPS_OUTPUT(op << " " << reg << ", -" << offset + ele_offset << "(" << point_reg << ")");
+		OUTPUT(op << " " << reg << ", -" << offset + ele_offset << "(" << point_reg << ")");
 
 	}
 	else {
-		MIPS_OUTPUT("sll $v0, "<< get_reg(off_str, false) <<", 2");  // offset *= 4
-		MIPS_OUTPUT("sub $v0, " << point_reg << ", $v0");
+		OUTPUT("sll $v0, "<< get_reg(off_str, false) <<", 2");  // offset *= 4
+		OUTPUT("sub $v0, " << point_reg << ", $v0");
 
-		MIPS_OUTPUT("addi $v0, $v0, -" << offset);  // add array base
-		MIPS_OUTPUT(op << " " << reg << ", 0($v0)");
+		OUTPUT("addi $v0, $v0, -" << offset);  // add array base
+		OUTPUT(op << " " << reg << ", 0($v0)");
 	}
 }
 
@@ -768,7 +640,7 @@ void name_handle(vector<string> strs) {
 		cur_label = strs[0];
 		Reg_recorder::before_label();
 		init_global_regs();
-		MIPS_OUTPUT(strs[0] << ":");    //[MIPS]标签，直接输出
+		OUTPUT(strs[0] << ":");    // MIPS标签，直接输出
 	}
 	else if (strs[1] == "ARRSET") {		//数组赋值语句
 		array_tar(strs[0], strs[2], strs[3], true);
@@ -781,13 +653,13 @@ void name_handle(vector<string> strs) {
 			//error_debug("assign to number");
 		}
 		if (is_num(strs[2])) {
-			// [MIPS] li加载立即数赋值
-			//MIPS_OUTPUT("li $s" << get_reg(strs[0], &conf_names) << ", " << strs[2]);
-			MIPS_OUTPUT("li "<< get_reg(strs[0], true) <<", " << strs[2]);
+			// MIPS li加载立即数赋值
+			//OUTPUT("li $s" << get_reg(strs[0], &conf_names) << ", " << strs[2]);
+			OUTPUT("li "<< get_reg(strs[0], true) <<", " << strs[2]);
 		}
 		else {
-			// [MIPS] move 加载变量值
-			MIPS_OUTPUT("move "<< get_reg(strs[0], true) << ", " << get_reg(strs[2], false));
+			// MIPS move 加载变量值
+			OUTPUT("move "<< get_reg(strs[0], true) << ", " << get_reg(strs[2], false));
 			//load(strs[2], "$t0");
 			//save(strs[0], "$t0");
 		}
@@ -810,20 +682,18 @@ void name_handle(vector<string> strs) {
 }
 
 
-void readline_tar() {
+void read_medis_tar() {
 	string line;
 	while (getline(midfile, line)) {
-		MIPS_OUTPUT("   # " << line);
+		OUTPUT("   # " << line);
 		istringstream is(line);
 		string str;
 		vector<string> strs;
 		while (is >> str) {
 			strs.push_back(str);
 		}
-		// para: 从基址中按顺序读取数值，存储至参数对应的地址中(fp之前) OK
 		if (strs[0] == "@var" || strs[0] == "@array") {
 			init_var(findSym(cur_func, (char*)strs[2].data()));
-
 		}
 		else if (strs[0] == "@para") {
 			assert(cur_func != NULL);
@@ -834,16 +704,15 @@ void readline_tar() {
 			assign_para_tar(temp);
 
 		}
-		else if (strs[0] == "@func") { // 初始化函数信息，生成标签    OK
+		else if (strs[0] == "@func") { // 初始化函数信息，生成标签
 			init_func(strs[1]);
 
 		}
-		else if (strs[0] == "@label")
-		{
+		else if (strs[0] == "@label") {
 			cur_label = strs[1];
 			//init_global_regs();
 		}
-		else if (strs[0] == "@push") { // 将参数保存至vector中（不直接存储是因为还要走表达式）   OK
+		else if (strs[0] == "@push") { // 将参数保存至vector中，不直接存储
 			paras.push_back(strs[1]);
 
 		}
@@ -851,28 +720,27 @@ void readline_tar() {
 			call_tar(strs[1]);
 
 		}
-		else if (strs[0] == "@get") { // 保存v寄存器的值 OK
+		else if (strs[0] == "@get") { // 保存v寄存器的值
 			if (is_num(strs[1])) {
 				//error_debug("num get");
 			}
 			else {
 				//save(strs[1], "$v0");
-				MIPS_OUTPUT("move " << get_reg(strs[1], true) << ", $v0");
+				OUTPUT("move " << get_reg(strs[1], true) << ", $v0");
 			}
 
 		}
-		else if (strs[0] == "@ret") { // v寄存器赋值，跳转至ra OK
+		else if (strs[0] == "@ret") { // v寄存器赋值，跳转至ra
 			if (strs.size() == 2) {
 				if (is_num(strs[1])) {
-					MIPS_OUTPUT("li $v0, " << strs[1]);
+					OUTPUT("li $v0, " << strs[1]);
 				}
 				else {
-					MIPS_OUTPUT("move $v0, " << get_reg(strs[1], false) );
+					OUTPUT("move $v0, " << get_reg(strs[1], false) );
 				}
 			}
 			Reg_recorder::before_return();
-			MIPS_OUTPUT("jr $ra");
-			//MIPS_OUTPUT("nop");
+			OUTPUT("jr $ra");
 
 		}
 		else if (strs[0] == "@be" || strs[0] == "@bne")
@@ -898,86 +766,80 @@ void readline_tar() {
 				name2 = strs[2];
 			}
 			Reg_recorder::before_branch_jump();
-			MIPS_OUTPUT(br_op << " " << name1 << ", " << name2 << ", " << strs[3]);
+			OUTPUT(br_op << " " << name1 << ", " << name2 << ", " << strs[3]);
 		}
 		else if (strs[0] == "@bz")
 		{
 			Reg_recorder::before_branch_jump();
-			MIPS_OUTPUT("beq " << get_reg(strs[1], false) << ", $0, " << strs[2]);
-			//MIPS_OUTPUT("nop");
+			OUTPUT("beq " << get_reg(strs[1], false) << ", $0, " << strs[2]);
 		}
-		else if (strs[0] == "@bgtz" || strs[0] == "@bgez" ||
+		/*else if (strs[0] == "@bgtz" || strs[0] == "@bgez" ||
 			strs[0] == "@blez" || strs[0] == "@bltz")
 		{
 			Reg_recorder::before_branch_jump();
-			MIPS_OUTPUT(strs[0].substr(1) << " " << get_reg(strs[1], false) << ", " << strs[2]);
-		}
+			OUTPUT(strs[0].substr(1) << " " << get_reg(strs[1], false) << ", " << strs[2]);
+		}*/
 		else if (strs[0] == "@j") {
 			Reg_recorder::before_branch_jump();
-			MIPS_OUTPUT("j " << strs[1]);
-			MIPS_OUTPUT("nop");
+			OUTPUT("j " << strs[1]);
 
 		}
 		else if (strs[0] == "@jal") {
-			MIPS_OUTPUT("jal " << strs[1]);
-			MIPS_OUTPUT("nop");
+			OUTPUT("jal " << strs[1]);
 
 		}
 		else if (strs[0] == "@printf") {
 			if (strs[1] == "LINE") {
-				MIPS_OUTPUT("li $a0, 10");
-				MIPS_OUTPUT("li $v0, 11");
-				MIPS_OUTPUT("syscall");
+				OUTPUT("li $a0, 10");
+				OUTPUT("li $v0, 11");
+				OUTPUT("syscall");
 			}
 			else {
 				bool is_immed = is_num(strs[2]);
 				if (strs[1] == "STRING") {
-					MIPS_OUTPUT("li $v0, 4");
-					MIPS_OUTPUT("la $a0, " << strs[2]);
-					MIPS_OUTPUT("syscall");
+					OUTPUT("li $v0, 4");
+					OUTPUT("la $a0, " << strs[2]);
+					OUTPUT("syscall");
 				}
 				else if (strs[1] == "INT") {
-					MIPS_OUTPUT("li $v0, 1");
+					OUTPUT("li $v0, 1");
 					if (is_immed) {
-						MIPS_OUTPUT("li $a0, " << strs[2]);
+						OUTPUT("li $a0, " << strs[2]);
 					}
 					else {
-						MIPS_OUTPUT("move $a0, " << get_reg(strs[2], false));
+						OUTPUT("move $a0, " << get_reg(strs[2], false));
 					}
-					MIPS_OUTPUT("syscall");
+					OUTPUT("syscall");
 
 				}
 				else if (strs[1] == "CHAR") {
-					MIPS_OUTPUT("li $v0, 11");
+					OUTPUT("li $v0, 11");
 					if (is_immed) {
-						MIPS_OUTPUT("li $a0, " << strs[2]);
+						OUTPUT("li $a0, " << strs[2]);
 					}
 					else {
-						MIPS_OUTPUT("move $a0, " << get_reg(strs[2], false));
+						OUTPUT("move $a0, " << get_reg(strs[2], false));
 					}
-					MIPS_OUTPUT("syscall");
+					OUTPUT("syscall");
 				}
 			}
 		}
 		else if (strs[0] == "@scanf") {
 			if (strs[1] == "INT") {
-				MIPS_OUTPUT("li $v0, 5");
+				OUTPUT("li $v0, 5");
 			}
 			else if (strs[1] == "CHAR") {
-				MIPS_OUTPUT("li $v0, 12");
+				OUTPUT("li $v0, 12");
 			}
-			MIPS_OUTPUT("syscall");
-			MIPS_OUTPUT("move " << get_reg(strs[2], true) << ", $v0");
+			OUTPUT("syscall");
+			OUTPUT("move " << get_reg(strs[2], true) << ", $v0");
 		}
 		else if (strs[0] == "@exit") {
 
 		}
 		else if (strs[0] == "@free") {
-			/*if (!is_temp(strs[1]) || get_temp_no(strs[1]) >= temp_max)
-			{
-			cout << "FREE " << get_temp_no(strs[0]) << " " << temp_max << endl;
-			}*/
-			free_temp_set.insert(strs[1]);	// free temp 用来记录，真正的free操作在下一条中间代码解析完成之后
+			// free temp 用来记录，真正的free操作在下一条中间代码解析完成之后
+			free_temp_set.insert(strs[1]);
 			continue;
 		}
 		else {
@@ -985,27 +847,27 @@ void readline_tar() {
 		}
 		set<string>::iterator it = free_temp_set.begin();	// 释放free_temp
 		while (it != free_temp_set.end()) {
-			name_regmap.erase(*it);
+			var_regmap.erase(*it);
 			it++;
 		}
 		free_temp_set.clear();
 	}
 }
 
-void set_data_str() {
-	MIPS_OUTPUT(".data");
+void setup_data() {
+	OUTPUT(".data");
 	int len = str_set.size();
 	for (int i = 0; i < len; i++) {
-		MIPS_OUTPUT("S_" << i << ": .asciiz \"" << str_set[i] << "\"");
+		OUTPUT("S_" << i << ": .asciiz \"" << str_set[i] << "\"");
 	}
-	MIPS_OUTPUT(".text");
+	OUTPUT(".text");
 }
 
 void tar_code() {
 	cout << "using new tar code generater" << endl;
 	init_reg_map();
-	set_data_str();
-	readline_tar();
+	setup_data();
+	read_medis_tar();
 }
 
 #endif

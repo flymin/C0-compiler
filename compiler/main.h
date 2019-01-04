@@ -11,6 +11,6 @@
 #include "dag_opt.h"
 #include "copy_opt.h"
 
-string get_filename(string info);
+string generate_filename(string info);
 
 #endif

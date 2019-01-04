@@ -14,8 +14,10 @@ S_11: .asciiz "          The total is "
 S_12: .asciiz " 10! = "
 .text
    # @call main
-addi $fp, $fp, 0
-addu $fp, $fp, $gp
+add $fp, $sp, $0
+sw $ra, 0($sp)
+sw $fp, -4($sp)
+addi $sp, $sp, -20
 jal main_E
 li $v0, 10
 syscall
@@ -234,7 +236,6 @@ li $v0, 11
 syscall
    # @j complete_num_L_3_else_over
 j complete_num_L_3_else_over
-nop
    # complete_num_L_3_else_begin :
 complete_num_L_3_else_begin:
    # k ARRSET n i
@@ -246,7 +247,6 @@ sw $s1, 0($v0)
 complete_num_L_3_else_over:
    # @j complete_num_L_2_else_over
 j complete_num_L_2_else_over
-nop
    # complete_num_L_2_else_begin :
 complete_num_L_2_else_begin:
    # complete_num_L_2_else_over :
@@ -261,7 +261,6 @@ beq $t0, $0, complete_num_L_1_doend
    # @label 3
    # @j complete_num_L_1_dobegin
 j complete_num_L_1_dobegin
-nop
    # complete_num_L_1_doend :
 complete_num_L_1_doend:
    # #0 = s EQ 0
@@ -314,7 +313,6 @@ beq $t0, $0, complete_num_L_5_doend
    # @label 5
    # @j complete_num_L_5_dobegin
 j complete_num_L_5_dobegin
-nop
    # complete_num_L_5_doend :
 complete_num_L_5_doend:
    # @printf STRING S_7
@@ -327,7 +325,6 @@ li $v0, 11
 syscall
    # @j complete_num_L_4_else_over
 j complete_num_L_4_else_over
-nop
    # complete_num_L_4_else_begin :
 complete_num_L_4_else_begin:
    # complete_num_L_4_else_over :
@@ -343,7 +340,6 @@ beq $t0, $0, complete_num_L_0_doend
    # @label 6
    # @j complete_num_L_0_dobegin
 j complete_num_L_0_dobegin
-nop
    # complete_num_L_0_doend :
 complete_num_L_0_doend:
    # @printf STRING S_8
@@ -382,29 +378,27 @@ beq $t0, $0, complete_num_L_6_doend
    # @label 7
    # @j complete_num_L_6_dobegin
 j complete_num_L_6_dobegin
-nop
    # complete_num_L_6_doend :
 complete_num_L_6_doend:
    # b = a
-move $s0, $s1
+move $s2, $s1
    # i = 0
-li $s2, 0
+li $s0, 0
    # complete_num_L_7_dobegin :
 complete_num_L_7_dobegin:
    # b = b ADD i
-addu $s0, $s0, $s2
+addu $s2, $s2, $s0
    # i = i ADD 1
-addi $s2, $s2, 1
+addi $s0, $s0, 1
    # #0 = i LT 1024
 li $t2, 1024
-slt $t0, $s2, $t2
+slt $t0, $s0, $t2
    # @free #0
    # @bz #0 complete_num_L_7_doend
 beq $t0, $0, complete_num_L_7_doend
    # @label 8
    # @j complete_num_L_7_dobegin
 j complete_num_L_7_dobegin
-nop
    # complete_num_L_7_doend :
 complete_num_L_7_doend:
    # @printf STRING S_9
@@ -413,7 +407,7 @@ la $a0, S_9
 syscall
    # @printf INT b
 li $v0, 1
-move $a0, $s0
+move $a0, $s2
 syscall
    # @printf LINE
 li $a0, 10
@@ -430,7 +424,7 @@ syscall
    # h = 0
 li $s4, 0
    # leap = 1
-li $s2, 1
+li $s1, 1
    # m = 2
 li $s3, 2
    # complete_num_L_8_dobegin :
@@ -438,14 +432,14 @@ complete_num_L_8_dobegin:
    # k2 = m DIV 2
 sra $s0, $s3, 1
    # i = 2
-li $s1, 2
+li $s2, 2
    # complete_num_L_9_dobegin :
 complete_num_L_9_dobegin:
    # #0 = m DIV i
-div $t0, $s3, $s1
+div $t0, $s3, $s2
    # @free #0
    # x2 = #0 MUL i
-mul $t3, $t0, $s1
+mul $t3, $t0, $s2
    # @push m
    # @push i
    # @call mod
@@ -455,7 +449,7 @@ sw $s2, 8($sp)
 sw $s3, 12($sp)
 sw $s4, 16($sp)
 addi $sp, $sp, -20
-move $a1, $s1
+move $a1, $s2
 move $a0, $s3
 sw $t3, -564($fp) # store x2
 sw $ra, 0($sp)
@@ -483,30 +477,28 @@ seq $t0, $t0, $0
 beq $t0, $0, complete_num_L_10_else_begin
    # @label 9
    # leap = 0
-li $s2, 0
+li $s1, 0
    # @j complete_num_L_10_else_over
 j complete_num_L_10_else_over
-nop
    # complete_num_L_10_else_begin :
 complete_num_L_10_else_begin:
    # complete_num_L_10_else_over :
 complete_num_L_10_else_over:
    # i = i ADD 1
-addi $s1, $s1, 1
+addi $s2, $s2, 1
    # #0 = i LE k2
-sle $t0, $s1, $s0
+sle $t0, $s2, $s0
    # @free #0
    # @bz #0 complete_num_L_9_doend
 beq $t0, $0, complete_num_L_9_doend
    # @label 10
    # @j complete_num_L_9_dobegin
 j complete_num_L_9_dobegin
-nop
    # complete_num_L_9_doend :
 complete_num_L_9_doend:
    # #0 = leap EQ 1
 li $s5, 1
-seq $t0, $s2, $s5
+seq $t0, $s1, $s5
    # @free #0
    # @bz #0 complete_num_L_11_else_begin
 beq $t0, $0, complete_num_L_11_else_begin
@@ -546,20 +538,18 @@ li $v0, 11
 syscall
    # @j complete_num_L_12_else_over
 j complete_num_L_12_else_over
-nop
    # complete_num_L_12_else_begin :
 complete_num_L_12_else_begin:
    # complete_num_L_12_else_over :
 complete_num_L_12_else_over:
    # @j complete_num_L_11_else_over
 j complete_num_L_11_else_over
-nop
    # complete_num_L_11_else_begin :
 complete_num_L_11_else_begin:
    # complete_num_L_11_else_over :
 complete_num_L_11_else_over:
    # leap = 1
-li $s2, 1
+li $s1, 1
    # m = m ADD 1
 addi $s3, $s3, 1
    # #0 = m LE 1024
@@ -571,7 +561,6 @@ beq $t0, $0, complete_num_L_8_doend
    # @label 13
    # @j complete_num_L_8_dobegin
 j complete_num_L_8_dobegin
-nop
    # complete_num_L_8_doend :
 complete_num_L_8_doend:
    # @printf STRING S_11

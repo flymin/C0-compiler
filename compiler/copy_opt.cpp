@@ -15,13 +15,13 @@
 
 # define DEBUG 0
 # if DEBUG
-# define MIPS_LEFT cout << "<==="
-# define MIPS_RIGHT "===>" << endl
+# define OUT_LEFT cout << "<==="
+# define OUT_RIGHT "===>" << endl
 # else
-# define MIPS_LEFT fout
-# define MIPS_RIGHT endl
+# define OUT_LEFT fout
+# define OUT_RIGHT endl
 # endif // DEBUG
-# define MIPS_OUTPUT(x) MIPS_LEFT << x << MIPS_RIGHT; line_count++
+# define OUTPUT(x) OUT_LEFT << x << OUT_RIGHT; line_count++
 # define IS_TEMP(name) (name[0] == '#')
 # define HAS_TEMP(tempname) temp_map.find(tempname) != temp_map.end()
 
@@ -222,7 +222,7 @@ void remove_temp(string tempname)
 	TEMP_MAP::iterator it = temp_map.find(tempname);
 	if (it != temp_map.end())
 	{
-		MIPS_OUTPUT("@free " << it->second);
+		OUTPUT("@free " << it->second);
 		temp_storage.push_back(it->second);
 		temp_map.erase(it);
 	}
@@ -310,7 +310,7 @@ void output_medis(bool is_return = false)
 	{
 		if (!has_line(l))
 		{
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (line_map[l]->active)
 		{
@@ -395,7 +395,7 @@ void output_medis(bool is_return = false)
 				}
 				ss << str;
 			}
-			MIPS_OUTPUT(ss.str());
+			OUTPUT(ss.str());
 		}
 		l++;
 	}
@@ -510,18 +510,18 @@ void ass_read_medis()
 		expre_opt(&strs);
 		if (strs[0] == "@var" || strs[0] == "@array")
 		{
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@para")
 		{
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@func")
 		{
 			output_medis();
 			init_blocks();			// 函数入口作为基本快开始
 			cur_func_ASS = findFunc((char*)strs[1].data());
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@push" && !skip)
 		{
@@ -651,13 +651,13 @@ void ass_read_medis()
 				// output | skip
 				line_map[lineno] = new Line(true);
 				output_medis();
-				MIPS_OUTPUT(line);
+				OUTPUT(line);
 				skip = true;
 			}
 		}
 		else if (strs[0] == "@jal" && !skip)
 		{
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@printf" && !skip)
 		{
@@ -680,7 +680,7 @@ void ass_read_medis()
 		{
 			output_medis(true);
 			init_blocks();			// exit作为整个程序的开始
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs[0] == "@free") {}
 		else if (strs[1] == ":")
@@ -689,7 +689,7 @@ void ass_read_medis()
 			// output | stop
 			output_medis();
 			init_blocks();			//标签作为基本快开始标志
-			MIPS_OUTPUT(line);
+			OUTPUT(line);
 		}
 		else if (strs.size() == 3 && !skip)		// X = X代码
 		{
@@ -727,7 +727,7 @@ string ass_main(string filename, int *lc)
 	init_blocks();
 	line_count = 0;
 	fin.open(filename.c_str());
-	string ass_filename = get_filename("ASS");
+	string ass_filename = generate_filename("ASS");
 	fout.open(ass_filename.c_str());
 	ass_read_medis();
 	fout.close();

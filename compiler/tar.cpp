@@ -18,20 +18,19 @@ using namespace std;
 #ifndef NEW_TAR
 
 #if 0
-#define MIPS_LEFT cout
-#define MIPS_RIGHT endl
+#define OUT_LEFT cout
+#define OUT_RIGHT endl
 #else
-#define MIPS_LEFT tarfile
-#define MIPS_RIGHT endl
+#define OUT_LEFT tarfile
+#define OUT_RIGHT endl
 #endif // DEBUG
-#define MIPS_OUTPUT(x) MIPS_LEFT << x << MIPS_RIGHT
+#define OUTPUT(x) OUT_LEFT << x << OUT_RIGHT
 
 /*extern from main.cpp*/
 extern ofstream tarfile;
 extern fstream midfile;
 
 /*本文件中的全局变量*/
-//const int reg_count = 8;      // the number of registers
 typedef map<string, int> STRINT_MAP;
 Sym* cur_func = NULL;
 int temp_base_addr = 0;
@@ -85,15 +84,15 @@ void save(string varname, string reg) {
 	Sym* var;
 	if (is_temp(varname)) {
 		addr = 4 * get_temp_no(varname) + temp_base_addr;
-		MIPS_OUTPUT("sw " << reg << ", -" << addr << "($fp)");
+		OUTPUT("sw " << reg << ", -" << addr << "($fp)");
 	}
 	else {
 		var = findSym(cur_func, (char*)varname.data());
 		if (var->global) { // is global variable
-			MIPS_OUTPUT("sw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
+			OUTPUT("sw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
 		}
 		else {
-			MIPS_OUTPUT("sw " << reg << ", -" << offset_map[var->name] << "($fp)");
+			OUTPUT("sw " << reg << ", -" << offset_map[var->name] << "($fp)");
 		}
 	}
 }
@@ -103,15 +102,15 @@ void load(string varname, string reg) {
 	Sym* var;
 	if (is_temp(varname)) {
 		addr = 4* get_temp_no(varname) + temp_base_addr;
-		MIPS_OUTPUT("lw " << reg << ", -" << addr << "($fp)");
+		OUTPUT("lw " << reg << ", -" << addr << "($fp)");
 	}
 	else {
 		var = findSym(cur_func, (char*)varname.data());
 		if (var->global) { // is global variable
-			MIPS_OUTPUT("lw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
+			OUTPUT("lw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
 		}
 		else {
-			MIPS_OUTPUT("lw " << reg << ", -" << offset_map[var->name] << "($fp)");
+			OUTPUT("lw " << reg << ", -" << offset_map[var->name] << "($fp)");
 		}
 	}
 }
@@ -236,41 +235,41 @@ void call_tar(string funcname) {
 			//paras.erase(paras.begin());
 			paras.pop_back();
 			if (is_num(paraname)) {
-				MIPS_OUTPUT("li $t0, " << paraname);
-				MIPS_OUTPUT("sw $t0, -" << addr << "($sp)");
+				OUTPUT("li $t0, " << paraname);
+				OUTPUT("sw $t0, -" << addr << "($sp)");
 			}
 			else {
 				load(paraname, "$t0");
-				MIPS_OUTPUT("sw $t0, -" << addr << "($sp)");
+				OUTPUT("sw $t0, -" << addr << "($sp)");
 			}
 		}
 
-		MIPS_OUTPUT("sw $ra, 0($sp)");
-		MIPS_OUTPUT("sw $fp, -4($sp)");
-		//MIPS_OUTPUT("sw $sp, -8($sp)");
+		OUTPUT("sw $ra, 0($sp)");
+		OUTPUT("sw $fp, -4($sp)");
+		//OUTPUT("sw $sp, -8($sp)");
 		// refresh $fp
-		MIPS_OUTPUT("addu $fp, $sp, $0");
-		MIPS_OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
+		OUTPUT("addu $fp, $sp, $0");
+		OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
 		// jump
-		MIPS_OUTPUT("jal " << funcname << "_E");
+		OUTPUT("jal " << funcname << "_E");
 		// load regs
-		MIPS_OUTPUT("addi $sp, $sp, " << temp_addr + 4 * func->paranum + func->psize);
-		MIPS_OUTPUT("lw $ra, 0($sp)");
-		MIPS_OUTPUT("lw $fp, -4($sp)");
+		OUTPUT("addi $sp, $sp, " << temp_addr + 4 * func->paranum + func->psize);
+		OUTPUT("lw $ra, 0($sp)");
+		OUTPUT("lw $fp, -4($sp)");
 	}
 	else {
 		// refresh $fp
-		//MIPS_OUTPUT("add $sp, $fp, $gp");
+		//OUTPUT("add $sp, $fp, $gp");
 		//global pointer有初始值，直接使用全局空间
-		MIPS_OUTPUT("addu $fp, $sp, $0");
-		MIPS_OUTPUT("sw $ra, 0($sp)");
-		MIPS_OUTPUT("sw $fp, -4($sp)");
-		//MIPS_OUTPUT("sw $sp, 8($sp)");
-		MIPS_OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
+		OUTPUT("addu $fp, $sp, $0");
+		OUTPUT("sw $ra, 0($sp)");
+		OUTPUT("sw $fp, -4($sp)");
+		//OUTPUT("sw $sp, 8($sp)");
+		OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
 		// jump
-		MIPS_OUTPUT("jal " << funcname << "_E");
-		MIPS_OUTPUT("li $v0, 10");		//程序出口调用
-		MIPS_OUTPUT("syscall");
+		OUTPUT("jal " << funcname << "_E");
+		OUTPUT("li $v0, 10");		//程序出口调用
+		OUTPUT("syscall");
 	}
 }
 
@@ -282,7 +281,7 @@ void init_func(string funcname) {
 	temp_base_addr = ptr;
 	cur_addr = 12;
 	para_read_count = 0;
-	MIPS_OUTPUT(funcname << "_E:");
+	OUTPUT(funcname << "_E:");
 }
 
 //目前使用t0, t1进行计算，结果存在t0
@@ -371,7 +370,7 @@ void cal_tar(string op, string tar_str, string cal_str1, string cal_str2) {
 			mips << ", $0";
 		}
 		else if (!is_cal) {
-			MIPS_OUTPUT("li $t0, " << immed1);
+			OUTPUT("li $t0, " << immed1);
 			mips << ", $t0";
 		}
 		else {
@@ -390,7 +389,7 @@ void cal_tar(string op, string tar_str, string cal_str1, string cal_str2) {
 			mips << ", " << immed2;
 		}
 		else {
-			MIPS_OUTPUT("li $t1, " << immed2);
+			OUTPUT("li $t1, " << immed2);
 			mips << ", $t1";
 		}
 	}
@@ -400,7 +399,7 @@ void cal_tar(string op, string tar_str, string cal_str1, string cal_str2) {
 		mips << ", $t1";
 	}
 
-	MIPS_OUTPUT(mips.str());
+	OUTPUT(mips.str());
 	save(tar_str, "$t0");
 }
 
@@ -420,7 +419,7 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 	string reg;
 	if (value_is_immed) {
 		reg = "$t0";
-		MIPS_OUTPUT("li $t0, " << var);
+		OUTPUT("li $t0, " << var);
 		if (!is_set) {
 			//error_debug("array to a value");
 		}
@@ -473,24 +472,24 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 		//	ele_offset *= 4;
 		//}
 		ele_offset *= 4;
-		MIPS_OUTPUT(op << " " << reg << ", -" << offset + ele_offset << "(" << point_reg << ")");
+		OUTPUT(op << " " << reg << ", -" << offset + ele_offset << "(" << point_reg << ")");
 
 	}
 	else {
 		//if (type == INT) {
 		//	load(off_str, "$t1");
-		//	MIPS_OUTPUT("sll $t1, $t1, 2");  // offset *= 4
-		//	MIPS_OUTPUT("add $t1, $t1, " << point_reg);
+		//	OUTPUT("sll $t1, $t1, 2");  // offset *= 4
+		//	OUTPUT("add $t1, $t1, " << point_reg);
 		//}
 		//else {
-		//	MIPS_OUTPUT("add $t1, $s" << get_reg(off_str) << ", " << point_reg);
+		//	OUTPUT("add $t1, $s" << get_reg(off_str) << ", " << point_reg);
 		//}
 		load(off_str, "$t1");
-		MIPS_OUTPUT("sll $t1, $t1, 2");  // offset *= 4
-		MIPS_OUTPUT("subu $t1, " << point_reg << ", $t1");
+		OUTPUT("sll $t1, $t1, 2");  // offset *= 4
+		OUTPUT("subu $t1, " << point_reg << ", $t1");
 
-		MIPS_OUTPUT("addi $t1, $t1, -" << offset);  // add array base
-		MIPS_OUTPUT(op << " " << reg << ", 0($t1)");
+		OUTPUT("addi $t1, $t1, -" << offset);  // add array base
+		OUTPUT(op << " " << reg << ", 0($t1)");
 	}
 	if (!is_set) {
 		save(var, "$t0");
@@ -503,7 +502,7 @@ void name_handle(vector<string> strs) {
 		//error_debug("too few strs");
 	}
 	else if (strs[1] == ":") {
-		MIPS_OUTPUT(strs[0] << ":");    //[MIPS]标签，直接输出
+		OUTPUT(strs[0] << ":");    //[MIPS]标签，直接输出
 	}
 	else if (strs[1] == "ARRSET") {		//数组赋值语句
 		array_tar(strs[0], strs[2], strs[3], true);
@@ -520,13 +519,13 @@ void name_handle(vector<string> strs) {
 		}
 		if (is_num(strs[2])) {
 			// [MIPS] li加载立即数赋值
-			//MIPS_OUTPUT("li $s" << get_reg(strs[0], &conf_names) << ", " << strs[2]);
-			MIPS_OUTPUT("li $t0, " << strs[2]);
+			//OUTPUT("li $s" << get_reg(strs[0], &conf_names) << ", " << strs[2]);
+			OUTPUT("li $t0, " << strs[2]);
 			save(strs[0], "$t0");
 		}
 		else {
 			// [MIPS] move 加载变量值
-			//MIPS_OUTPUT("move $s" << get_reg(strs[0], &conf_names) << ", $s" << get_reg(strs[2], &conf_names));
+			//OUTPUT("move $s" << get_reg(strs[0], &conf_names) << ", $s" << get_reg(strs[2], &conf_names));
 			load(strs[2], "$t0");
 			save(strs[0], "$t0");
 		}
@@ -549,10 +548,10 @@ void name_handle(vector<string> strs) {
 }
 
 
-void readline_tar() {
+void read_medis_tar() {
 	string line;
 	while (getline(midfile, line)) {
-		MIPS_OUTPUT("   # " << line);
+		OUTPUT("   # " << line);
 		istringstream is(line);
 		string str;
 		vector<string> strs;
@@ -591,21 +590,21 @@ void readline_tar() {
 			}
 			else {
 				save(strs[1], "$v0");
-				//MIPS_OUTPUT("move $s" << get_reg(strs[1]) << ", $v0");
+				//OUTPUT("move $s" << get_reg(strs[1]) << ", $v0");
 			}
 
 		}
 		else if (strs[0] == "@ret") { // v寄存器赋值，跳转至ra OK
 			if (strs.size() == 2) {
 				if (is_num(strs[1])) {
-					MIPS_OUTPUT("li $v0, " << strs[1]);
+					OUTPUT("li $v0, " << strs[1]);
 				}
 				else {
 					load(strs[1], "$v0");
 				}
 			}
-			MIPS_OUTPUT("jr $ra");
-			MIPS_OUTPUT("nop");
+			OUTPUT("jr $ra");
+			OUTPUT("nop");
 
 		}
 		else if (strs[0] == "@be") {
@@ -614,71 +613,71 @@ void readline_tar() {
 			}
 			else {
 				load(strs[1], "$t0");
-				MIPS_OUTPUT("beq $t0, " << strs[2] << ", " << strs[3]);
-				MIPS_OUTPUT("nop");
+				OUTPUT("beq $t0, " << strs[2] << ", " << strs[3]);
+				OUTPUT("nop");
 			}
 
 		}
 		else if (strs[0] == "@bz") {
 			load(strs[1], "$t0");
-			MIPS_OUTPUT("beq $t0, $0, " << strs[2]);
-			MIPS_OUTPUT("nop");
+			OUTPUT("beq $t0, $0, " << strs[2]);
+			OUTPUT("nop");
 
 		}
 		else if (strs[0] == "@j") {
-			MIPS_OUTPUT("j " << strs[1]);
-			MIPS_OUTPUT("nop");
+			OUTPUT("j " << strs[1]);
+			OUTPUT("nop");
 
 		}
 		else if (strs[0] == "@jal") {
-			MIPS_OUTPUT("jal " << strs[1]);
-			MIPS_OUTPUT("nop");
+			OUTPUT("jal " << strs[1]);
+			OUTPUT("nop");
 
 		}
 		else if (strs[0] == "@printf") {
 			if (strs[1] == "LINE") {
-				MIPS_OUTPUT("li $a0, 10");
-				MIPS_OUTPUT("li $v0, 11");
-				MIPS_OUTPUT("syscall");
+				OUTPUT("li $a0, 10");
+				OUTPUT("li $v0, 11");
+				OUTPUT("syscall");
 			}
 			else {
 				bool is_immed = is_num(strs[2]);
 				if (strs[1] == "STRING") {
-					MIPS_OUTPUT("li $v0, 4");
-					MIPS_OUTPUT("la $a0, " << strs[2]);
-					MIPS_OUTPUT("syscall");
+					OUTPUT("li $v0, 4");
+					OUTPUT("la $a0, " << strs[2]);
+					OUTPUT("syscall");
 				}
 				else if (strs[1] == "INT") {
-					MIPS_OUTPUT("li $v0, 1");
+					OUTPUT("li $v0, 1");
 					if (is_immed) {
-						MIPS_OUTPUT("li $a0, " << strs[2]);
+						OUTPUT("li $a0, " << strs[2]);
 					}
 					else {
 						load(strs[2], "$a0");
 					}
-					MIPS_OUTPUT("syscall");
+					OUTPUT("syscall");
 
 				}
 				else if (strs[1] == "CHAR") {
-					MIPS_OUTPUT("li $v0, 11");
+					OUTPUT("li $v0, 11");
 					if (is_immed) {
-						MIPS_OUTPUT("li $a0, " << strs[2]);
+						OUTPUT("li $a0, " << strs[2]);
 					}
 					else {
 						load(strs[2], "$a0");
 					}
-					MIPS_OUTPUT("syscall");
+					OUTPUT("syscall");
 				}
 			}
 		}
 		else if (strs[0] == "@scanf") {
 			if (strs[1] == "INT") {
-				MIPS_OUTPUT("li $v0, 5");
+				OUTPUT("li $v0, 5");
 			}
 			else if (strs[1] == "CHAR") {
-				MIPS_OUTPUT("li $v0, 12");
+				OUTPUT("li $v0, 12");
 			}
-			MIPS_OUTPUT("syscall");
+			OUTPUT("syscall");
 			save(strs[2], "$v0");
 		}
 		else if (strs[0] == "@exit") {
@@ -691,17 +690,17 @@ void readline_tar() {
 }
 
 void set_data_str() {
-	MIPS_OUTPUT(".data");
+	OUTPUT(".data");
 	int len = str_set.size();
 	for (int i = 0; i < len; i++) {
-		MIPS_OUTPUT("S_" << i << ": .asciiz \"" << str_set[i] << "\"");
+		OUTPUT("S_" << i << ": .asciiz \"" << str_set[i] << "\"");
 	}
-	MIPS_OUTPUT(".text");
+	OUTPUT(".text");
 }
 
 void tar_code() {
 	set_data_str();
-	readline_tar();
+	read_medis_tar();
 }
 
 #endif

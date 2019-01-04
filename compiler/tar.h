@@ -39,7 +39,7 @@ extern STRINT_MAP global_addr_map;
 
 typedef map<string, Reg_recorder*> REG_MAP;
 extern REG_MAP reg_regmap;
-extern REG_MAP name_regmap;
+extern REG_MAP var_regmap;
 
 bool is_num(string str);
 void tar_code();
