@@ -33,7 +33,7 @@ public:
 	void init();
 	void save();
 	void load();
-	static void record_occu_regs(list<string>* save_list);
+	static void record_occu_regs(list<string>* save_list, list<string>* var_list);
 	static void save_occu_regs(list<string>* save_list, int offset);
 	static void load_occu_regs(list<string>* save_list, int offset);
 	static void clear_and_init_all();

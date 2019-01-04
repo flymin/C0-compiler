@@ -16,6 +16,7 @@
 #include "reg_recorder.h"
 #include "live_var.h"
 #include "dag_opt.h"
+#include "main.h"
 
 
 using namespace std;
@@ -402,7 +403,10 @@ void call_tar(string funcname) {
 
 		//开始保存寄存器
 		list<string> reg_save_list;
-		Reg_recorder::record_occu_regs(&reg_save_list);
+		list<string> var_save_list;
+		//map<string, Reg_recorder*> temp;
+		//temp = var_regmap;
+		Reg_recorder::record_occu_regs(&reg_save_list, &var_save_list);
 		int store_count = 0;
 		int stack_offset = (reg_save_list.size() + store_count) * 4;
 		Reg_recorder::save_occu_regs(&reg_save_list, store_count * 4);
@@ -422,7 +426,7 @@ void call_tar(string funcname) {
 			string paraname = paras.back();
 			paras.pop_back();
 			OUTPUT("move $a" << i << ", " << get_reg(paraname, false));
-			REG_MAP::iterator it = var_regmap.end();
+			//REG_MAP::iterator it = var_regmap.end();
 		}
 		// 这里需要清理变量到寄存器的映射
 		Reg_recorder::clear_and_init_all();		//only use $fp and $gp, no $sp
@@ -446,7 +450,11 @@ void call_tar(string funcname) {
 		OUTPUT("# BEGIN");
 		init_global_regs(); // [fix]
 		Reg_recorder::load_occu_regs(&reg_save_list, store_count * 4);
-
+		while (!var_save_list.empty()) {
+			get_reg(var_save_list.front(), true);
+			var_save_list.pop_front();
+		}
+		//var_regmap = temp;
 		OUTPUT("#END");
 	}
 	else {
@@ -853,7 +861,7 @@ void read_medis_tar() {
 		}
 		else if (strs[0] == "@free") {
 			// free temp 用来记录，真正的free操作在下一条中间代码解析完成之后
-			//free_temp_set.insert(strs[1]);
+			free_temp_set.insert(strs[1]);
 			continue;
 		}
 		else {

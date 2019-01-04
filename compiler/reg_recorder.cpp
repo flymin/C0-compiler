@@ -92,7 +92,7 @@ void Reg_recorder::load()
 }
 
 // before call
-void Reg_recorder::record_occu_regs(list<string>* save_list)
+void Reg_recorder::record_occu_regs(list<string>* save_list, list<string>* var_list)
 {
 	REG_MAP::iterator it = reg_regmap.begin();
 	while (it != reg_regmap.end())
@@ -101,6 +101,7 @@ void Reg_recorder::record_occu_regs(list<string>* save_list)
 		if (rec->state == OCCUPIED)
 		{
 			save_list->push_back(rec->regname);
+			var_list->push_back(rec->name);
 		}
 		it++;
 	}
