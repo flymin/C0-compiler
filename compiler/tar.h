@@ -12,7 +12,7 @@
 #include <map>
 #include <set>
 
-#define NEW_TAR
+
 
 #ifdef NEW_TAR
 bool has_name(string name);

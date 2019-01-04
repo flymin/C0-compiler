@@ -11,6 +11,9 @@
 #include "dag_opt.h"
 #include "copy_opt.h"
 
+//#define NEW_TAR
+#define OPT
+
 string generate_filename(string info);
 
 #endif

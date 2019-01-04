@@ -369,12 +369,10 @@ void cal_tar(string op, string tar_str, string cal_str1, string cal_str2) {
 		if (immed1 == 0) {
 			mips << ", $0";
 		}
-		else if (!is_cal) {
+		//else if (!is_cal) {
+		else {
 			OUTPUT("li $t0, " << immed1);
 			mips << ", $t0";
-		}
-		else {
-			//error_debug("cal1 is a number");
 		}
 	}
 	else {
@@ -684,6 +682,9 @@ void read_medis_tar() {
 			}
 			OUTPUT("syscall");
 			save(strs[2], "$v0");
+		}
+		else if (strs[0] == "@free") {
+
 		}
 		else if (strs[0] == "@exit") {
 

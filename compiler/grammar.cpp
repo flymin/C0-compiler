@@ -384,6 +384,12 @@ void var_declare() {
 		if (kind != ARRAY) {
 			//insymbol(kind, type)插入符号表，返回插入位置
 			temp = pushTable(token, VAR, type);
+			if(!temp){
+				while (!check_legal(1, SEMI)) {
+					getsym_check();
+				}
+				break;
+			}
 			if (!this_func) {
 				temp->global = true;
 			}
@@ -398,6 +404,12 @@ void var_declare() {
 		else {
 			//insymbol(kind, type, array_length)插入符号表，返回插入位置
 			temp = pushTable(token, ARRAY, type);
+			if (!temp) {
+				while (!check_legal(1, SEMI)) {
+					getsym_check();
+				}
+				break;
+			}
 			getsym_check();		//这个符号一定是中括号
 			assert(symbol == LBKT);
 			getsym_check();
@@ -412,7 +424,7 @@ void var_declare() {
 			else {
 				array_length = num;
 				if (array_length <= 0) {
-					gram_error("数组长度应该大于零！");
+					sema_error("数组长度应该大于零！");
 					//error: the leng of the array should greater than 0
 					array_length = 1;
 				}
@@ -1617,7 +1629,7 @@ void forstate() {
 	getsym_check();
 	if (symbol != BECOME) {
 		//error:缺少等号
-		gram_error("缺少等号！");
+		gram_error("应出现赋值符号！");
 		goto jump2;
 	}
 	getsym_check();

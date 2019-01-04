@@ -853,7 +853,7 @@ void read_medis_tar() {
 		}
 		else if (strs[0] == "@free") {
 			// free temp 用来记录，真正的free操作在下一条中间代码解析完成之后
-			free_temp_set.insert(strs[1]);
+			//free_temp_set.insert(strs[1]);
 			continue;
 		}
 		else {

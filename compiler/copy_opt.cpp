@@ -26,7 +26,7 @@
 
 using namespace std;
 
-#ifdef NEW_TAR
+#ifdef OPT
 
 int line_count = 0;			//统计中间代码行数，两次相同认为中间代码优化可终止
 static ifstream fin;
@@ -598,7 +598,7 @@ void copy_read_medis() {
 			OUTPUT(line);
 		}
 		else if (strs[0] == "@free") {}
-		else if (strs[1] == ":") {
+		else if (strs.size() > 1 && strs[1] == ":") {
 		label:
 			// output | stop
 			output_medis();

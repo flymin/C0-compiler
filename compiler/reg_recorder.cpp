@@ -7,6 +7,7 @@
 # include "table.h"
 # include "tar.h"
 # include "live_var.h"
+# include "main.h"
 # define DEBUG 0
 # if DEBUG
 # define OUT_LEFT cout
