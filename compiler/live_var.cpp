@@ -50,10 +50,10 @@ list<Data_node*> var_stack;
 int get_regno(string funcname, string cblockname, string varname) {
 	Fund_block* cblk = (*(func_fblock_map[funcname]))[cblockname];
 	if (cblk->has_live(varname)) {
-		return cblk->lives[varname]->regno;
+		return cblk->actives[varname]->regno;
 	}
 	else {
-		return -1; // not in lives
+		return -1; // not in actives
 	}
 }
 
@@ -93,9 +93,9 @@ void Fund_block::print_info() {
 
 	VARNODE_MAP::iterator map_it;
 
-	map_it = this->lives.begin();
-	log_file << "lives:" << endl;
-	while (map_it != this->lives.end()) {
+	map_it = this->actives.begin();
+	log_file << "actives:" << endl;
+	while (map_it != this->actives.end()) {
 		log_file << map_it->first << " ";
 		map_it++;
 	}
@@ -141,7 +141,7 @@ bool Fund_block::has_out(string name) {
 }
 
 bool Fund_block::has_live(string name) {
-	return (this->lives.find(name) != this->lives.end());
+	return (this->actives.find(name) != this->actives.end());
 }
 
 void Fund_block::try_use(string name) {
@@ -305,18 +305,18 @@ void complete_set_varnodes(set<Data_node*>* dustbin,
 			vn_it->second = tmn; // change ptr
 		}
 		if (!fblock->has_live(name)) {
-			fblock->lives.insert(VARNODE_MAP::value_type
-			(vn_it->first, vn_it->second)); // put into lives
+			fblock->actives.insert(VARNODE_MAP::value_type
+			(vn_it->first, vn_it->second)); // put into actives
 		}
 		vn_it++;
 	}
 }
 
 void refresh_conflict(Fund_block* fblock) {
-	VARNODE_MAP::iterator it = fblock->lives.begin();
-	while (it != fblock->lives.end()) {// varnodes
-		VARNODE_MAP::iterator conf_it = fblock->lives.begin();
-		while (conf_it != fblock->lives.end()) {// varnodes
+	VARNODE_MAP::iterator it = fblock->actives.begin();
+	while (it != fblock->actives.end()) {// varnodes
+		VARNODE_MAP::iterator conf_it = fblock->actives.begin();
+		while (conf_it != fblock->actives.end()) {// varnodes
 			if (conf_it != it) {// not self
 				it->second->conflicts.insert(conf_it->second);
 			}
@@ -334,7 +334,7 @@ void complete_function_varnodes() {
 	//cout << funcname << endl;
 	set<Data_node*> useless_vns;
 	list<Fund_block*>::iterator cb_it = cblock_list.begin();
-	// put into lives | refresh conflict
+	// put into actives | refresh conflict
 	while (cb_it != cblock_list.end()) {// code_blocks
 		Fund_block* fblock = *cb_it;
 		complete_set_varnodes(&useless_vns, fblock, &fblock->ins);

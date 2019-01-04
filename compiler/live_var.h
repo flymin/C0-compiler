@@ -33,7 +33,7 @@ public:
 	set<string> defs;
 	map<string, Data_node*> ins; // same values as outs
 	map<string, Data_node*> outs; // can be enlarge, but not modified
-	map<string, Data_node*> lives; // ins | outs
+	map<string, Data_node*> actives; // ins | outs
 
 	Fund_block(string label);
 	void print_info();

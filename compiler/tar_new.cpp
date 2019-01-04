@@ -137,7 +137,7 @@ void load(string varname, string reg) {
 ************/
 
 void init_global_regs() {
-	map<string, Data_node*> *vn_map = &((*(func_fblock_map[cur_func->name]))[cur_label]->lives);
+	map<string, Data_node*> *vn_map = &((*(func_fblock_map[cur_func->name]))[cur_label]->actives);
 	map<string, Data_node*>::iterator it = vn_map->begin();
 	while (it != vn_map->end())
 	{

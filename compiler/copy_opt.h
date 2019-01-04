@@ -1,8 +1,9 @@
 #ifndef ASS_OPT_H_INCLUDED
 #define ASS_OPT_H_INCLUDED
 
-class Line
-{
+# define IS_TEMP(name) (name[0] == '#')
+
+class Line {
 public:
 	bool active = false;
 	vector<string> last_use_names;  // must be temp
@@ -13,31 +14,28 @@ public:
 	}
 };
 
-class Block
-{
+class Block_copy {
 public:
-	int def_line;
+	int def_line_no;
 	string name;
-	Block* nature = NULL;	// 指向当前Block的数据来源
+	Block_copy* source = NULL;	// 指向当前Block_copy的数据来源
 	int last_used_line = -1;
 
-	Block(int line, string name)
-	{
-		this->def_line = line;
+	Block_copy(int line, string name) {
+		this->def_line_no = line;
 		this->name = name;
 	}
 
-	Block* get_nature() {	// def block的nature为自己，useblock的nature为定义点
-		Block* block = this;
-		while (block->nature != NULL)
-		{
-			block = block->nature;
+	Block_copy* get_source() {	// def block的source为自己，useblock的source为定义点
+		Block_copy* block = this;
+		while (block->source != NULL) {
+			block = block->source;
 		}
 		return block;
 	}
 };
 
 string use(string usename);
-string ass_main(string, int*);
+string copy_main(string, int*);
 
 #endif // ASS_OPT_H_INCLUDED

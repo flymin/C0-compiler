@@ -56,10 +56,8 @@ Node::Node(string op, Node* lptr, Node* rptr)
 	this->name = "#-1";
 }
 
-void Node::make_certain()
-{
-	if (this->is_certain)
-	{
+void Node::make_certain() {
+	if (this->is_certain) {
 		return;
 	}
 	this->lptr->make_certain();
@@ -72,10 +70,8 @@ void Node::make_certain()
 }
 
 // scanf(continue) | get(continue)
-void remove_var(string name)
-{
-	if (has_node(name))
-	{
+void remove_var(string name) {
+	if (has_node(name)) {
 		NODE_MAP::iterator it = node_map.find(name);    // get iterator
 		record_code(it);    // temp <- var, erase it
 	}
@@ -83,12 +79,10 @@ void remove_var(string name)
 
 // assign: to record vars' value, for other blocks' using
 // remove: values of vars may be modified
-void init_DAG()
-{
+void init_DAG() {
 	refresh_vars();
 	node_map.clear();
-	for (unsigned int i = 0; i < nodes.size(); i++)
-	{
+	for (unsigned int i = 0; i < nodes.size(); i++) {
 		delete(nodes[i]);
 	}
 	nodes.clear();
@@ -115,8 +109,7 @@ NODE_MAP::iterator record_code(NODE_MAP::iterator it) {
 	Node* node = it->second;
 	string name = it->first;
 	node_map.erase(it++);
-	if (name == get_name(node))      // must be certain
-	{
+	if (name == get_name(node)) {     // must be certain
 
 		set_name(node); // refresh node's name
 	}
@@ -173,14 +166,12 @@ void refresh_vars(){
 }
 
 // 判断变量名是否有对应的节点
-bool has_node(string name)
-{
+bool has_node(string name) {
 	NODE_MAP::iterator it = node_map.find(name);
 	return (it != node_map.end());
 }
 
-void add_to_map(string name, Node* nodeptr)
-{
+void add_to_map(string name, Node* nodeptr) {
 	node_map[name] = nodeptr;
 }
 
@@ -206,10 +197,8 @@ void set_node(string name, Node* nodeptr, bool change_name = true) {
  *  has_node => return node_map[name]
  *  !has_node => return new node of which the content is name
  */
-Node* get_node(string name)
-{
-	if (!has_node(name))
-	{
+Node* get_node(string name) {
+	if (!has_node(name)) {
 		Node* node = new Node(name);    // create node
 		nodes.push_back(node);  // add to node list
 		set_node(name, node);
@@ -224,23 +213,19 @@ Node* get_node(string name)
  *  \exists key in node_map : is_var(key) && value is node => name = key
  *  \except => name = "#" + id (could be #-1)
  */
-void set_name(Node* node)
-{
-	if (IS_NUM(node->content))
-	{
+void set_name(Node* node) {
+	if (IS_NUM(node->content)) {
 		node->name = node->content;
 		return;
 	}
 	string content = node->content;
 	// points to it self
-	if (IS_VAR(content) && has_node(content) && node_map[content] == node)
-	{
+	if (IS_VAR(content) && has_node(content) && node_map[content] == node) {
 		node->name = content;
 		return;
 	}
 	bool has_name = (node->name[0] != '#');
-	if (has_name)   // already has name
-	{
+	if (has_name) { // already has name
 		NODE_MAP::iterator it = node_map.begin();
 		while (it != node_map.end()) {
 			if (IS_VAR(it->first) && it->second == node)
@@ -253,12 +238,10 @@ void set_name(Node* node)
 			it++;
 		}
 	}
-	else if (!node->is_certain)
-	{
+	else if (!node->is_certain) {
 		NODE_MAP::iterator it = node_map.begin();
 		while (it != node_map.end()) {
-			if (IS_VAR(it->first) && it->second == node)
-			{
+			if (IS_VAR(it->first) && it->second == node) {
 				node->name = it->first;
 				node->make_certain();
 				node->content = it->first;
@@ -269,14 +252,12 @@ void set_name(Node* node)
 	}
 
 	stringstream ss;
-	if (has_name)
-	{
+	if (has_name) {
 		node->no = temp_count++;
 		ss << "#" << node->no;
 		OUTPUT(ss.str() << " = " << node->name);
 	}
-	else
-	{
+	else {
 		ss << "#" << node->no;
 	}
 	node->name = ss.str();
@@ -289,8 +270,7 @@ void set_name(Node* node)
  *                => name = "#" + no
  *  return name
  */
-string get_name(Node* node)
-{
+string get_name(Node* node) {
 	if (node->name == "#-1")
 	{
 		node->no = temp_count++;
@@ -304,23 +284,17 @@ string get_name(Node* node)
 
 // XX = XX op XX
 // XX = XX
-void build_DAG(vector<string> code)
-{
-	if (code.size() == 3)   // assign
-	{
+void build_DAG(vector<string> code) {
+	if (code.size() == 3) {  // assign
 		if (IS_VAR(code[0])) refresh_vars();
 		set_node(code[0], get_node(code[2]), false);
 	}
-	else if (code.size() == 4 && code[1] == "ARRSET")
-	{
-		if (has_node(code[0]))
-		{
+	else if (code.size() == 4 && code[1] == "ARRSET") {
+		if (has_node(code[0])) {
 			Node* node = get_node(code[0]);
 			node_map.erase(node_map.find(code[0]));
-			for (unsigned int i = 0; i < nodes.size(); i++)
-			{
-				if (!nodes[i]->is_leaf && nodes[i]->lptr == node)
-				{
+			for (unsigned int i = 0; i < nodes.size(); i++) {
+				if (!nodes[i]->is_leaf && nodes[i]->lptr == node) {
 					set_name(nodes[i]);
 					nodes[i]->make_certain();
 				}
@@ -330,19 +304,16 @@ void build_DAG(vector<string> code)
 		OUTPUT(code[0] << " ARRSET " << use_new_name(code[2]) <<
 			" " << use_new_name(code[3]));
 	}
-	else if (code.size() == 5)	// ARRGET按照计算符处理，数组名整体作为一个变量
-	{
+	else if (code.size() == 5) {	// ARRGET按照计算符处理，数组名整体作为一个变量
 		if (IS_VAR(code[0])) refresh_vars();
 		string op = code[3];
 		Node* node1 = get_node(code[2]);
 		Node* node2 = get_node(code[4]);
 		bool could_reverse = (op == "ADD" || op == "MUL" || op == "BE" || op == "EQ");
 		int len = nodes.size();
-		for (int i = 0; i < len; i++)   // all nodes
-		{
+		for (int i = 0; i < len; i++) {  // all nodes
 			Node* node = nodes[i];
-			if (node->content != op)    // not the same op
-			{
+			if (node->content != op) {   // not the same op
 				continue;
 			}
 			if ((node->lptr == node1 && node->rptr == node2) ||
@@ -357,8 +328,7 @@ void build_DAG(vector<string> code)
 		nodes.push_back(node);
 		set_node(code[0], node);
 	}
-	else
-	{
+	else {
 		for (unsigned int i = 0; i<code.size(); i++) cout << code[i] << " ";
 		//error_debug("cal len not 3 or 5 in dag.add_and_output");
 	}
@@ -377,8 +347,7 @@ string use_new_name(string name) {
 	return GET_NEW_NAME(name);
 }
 
-void read_medis()
-{
+void read_medis() {
 	string raw_line;
 	while (getline(fin, raw_line)) {
 		string line = "";
@@ -398,32 +367,24 @@ void read_medis()
 		while (is >> str){
 			strs.push_back(str);
 		}
-		if (strs[0] == "@var" || strs[0] == "@array")
-		{
+		if (strs[0] == "@var"	||	strs[0] == "@array" ||
+			strs[0] == "@para"	||	strs[0] == "@exit"	) {
 			OUTPUT(line);
 		}
-		else if (strs[0] == "@para")
-		{
-			OUTPUT(line);
-		}
-		else if (strs[0] == "@func")
-		{
+		else if (strs[0] == "@func") {
 			cur_func_DAG = findFunc((char *)strs[1].data());
 			assert(cur_func_DAG != NULL);
 			OUTPUT(line);
 		}
-		else if (strs[0] == "@push")
-		{
+		else if (strs[0] == "@push") {
 			OUTPUT("@push " << use_new_name(strs[1]));
 		}
-		else if (strs[0] == "@call")
-		{
+		else if (strs[0] == "@call") {
 			record_global_vars();
 			refresh_global_vars();
 			OUTPUT(line);
 		}
-		else if (strs[0] == "@get")
-		{
+		else if (strs[0] == "@get") {
 			if (IS_VAR(strs[1])) refresh_vars();
 			remove_var(strs[1]);    // var <- function return value
 			string name = use_new_name(strs[1]);
@@ -435,16 +396,14 @@ void read_medis()
 				init_DAG();
 				OUTPUT(line);
 			}
-			else
-			{
+			else {
 				string var1 = use_new_name(strs[1]);
 				refresh_global_vars();
 				init_DAG();
 				OUTPUT("@ret " << var1);
 			}
 		}
-		else if (strs[0] == "@be")
-		{
+		else if (strs[0] == "@be") {
 			if (has_node(strs[1]) && has_node(strs[2]) &&
 				GET_NEW_NAME(strs[1]) == GET_NEW_NAME(strs[2])) { // have same node
 				// 相同节点的前提下使用无条件跳转指令
@@ -458,57 +417,45 @@ void read_medis()
 				OUTPUT("@be " << var1 << " " << var2 << " " << strs[3]);
 			}
 		}
-		else if (strs[0] == "@bz")
-		{
-			if (has_node(strs[1]) && GET_NEW_NAME(strs[1]) == "0")
-			{
+		else if (strs[0] == "@bz") {
+			if (has_node(strs[1]) && GET_NEW_NAME(strs[1]) == "0") {
 				refresh_vars();
 				OUTPUT("@j " << strs[2]);
 			}
-			else
-			{
+			else {
 				string var1 = use_new_name(strs[1]);
 				refresh_vars();
 				OUTPUT("@bz " << var1 << " " << strs[2]);
 			}
 
 		}
-		else if (strs[0] == "@j")
-		{
+		else if (strs[0] == "@j") {
 			refresh_vars();
 			OUTPUT(line);
 		}
-		else if (strs[0] == "@jal")
-		{
+		else if (strs[0] == "@jal") {
 			refresh_vars();
 			OUTPUT(line);
 		}
-		else if (strs[0] == "@printf")
-		{
-			if (strs[1] == "STRING" || strs[1] == "LINE")
-			{
+		else if (strs[0] == "@printf") {
+			if (strs[1] == "STRING" || strs[1] == "LINE") {
 				OUTPUT(line);
 			}
-			else
-			{
+			else {
 				OUTPUT("@printf " << strs[1] << " " << use_new_name(strs[2]));
 			}
 		}
-		else if (strs[0] == "@scanf")
-		{
+		else if (strs[0] == "@scanf") {
 			refresh_vars();
 			remove_var(strs[2]);
 			OUTPUT(line);
 		}
-		else if (strs[0] == "@exit")
-		{
-			OUTPUT(line);
+		else if (strs[0] == "@free") {
+			//do nothing
 		}
-		else if (strs[0] == "@free") {}
 		else {
 			// 在标签处划分基本块
-			if (strs[1] == ":")
-			{
+			if (strs[1] == ":") {
 				init_DAG();
 				OUTPUT(line);
 			}
@@ -523,8 +470,9 @@ string dag_main(string filename){
 	fin.open(filename.c_str());
 	string dag_filename = generate_filename("DAG");
 	if (!DEBUG)fout.open(dag_filename.c_str());
+
 	read_medis();
-	if (!DEBUG)fout.close();
+
 	if (!DEBUG)fout.close();
 	fin.close();
 	return dag_filename;
