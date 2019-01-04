@@ -352,14 +352,6 @@ void read_medis() {
 	while (getline(fin, raw_line)) {
 		string line = "";
 		int len = raw_line.length();
-		//for (int i = 0; i < len; i++){
-			//if (raw_line[i] == '#'){
-			//	line += '$';
-			//}
-			//else{
-			//	line += raw_line[i];
-			//}
-		//}
 		line = raw_line;
 		istringstream is(line);
 		string str;

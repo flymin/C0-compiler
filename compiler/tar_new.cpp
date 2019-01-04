@@ -431,6 +431,7 @@ void call_tar(string funcname) {
 		//Reg_recorder::save_global_modi_regs();
 		
 
+
 		// refresh $fp
 		OUTPUT("add $fp, $sp, $0");
 		OUTPUT("addi $sp, $sp, -" << temp_addr + 4 * func->paranum + func->psize);
@@ -602,31 +603,44 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 	if (it != offset_map.end()) {
 		offset = it->second;
 		point_reg = "$fp";
+		if (offset_is_immed) {
+			int ele_offset;
+			sscanf_s(off_str.c_str(), "%d", &ele_offset);
+			ele_offset *= 4;
+			OUTPUT(op << " " << reg << ", -" << offset + ele_offset << "(" << point_reg << ")");
+
+		}
+		else {
+			OUTPUT("sll $v0, " << get_reg(off_str, false) << ", 2");  // offset *= 4
+			OUTPUT("sub $v0, " << point_reg << ", $v0");
+
+			OUTPUT("addi $v0, $v0, -" << offset);  // add array base
+			OUTPUT(op << " " << reg << ", 0($v0)");
+		}
 	}
 	else {
 		it = global_addr_map.find(arr_str);
 		if (it != global_addr_map.end()) {
 			offset = it->second;
 			point_reg = "$gp";
+			if (offset_is_immed) {
+				int ele_offset;
+				sscanf_s(off_str.c_str(), "%d", &ele_offset);
+				ele_offset *= 4;
+				OUTPUT(op << " " << reg << ", " << offset + ele_offset << "(" << point_reg << ")");
+
+			}
+			else {
+				OUTPUT("sll $v0, " << get_reg(off_str, false) << ", 2");  // offset *= 4
+				OUTPUT("addu $v0, " << point_reg << ", $v0");
+
+				OUTPUT("addi $v0, $v0, " << offset);  // add array base
+				OUTPUT(op << " " << reg << ", 0($v0)");
+			}
 		}
 		else {
 			//error_debug("cannot found array");
 		}
-	}
-
-	if (offset_is_immed) {
-		int ele_offset;
-		sscanf_s(off_str.c_str(), "%d", &ele_offset);
-		ele_offset *= 4;
-		OUTPUT(op << " " << reg << ", -" << offset + ele_offset << "(" << point_reg << ")");
-
-	}
-	else {
-		OUTPUT("sll $v0, "<< get_reg(off_str, false) <<", 2");  // offset *= 4
-		OUTPUT("sub $v0, " << point_reg << ", $v0");
-
-		OUTPUT("addi $v0, $v0, -" << offset);  // add array base
-		OUTPUT(op << " " << reg << ", 0($v0)");
 	}
 }
 

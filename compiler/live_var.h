@@ -9,8 +9,7 @@ using namespace std;
 class Fund_block;
 extern map<string, map<string, Fund_block*>*> func_fblock_map;
 
-class Data_node
-{
+class Data_node {
 public:
 	string name;
 	Data_node* redirect_ptr = NULL;
@@ -42,8 +41,8 @@ public:
 	bool has_in(string name);
 	bool has_out(string name);
 	bool has_live(string name);
-	void try_use(string name);
-	void try_def(string name);
+	void put_use(string name);
+	void put_def(string name);
 	bool refresh_out();
 	void refresh_in();
 };

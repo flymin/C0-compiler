@@ -61,7 +61,7 @@ void Reg_recorder::save()
 		// store old value
 		if (this->global)
 		{
-			OUTPUT("sw " << this->regname << ", -" << this->offset
+			OUTPUT("sw " << this->regname << ", " << this->offset
 				<< "($gp) # store " << this->name);
 		}
 		else
@@ -80,7 +80,7 @@ void Reg_recorder::load()
 	}
 	else if (offset != -1 && this->global)   // is global variable
 	{
-		OUTPUT("lw " << this->regname << ", -" << this->offset
+		OUTPUT("lw " << this->regname << ", " << this->offset
 			<< "($gp) # load " << this->name);
 	}
 	else if (offset != -1)

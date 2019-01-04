@@ -89,7 +89,7 @@ void save(string varname, string reg) {
 	else {
 		var = findSym(cur_func, (char*)varname.data());
 		if (var->global) { // is global variable
-			OUTPUT("sw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
+			OUTPUT("sw " << reg << ", " << global_addr_map[var->name] << "($gp)");
 		}
 		else {
 			OUTPUT("sw " << reg << ", -" << offset_map[var->name] << "($fp)");
@@ -107,7 +107,7 @@ void load(string varname, string reg) {
 	else {
 		var = findSym(cur_func, (char*)varname.data());
 		if (var->global) { // is global variable
-			OUTPUT("lw " << reg << ", -" << global_addr_map[var->name] << "($gp)");
+			OUTPUT("lw " << reg << ", " << global_addr_map[var->name] << "($gp)");
 		}
 		else {
 			OUTPUT("lw " << reg << ", -" << offset_map[var->name] << "($fp)");
@@ -453,44 +453,49 @@ void array_tar(string arr_str, string off_str, string var, bool is_set) {
 	if (it != offset_map.end()) {
 		offset = it->second;
 		point_reg = "$fp";
+		if (offset_is_immed) {
+			int ele_offset;
+			sscanf_s(off_str.c_str(), "%d", &ele_offset);
+			ele_offset *= 4;
+			OUTPUT(op << " " << reg << ", -" << offset + ele_offset << "(" << point_reg << ")");
+
+		}
+		else {
+			load(off_str, "$t1");
+			OUTPUT("sll $t1, $t1, 2");  // offset *= 4
+			OUTPUT("subu $t1, " << point_reg << ", $t1");
+
+			OUTPUT("addi $t1, $t1, -" << offset);  // add array base
+			OUTPUT(op << " " << reg << ", 0($t1)");
+		}
 	}
 	else {
 		it = global_addr_map.find(arr_str);
 		if (it != global_addr_map.end()) {
 			offset = it->second;
 			point_reg = "$gp";
+			if (offset_is_immed) {
+				int ele_offset;
+				sscanf_s(off_str.c_str(), "%d", &ele_offset);
+				ele_offset *= 4;
+				OUTPUT(op << " " << reg << ", " << offset + ele_offset << "(" << point_reg << ")");
+
+			}
+			else {
+				load(off_str, "$t1");
+				OUTPUT("sll $t1, $t1, 2");  // offset *= 4
+				OUTPUT("addu $t1, " << point_reg << ", $t1");
+
+				OUTPUT("addi $t1, $t1, " << offset);  // add array base
+				OUTPUT(op << " " << reg << ", 0($t1)");
+			}
 		}
 		else {
 			//error_debug("cannot found array");
 		}
 	}
 
-	if (offset_is_immed) {
-		int ele_offset;
-		sscanf_s(off_str.c_str(), "%d", &ele_offset);
-		//if (type == INT) {
-		//	ele_offset *= 4;
-		//}
-		ele_offset *= 4;
-		OUTPUT(op << " " << reg << ", -" << offset + ele_offset << "(" << point_reg << ")");
 
-	}
-	else {
-		//if (type == INT) {
-		//	load(off_str, "$t1");
-		//	OUTPUT("sll $t1, $t1, 2");  // offset *= 4
-		//	OUTPUT("add $t1, $t1, " << point_reg);
-		//}
-		//else {
-		//	OUTPUT("add $t1, $s" << get_reg(off_str) << ", " << point_reg);
-		//}
-		load(off_str, "$t1");
-		OUTPUT("sll $t1, $t1, 2");  // offset *= 4
-		OUTPUT("subu $t1, " << point_reg << ", $t1");
-
-		OUTPUT("addi $t1, $t1, -" << offset);  // add array base
-		OUTPUT(op << " " << reg << ", 0($t1)");
-	}
 	if (!is_set) {
 		save(var, "$t0");
 	}

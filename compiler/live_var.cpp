@@ -144,14 +144,14 @@ bool Fund_block::has_live(string name) {
 	return (this->actives.find(name) != this->actives.end());
 }
 
-void Fund_block::try_use(string name) {
+void Fund_block::put_use(string name) {
 	if (is_local_var(cur_funcname, name) && !has_def(name))
 	{
 		this->uses.insert(name);
 	}
 }
 
-void Fund_block::try_def(string name) {
+void Fund_block::put_def(string name) {
 	if (is_local_var(cur_funcname, name) && !has_use(name)) {
 		this->defs.insert(name);
 	}
@@ -538,23 +538,23 @@ void live_medis_read() {
 		}
 		else if (strs[0] == "@push")
 		{
-			cur_cblock->try_use(strs[1]);
+			cur_cblock->put_use(strs[1]);
 		}
 		else if (strs[0] == "@get")
 		{
-			cur_cblock->try_def(strs[1]);
+			cur_cblock->put_def(strs[1]);
 		}
 		else if (strs[0] == "@ret")
 		{
 			if (strs.size() > 1)
 			{
-				cur_cblock->try_use(strs[1]);
+				cur_cblock->put_use(strs[1]);
 			}
 		}
 		else if (strs[0] == "@be" || strs[0] == "@bne")
 		{
-			cur_cblock->try_use(strs[1]);
-			cur_cblock->try_use(strs[2]);
+			cur_cblock->put_use(strs[1]);
+			cur_cblock->put_use(strs[2]);
 			link_code_blocks(cur_cblock, get_code_block(strs[3]));
 			string temp_label = set_temp_label();
 			link_code_blocks(cur_cblock, get_code_block(temp_label));
@@ -563,7 +563,7 @@ void live_medis_read() {
 		else if (strs[0] == "@bz" || strs[0] == "@bgtz" || strs[0] == "@bltz" ||
 			strs[0] == "@blez" || strs[0] == "@bgez")
 		{
-			cur_cblock->try_use(strs[1]);
+			cur_cblock->put_use(strs[1]);
 			link_code_blocks(cur_cblock, get_code_block(strs[2]));
 			string temp_label = set_temp_label();
 			link_code_blocks(cur_cblock, get_code_block(temp_label));
@@ -577,12 +577,12 @@ void live_medis_read() {
 		{
 			if (strs[1] != "STRING" && strs[1] != "LINE")
 			{
-				cur_cblock->try_use(strs[2]);
+				cur_cblock->put_use(strs[2]);
 			}
 		}
 		else if (strs[0] == "@scanf")
 		{
-			cur_cblock->try_def(strs[2]);
+			cur_cblock->put_def(strs[2]);
 		}
 		else if (strs[1] == ":")
 		{
@@ -591,22 +591,22 @@ void live_medis_read() {
 		}
 		else if (strs.size() == 3)
 		{
-			cur_cblock->try_use(strs[2]);
-			cur_cblock->try_def(strs[0]);
+			cur_cblock->put_use(strs[2]);
+			cur_cblock->put_def(strs[0]);
 		}
 		else if (strs.size() == 4)			//ARRSET
 		{
-			cur_cblock->try_use(strs[2]);
-			cur_cblock->try_use(strs[3]);
+			cur_cblock->put_use(strs[2]);
+			cur_cblock->put_use(strs[3]);
 		}
 		else if (strs.size() == 5)
 		{
 			if (strs[3] != "ARRGET")
 			{
-				cur_cblock->try_use(strs[2]);
+				cur_cblock->put_use(strs[2]);
 			}
-			cur_cblock->try_use(strs[4]);
-			cur_cblock->try_def(strs[0]);
+			cur_cblock->put_use(strs[4]);
+			cur_cblock->put_def(strs[0]);
 		}
 		else
 		{
