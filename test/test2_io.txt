@@ -1,0 +1,3 @@
+输出：enter five numbers:
+输入：3 6 3 7 5
+输出 sorted array:-7 3 3 5 6 6 7 8 32 100

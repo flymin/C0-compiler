@@ -137,8 +137,9 @@ void assign_mid(string name, int value){
 }
 
 /*@push动作用来完成函数传参过程*/
-void push_mid(string name){
-	OUTPUT("@push " << string(name));
+void push_mid(string name, string temp){
+	OUTPUT(temp << " = " << name);
+	OUTPUT("@push " << string(temp));
 }
 
 void push_mid(int name){

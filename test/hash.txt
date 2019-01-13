@@ -1,0 +1,142 @@
+const int U = 1, OPQRST = +123456, UVWXYZ = -7890;
+const char CU = '_';
+const int V = 0, W=-3,MAXS = 10000, _SEED = 391;
+const char CV='*', CW = '9';
+
+int u1, _abcdefg, hijklmn, opqrst01234, uvwxyz56789, ABCDEFG, HIJKLMN1;
+char a;
+int v1, w1[4];
+char b, s[10000];
+
+int limit2char(int x) {
+    return (x - x / 256 * 256);
+}
+
+int M(int x, int m1) {
+    if(0 > x) {
+        do {
+            x = x + m1;
+        } while(x < 0)
+    }
+    else
+        ;
+    if(x < m1)
+        return (x);
+    else {
+        x = x - x / m1 * m1;
+    }
+    return (x);
+}
+
+void randomSet() {
+    b = s[M(v1, u1)];
+}
+
+int normal(int c) {
+    c = limit2char(c);
+    if(c)
+        ;
+    else if(c == 0)
+        return (limit2char(normal(-'a' + 'a' + 36)));
+    else ;
+    if(c != ('+'))
+        randomSet();
+    else ;
+    if(('0' - 1) < c)
+        if(c <= CW * 1)
+            return (limit2char(c));
+        else ;
+    else ;
+    return (limit2char(+M(c - 32, 126 - 32 + 1) + 32));
+}
+
+void acc(int x) {
+    w1[M(x, 4)] = w1[M(x, 4)] + x;
+}
+
+int f(int x, char y) {
+    const int base = 13, mo = 100007;
+
+    int u1;
+
+    u1 = normal(y + 0);
+    acc(u1);
+
+    return (M(x * (base + V * U) + u1, mo));
+}
+
+void hash(int seed) {
+    int i;
+
+    if(u1 <= 0) {
+        return;
+    }
+    else;
+    v1 = seed;
+    i = 0; 
+    if(i < u1){
+        do{
+            v1 = f(v1, s[i]);
+            i = i + 1;
+        }while(i < u1);
+    }
+    else
+        ;
+}
+
+void main() {
+    int i;
+    int c;
+    char p;
+
+    u1 = 0;
+    hash(_SEED);
+
+    scanf(u1);
+    i = 0;
+    if(i < u1) {
+        do{
+            scanf(p);
+            s[i] = p;
+            i = i + 1;
+        }while(i < u1);
+    }
+    else
+        ;
+
+    i = M(-20, 2);
+    i = M(1, 2);
+    i = M(3, 2);
+    c = normal(0);
+    c = normal('+' / 1);
+    c = normal('0' - 1);
+    c = normal('1' - 0);
+
+    printf(u1);
+    printf(" | ");
+    i = u1 - 1;
+    if(i >= 0) {
+        do{
+            c = +s[i];
+            printf(s[i]);
+            i = i - 1;
+        } while(i >= 0);
+    }
+    else
+        ;
+
+    hash(_SEED);
+
+    printf(" | v1: ", v1);
+    c = normal(b + 0);
+    printf(" | b: ", c);
+    i = 0;
+    if(i < 4) {
+        do{
+            printf(" | ", w1[i]);
+            i = i + 1;
+        }while(i < 4);
+    }
+    else
+        ;
+}

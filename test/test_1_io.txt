@@ -1,0 +1,10 @@
+输出：please enter two numbers between 0-10 and two characters:
+输入：1 3 s d
+输出：
+335
+sum array: 285
+fibo ans 3
+is a2 equal to 127: 127
+global g_int_1 = 10
+local g_int_1 = 3
+a

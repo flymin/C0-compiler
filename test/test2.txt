@@ -1,0 +1,70 @@
+int a[10];
+int judge1(int a, int b, int c, int d){
+	if(a>=b){
+		if(c>d)
+			return (1);
+	}
+	return (0);
+}
+int judge2(int a, int b, int c, int d){
+	if(a<=b){
+			if(c>d)
+				return (1);
+		}
+		return (0);
+}
+int pivot(int begin, int end){
+	int i, j, t, r;
+	r = a[begin];
+	i = begin;
+	j = end;
+
+	if(i!=j){
+		do{
+			if(judge1(a[j], r, j, i)){
+			do{
+				j=j-1;
+			}while(judge1(a[j], r, j, i));
+				}
+				if(judge2(a[i], r, j, i)){
+					do{i=i+1;}
+			while(judge2(a[i], r, j, i));
+				
+		}
+			t = a[i];
+			a[i] = a[j];
+			a[j] = t;
+		}while(i!=j);
+	}
+	a[begin] = a[i];
+	a[i] = r;
+	return (i);
+}
+void quickSort(int begin, int end){
+	int mid;
+	if(begin<end){
+		mid = pivot(begin, end);
+		quickSort(begin, mid-1);
+		quickSort(mid+1, end);
+	}
+	return;
+}
+void main(){
+	const int len =10;
+	int i, temp; 
+	printf("enter five numbers: ");
+	for(i=0;i<5;i=i+1){
+		scanf(temp);
+		a[i] = temp;
+	}
+	a[5] = ('d');
+	a[6] = -7;
+	a[7] = 6;
+	a[8] = 8;
+	a[9] = 32;
+	quickSort(0, len-1);
+	printf("sorted array:");
+	for(i=0;i<len;i=i+1)
+		printf(a[i]);
+	return;
+}

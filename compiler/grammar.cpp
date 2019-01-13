@@ -709,7 +709,7 @@ void call(Sym *func) {
 				push_mid(para.value);
 			}
 			else {//传递变量
-				push_mid(para.name);
+				push_mid(para.name, new_temp());
 			}
 		}
 		else {//参数个数超过限制
@@ -1030,6 +1030,7 @@ Type expression(Ret_item* box) {
 		if (symbol == SUB) {
 			cur_op = SUB;
 		}
+		type = INT;
 		getsym_check();
 	}
 	do {

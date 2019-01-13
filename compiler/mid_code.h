@@ -45,7 +45,7 @@ void cal_mid(Symbol op, string result, int a1, string a2);
 void assign_mid(string n1, string n2);
 void assign_mid(string name, int value);
 
-void push_mid(string name);
+void push_mid(string name, string temp);
 void push_mid(int name);
 
 void return_get_mid(string name);

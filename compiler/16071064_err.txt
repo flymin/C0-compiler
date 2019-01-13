@@ -198,6 +198,14 @@ void _printf() {
 	if(one != -1)
 		printf(" one error ");
 }
+void Printf() 
+	printf(" T is ", T);
+	printf(" underline is ", underline);
+	if(One != 1)
+		printf(" One error ");
+	if(one != -1)
+		printf(" one error ");
+}
 
 char _scanf() {
 	char temp;

@@ -1,0 +1,115 @@
+const int g_int_1 = 1;
+const char g_c_charf = 'f';
+const char g_c_chara = 'a', _0b = 'b';
+const int _c_int2 = 2, _g_10 = 4;
+
+int G_int_1;
+int g_v_int_arr[10], g_v_int_b;
+char g_v_char_b, g_v_char_arr[2]; 
+
+int intaddchar(int a, char b){
+	return(a+b);
+}
+
+int intaddint(int a, int b){
+	return(a+b);
+}
+
+int charaddchar(char a, char b){
+	return(a+b);
+}
+void echochar(){
+	g_v_char_b = 'a';
+	g_v_char_arr[0] = g_v_char_b;
+	g_v_char_arr[1] = 'A';
+	printf(g_v_char_arr[0]);
+}
+int sum(int len){
+	int i ,ans;
+	ans = 0;
+	for(i=len-1;i>=0;i=i-1)
+		g_v_int_arr[i] = i*i;
+	do{
+		ans = ans+g_v_int_arr[i];
+		i=i+1;
+	}while(i<len);
+	return (ans);
+}
+
+int test_all_cond(){
+	int a;
+	int b;
+	int c;
+	char d;
+	int answer;
+	a = 1;
+	b = 2;
+	c = 2;
+	d = 'A';
+	answer = 0;
+	if(b==c)
+		answer = answer +1;
+	if(a<b)
+		answer = answer+2;
+	if(c>a)
+		answer = answer+4;
+	if((d))
+		answer =answer +64;
+	if(a==1)
+		answer = answer+8;
+	if(a!=1)
+		answer =answer +128;
+	if(a<=c)
+		answer = answer+16;
+	if(b>=a)
+		answer = answer+32;
+	if((d)>66)
+		answer =answer +256;
+	return (answer);
+}
+
+int fib(int n){	
+	if(n==1)
+		return(1);
+	else if(n==2)
+		return(1);
+	return(fib(n-1)+fib(n-2));
+}
+
+
+void global(){
+	const char g_c_chara = 'b';
+	G_int_1 = +_g_10*_c_int2+(g_c_chara-_0b)--12/(_c_int2*3);
+	printf("global g_int_1 = ",G_int_1);
+}
+
+void test_expression(){
+	int G_int_1; 
+	G_int_1 = 2;
+	global();
+	G_int_1 = g_int_1+G_int_1;
+	printf("local g_int_1 = ", G_int_1);
+}
+
+void really_void(){;}
+
+void main()
+{
+	const int len = 10;
+	int a1,a2;
+	char c1,c2;
+	int ans ;
+	ans =0;
+	printf("please enter two numbers between 1-10 and two characters:");
+	scanf(a1,a2,c1,c2);
+	ans = intaddint(a1,a2)+intaddchar(a1,c1)+charaddchar(c1,c2);
+	printf(ans);
+	printf("sum array : ",sum(len));
+	a1 = fib(a1)+fib(a2);
+	printf("fib ans ", a1);
+	a2 = test_all_cond();
+	printf("is a2 equal to 127:",a2);
+	test_expression();
+	echochar();
+	really_void();
+}
